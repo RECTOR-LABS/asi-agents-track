@@ -12,15 +12,13 @@
 
 ## 🎯 Project Overview
 
-> **Note:** This is a template setup for the ASI Agents Track hackathon. Update this section with your actual project description once you've chosen your problem domain.
+**MediChain AI** is a decentralized healthcare diagnostic system that combines Fetch.ai's autonomous agents with SingularityNET's MeTTa knowledge graphs to provide accurate, explainable medical assessments accessible through ASI:One chat interface.
 
-[Brief description of what your agent system does - 2-3 sentences]
+**Problem Statement:** Medical misdiagnosis affects 12 million Americans annually, leading to $40 billion in healthcare costs and thousands of preventable deaths. Current solutions lack transparency, scalability, and 24/7 accessibility.
 
-**Problem Statement:** [What problem does this solve?]
+**Solution:** Multi-agent diagnostic system with transparent MeTTa-powered reasoning that analyzes symptoms, identifies conditions with evidence-based recommendations, and provides explainable diagnostic chains showing "why" behind every diagnosis.
 
-**Solution:** [How do your agents solve it?]
-
-**Impact:** [What's the real-world benefit?]
+**Impact:** Democratizes access to preliminary medical diagnosis through AI agents, providing 24/7 assessment with transparent reasoning, evidence-linked treatments, and appropriate urgency classification to guide patients to timely care.
 
 ---
 
@@ -28,10 +26,12 @@
 
 ### Agent System
 
-- **Coordinator Agent** - [Description and address]
-- **Specialist Agent 1** - [Description and address]
-- **Specialist Agent 2** - [Description and address]
-- **Specialist Agent 3** - [Description and address]
+**Current Deployment (3/5 Agents - 60%):**
+- **Coordinator Agent** - Central routing with Chat Protocol (`agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q`) ✅
+- **Patient Intake Agent** - NLP symptom extraction (`agent1qgr8ga84fyjsy478ctvzp3zf5r8rw9nulzmrl9w0l3x83suxuzt6zjq29y2`) ✅
+- **Knowledge Graph Agent** - MeTTa diagnostic reasoning (`agent1qdjy30exkpc0zxu6p8urwnllg9fygj27h3nzksq9twmqcsyundvckavn6v6`) ✅
+- **Symptom Analysis Agent** - Urgency assessment (planned) 📋
+- **Treatment Recommendation Agent** - Evidence-based treatments (planned) 📋
 
 ### Technology Stack
 
@@ -85,9 +85,9 @@ python src/agents/coordinator.py
 
 2. In separate terminals, start specialist agents:
 ```bash
-python src/agents/specialist_1.py
-python src/agents/specialist_2.py
-python src/agents/specialist_3.py
+python src/agents/patient_intake.py
+python src/agents/knowledge_graph.py
+# Additional agents coming soon
 ```
 
 3. Test via ASI:One interface: [https://asi1.ai/](https://asi1.ai/)
@@ -97,42 +97,76 @@ python src/agents/specialist_3.py
 ## 📋 Agent Details
 
 ### Coordinator Agent
-- **Name:** [Agent Name]
-- **Address:** `agent1...` (will be updated after deployment)
+- **Name:** MediChain Coordinator
+- **Address:** `agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q`
 - **Role:** Routes user requests to appropriate specialist agents
-- **Chat Protocol:** ✅ Enabled
+- **Chat Protocol:** ✅ Enabled (ASI:One accessible)
+- **Status:** ✅ Deployed
 
-### Specialist Agent 1
-- **Name:** [Agent Name]
-- **Address:** `agent1...` (will be updated after deployment)
-- **Role:** [Specific domain expertise]
-- **MeTTa Integration:** ✅ Yes
+### Patient Intake Agent
+- **Name:** MediChain Patient Intake
+- **Address:** `agent1qgr8ga84fyjsy478ctvzp3zf5r8rw9nulzmrl9w0l3x83suxuzt6zjq29y2`
+- **Role:** Natural language symptom extraction and validation
+- **Features:** Regex + keyword extraction, symptom normalization, clarifying questions
+- **Status:** ✅ Deployed
 
-### Specialist Agent 2
-- **Name:** [Agent Name]
-- **Address:** `agent1...` (will be updated after deployment)
-- **Role:** [Specific domain expertise]
-- **MeTTa Integration:** ✅ Yes
+### Knowledge Graph Agent
+- **Name:** MediChain Knowledge Graph
+- **Address:** `agent1qdjy30exkpc0zxu6p8urwnllg9fygj27h3nzksq9twmqcsyundvckavn6v6`
+- **Role:** MeTTa-powered diagnostic reasoning with transparent explanation chains
+- **Features:** Multi-hop reasoning, differential diagnosis, uncertainty handling, safety validation
+- **MeTTa Integration:** ✅ Deep integration (13 conditions, 200+ facts, 21 query methods)
+- **Status:** ✅ Deployed (Day 3)
 
-### Specialist Agent 3
-- **Name:** [Agent Name]
-- **Address:** `agent1...` (will be updated after deployment)
-- **Role:** [Specific domain expertise]
-- **MeTTa Integration:** ✅ Yes
+### Symptom Analysis Agent
+- **Name:** MediChain Symptom Analyzer
+- **Address:** (planned)
+- **Role:** Urgency assessment (emergency/urgent/routine) and red flag detection
+- **Status:** 📋 Planned (Epic 3)
+
+### Treatment Recommendation Agent
+- **Name:** MediChain Treatment Advisor
+- **Address:** (planned)
+- **Role:** Evidence-based treatment recommendations with source linking
+- **Status:** 📋 Planned (Epic 3)
 
 ---
 
 ## 🧠 MeTTa Knowledge Graph
 
-Our MeTTa knowledge graph contains:
+**Medical Diagnostic Knowledge Base (v1.1):**
 
-- **[Domain]:** [Number] entries with [relationship types]
-- **Evidence Sources:** [CDC, WHO, research papers, etc.]
-- **Query Capabilities:** [Types of queries supported]
+- **13 Medical Conditions:** Critical (6), Urgent (1), Common (3), Differential (3)
+  - Meningitis, Stroke, Heart Attack, Appendicitis, Pulmonary Embolism, Sepsis
+  - Pneumonia, Migraine, Influenza, Gastroenteritis
+  - COVID-19, Tension Headache, Common Cold
+- **200+ Medical Facts:** Symptoms, treatments, urgency levels, evidence sources, contraindications, safety warnings
+- **10+ Relationship Types:** has-symptom, has-treatment, has-urgency, red-flag-symptom, differential-from, time-sensitive, contraindication, safety-warning, drug-interaction, requires-dose-adjustment
+- **45+ Contraindications:** Comprehensive safety validation across all medication classes
+- **Evidence Sources:** CDC, WHO, American Heart Association, Johns Hopkins Medicine
 
-Example query:
+**Query Capabilities (21 Methods):**
+- Emergency condition detection & red flag symptom identification
+- Multi-symptom diagnostic matching with confidence scoring
+- Differential diagnosis generation
+- Treatment safety validation (contraindications, drug interactions, dose adjustments)
+- **Transparent reasoning chain explanation** with evidence tracing
+- Multi-hop reasoning for complex diagnostic scenarios
+
+Example diagnostic query:
 ```python
-# [Show example MeTTa query relevant to your domain]
+from src.metta.query_engine import MeTTaQueryEngine
+
+engine = MeTTaQueryEngine()
+symptoms = ['fever', 'severe-headache', 'stiff-neck', 'non-blanching-rash']
+
+# Find matching conditions
+matches = engine.find_conditions_by_symptoms(symptoms)
+# Output: {'meningitis': 4, 'pneumonia': 1, 'influenza': 1, 'covid-19': 1}
+
+# Generate reasoning chain
+reasoning = engine.generate_reasoning_chain(symptoms, 'meningitis')
+# Shows: symptom matching, severity, urgency, red flags, treatments, differentials
 ```
 
 ---
@@ -251,14 +285,32 @@ asi-agents-track/
 
 ## 🛠️ Development Roadmap
 
-Track progress in [TIMELINE.md](docs/TIMELINE.md)
+**Current Progress:** 48% complete (37/80 tasks) - **7+ DAYS AHEAD OF SCHEDULE!**
 
-- [x] Week 1: Foundation - Basic agents and Chat Protocol
-- [ ] Week 2: Advanced - MeTTa integration and polish
-- [ ] Week 3: Demo - Video production and testing
+Track detailed progress in [EXECUTION-PLAN.md](docs/EXECUTION-PLAN.md)
+
+- [x] **Epic 1:** Multi-Agent Foundation ✅ (Day 2, planned Day 7)
+- [x] **Epic 2:** MeTTa Integration ✅ 100% (Day 3, planned Day 10 - **7 DAYS AHEAD!**)
+- [ ] **Epic 3:** Specialized Diagnostic Agents (Days 5-12)
+- [ ] **Epic 4:** ASI:One Chat Protocol (Days 11-14)
+- [ ] **Epic 5:** Production Polish & Quality (Days 12-20)
+- [ ] **Epic 6:** Documentation & Demo Video (Days 13-21)
+
+**Week Progress:**
+- [x] Week 1: Foundation - Basic agents + Chat Protocol + MeTTa basics ✅ **COMPLETE - 7 DAYS AHEAD!**
+- [ ] Week 2: Advanced - Deep MeTTa integration + multi-agent coordination (In progress)
+- [ ] Week 3: Polish - Demo video + testing + final fixes
 - [ ] Week 4: Submission - Final review and submit
 
-See detailed milestones in [TIMELINE.md](docs/TIMELINE.md)
+**Epic 2 Achievements (Day 3):**
+- ✅ Medical knowledge base v1.1 with 200+ facts
+- ✅ 45+ contraindications and safety validation
+- ✅ 21 MeTTa query methods (12 medical + 4 safety + 5 base)
+- ✅ Knowledge Graph Agent deployed and tested
+- ✅ Multi-hop reasoning with differential diagnosis
+- ✅ Transparent reasoning chain generation
+
+See detailed timeline in [TIMELINE.md](docs/TIMELINE.md)
 
 ---
 
