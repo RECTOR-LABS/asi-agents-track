@@ -482,6 +482,228 @@ All requirements tracked in [TRACK-REQUIREMENTS.md](docs/TRACK-REQUIREMENTS.md)
 
 ---
 
+## 🔧 Troubleshooting Guide
+
+### Common Issues and Solutions
+
+#### Agent Deployment Issues
+
+**Problem: Agent won't start / Port conflict**
+```
+Error: Address already in use: ('0.0.0.0', 8000)
+```
+**Solution:**
+- Change port in agent initialization: `Agent(port=8001)` (use 8001-8010)
+- Or kill existing process: `lsof -ti:8000 | xargs kill -9`
+
+**Problem: Mailbox registration fails**
+```
+ERROR: Failed to register mailbox
+```
+**Solution:**
+1. Verify `AGENTVERSE_API_KEY` in `.env` is correct
+2. Check internet connectivity
+3. Ensure agent has unique `seed` phrase
+4. Restart agent after fixing `.env`
+
+**Problem: Agent not appearing in Agentverse dashboard**
+```
+Agent shows "Inactive" or not listed
+```
+**Solution:**
+1. Create mailbox via Agentverse Inspector (REQUIRED):
+   - Start agent locally with `mailbox=True`
+   - Open inspector URL from logs
+   - Click "Connect" → Select "Mailbox" → "OK, got it"
+2. Verify agent logs show: `Successfully registered as mailbox agent`
+3. Check dashboard: https://agentverse.ai/agents
+
+#### ASI:One Integration Issues
+
+**Problem: Agent not discoverable on ASI:One**
+```
+Cannot find agent when searching on asi1.ai
+```
+**Solution:**
+1. Verify Chat Protocol included: `agent.include(chat_proto, publish_manifest=True)`
+2. Check agent profile shows "AgentChatProtocol" at: `https://agentverse.ai/agents/details/{ADDRESS}/profile`
+3. Wait 5-10 minutes for indexing after first deployment
+4. Test via Agentverse chat interface first: `https://chat.agentverse.ai/sessions/{SESSION_ID}`
+
+**Problem: Agent responds but ASI:One shows default AI response**
+```
+User message reaches agent, but ASI:One doesn't show agent reply
+```
+**Solution:**
+1. Always send `ChatAcknowledgement` for EVERY received message
+2. Verify response format matches Chat Protocol structure
+3. Check agent logs for errors during message handling
+4. Test conversation flow via Agentverse chat interface first
+
+#### MeTTa Knowledge Base Issues
+
+**Problem: MeTTa import error**
+```
+ModuleNotFoundError: No module named 'hyperon'
+```
+**Solution:**
+```bash
+pip install hyperon>=0.1.0
+# Or reinstall all dependencies:
+pip install -r requirements.txt
+```
+
+**Problem: Knowledge base not loading**
+```
+Warning: Knowledge base not found at ./data/knowledge_base.metta
+```
+**Solution:**
+1. Verify file exists: `ls -la data/knowledge_base.metta`
+2. Check `METTA_KB_PATH` in `.env` points to correct location
+3. Ensure file has read permissions: `chmod 644 data/knowledge_base.metta`
+
+**Problem: MeTTa query returns empty results**
+```
+conditions = engine.find_by_symptom("fever")
+# Returns: []
+```
+**Solution:**
+1. Verify symptom names use hyphens: `"fever"` not `"fever_symptom"`
+2. Check knowledge base loaded: look for startup message `Successfully loaded knowledge base`
+3. Test basic query: `engine.query("!(match &self (has-symptom $c fever) $c)")`
+
+#### Test Execution Issues
+
+**Problem: Tests fail with import errors**
+```
+ImportError: cannot import name 'SymptomExtractor' from 'src.agents.patient_intake'
+```
+**Solution:**
+```bash
+# Ensure PYTHONPATH includes project root
+export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+
+# Or use pytest with explicit path
+pytest tests/ --verbose
+```
+
+**Problem: Asyncio errors in tests**
+```
+RuntimeError: Event loop is closed
+```
+**Solution:**
+- Ensure `pytest.ini` has: `asyncio_mode = auto`
+- Install pytest-asyncio: `pip install pytest-asyncio`
+
+**Problem: Coverage report not generated**
+```
+WARNING: No data was collected
+```
+**Solution:**
+```bash
+# Install coverage plugin
+pip install pytest-cov
+
+# Run with explicit source
+pytest --cov=src --cov-report=term-missing tests/
+```
+
+#### Environment Configuration Issues
+
+**Problem: Missing environment variables**
+```
+KeyError: 'COORDINATOR_ADDRESS'
+```
+**Solution:**
+1. Copy template: `cp .env.example .env`
+2. Deploy agents to get addresses
+3. Update `.env` with generated agent addresses
+4. Restart agents after updating `.env`
+
+**Problem: Virtual environment not activated**
+```
+Command 'python' not found or wrong version
+```
+**Solution:**
+```bash
+# Activate venv (macOS/Linux)
+source venv/bin/activate
+
+# Activate venv (Windows)
+venv\Scripts\activate
+
+# Verify Python version
+python --version  # Should show 3.9+
+```
+
+#### Inter-Agent Communication Issues
+
+**Problem: Coordinator can't reach specialist agents**
+```
+ERROR: Failed to send message to agent1q...
+```
+**Solution:**
+1. Verify all agent addresses in `.env` are correct
+2. Ensure all agents are running (check each terminal)
+3. Verify agents use `mailbox=True` for Agentverse routing
+4. Check agent logs for connection errors
+
+**Problem: Message protocol validation errors**
+```
+ValidationError: 1 validation error for DiagnosticRequest
+```
+**Solution:**
+1. Ensure Pydantic models match protocol definitions in `src/protocols/messages.py`
+2. Verify all required fields are provided
+3. Check data types match model definitions
+4. Use `.dict()` or `.model_dump()` when sending messages
+
+#### Performance Issues
+
+**Problem: Tests run slowly (>30 seconds)**
+```
+109 tests passed in 45.23s
+```
+**Solution:**
+1. Run specific test files: `pytest tests/test_patient_intake.py`
+2. Skip slow tests: `pytest -m "not slow"`
+3. Use pytest-xdist for parallel execution: `pytest -n auto`
+
+**Problem: Agent responses are slow (>10 seconds)**
+```
+Response time: 15.2 seconds
+```
+**Solution:**
+1. Check MeTTa query complexity - simplify if needed
+2. Verify knowledge base size is reasonable (<10MB)
+3. Profile code: `python -m cProfile src/agents/coordinator.py`
+4. Consider caching frequent queries
+
+### Getting Additional Help
+
+1. **Check Logs:** Agent logs are in `/tmp/{agent_name}_mailbox.log`
+2. **Review Documentation:** See `docs/` folder for detailed guides
+3. **Test Locally First:** Use `pytest tests/` before deploying
+4. **Agentverse Inspector:** Use inspector for real-time debugging
+5. **Community Support:**
+   - Fetch.ai Discord: https://discord.gg/fetchai
+   - Hackathon Contact: https://t.me/prithvipc
+   - GitHub Issues: Create issue with error logs and steps to reproduce
+
+### Debug Mode
+
+Enable verbose logging:
+```python
+# In agent file
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Or via environment variable
+LOG_LEVEL=DEBUG python src/agents/coordinator.py
+```
+
+---
+
 ## 🤝 Contributing
 
 This is a hackathon project. Contributions welcome during development phase.
