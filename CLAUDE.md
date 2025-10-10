@@ -238,13 +238,18 @@ asi-agents-track/
 ├── setup.sh                         # Quick setup script
 ├── README.md                        # Project documentation
 ├── docs/
-│   ├── TRACK-REQUIREMENTS.md        # Submission checklist
-│   ├── TIMELINE.md                  # 22-day development plan
-│   ├── GETTING-STARTED.md           # Quick start guide
 │   ├── PRD.md                       # Product Requirements Document
 │   ├── EXECUTION-PLAN.md            # Progress tracker
-│   ├── hackathon-analysis.md        # Strategic analysis
-│   └── hackathon-original.md        # Original hackathon content
+│   ├── TIMELINE.md                  # 22-day development plan
+│   ├── GETTING-STARTED.md           # Quick start guide
+│   ├── TRACK-REQUIREMENTS.md        # Submission checklist
+│   ├── deployment/                  # Deployment documentation
+│   │   ├── ASI-ONE-DEPLOYMENT-GUIDE.md
+│   │   ├── ASI-ONE-TEST-RESULTS.md
+│   │   └── DEPLOYMENT-STATUS.md
+│   └── reference/                   # Reference & analysis
+│       ├── hackathon-analysis.md    # Strategic analysis
+│       └── hackathon-original.md    # Original hackathon content
 ```
 
 ---
@@ -553,9 +558,14 @@ ctx.logger.error(f"Error: {e}")
 ### Project Context & Strategy
 - **README.md** - Main project documentation, update with agent details
 - **CLAUDE.md** - This file - project guidance for Claude Code
-- **docs/hackathon-analysis.md** - Strategic analysis and winning strategies
+- **docs/reference/hackathon-analysis.md** - Strategic analysis and winning strategies
 - **docs/TRACK-REQUIREMENTS.md** - Complete submission checklist, review weekly
 - **docs/GETTING-STARTED.md** - Quick start guide for new contributors
+
+### Deployment Documentation
+- **docs/deployment/ASI-ONE-DEPLOYMENT-GUIDE.md** - ASI:One deployment procedures
+- **docs/deployment/ASI-ONE-TEST-RESULTS.md** - Testing results and issues
+- **docs/deployment/DEPLOYMENT-STATUS.md** - Current deployment status
 
 ### Planning Workflow
 1. **Before starting any task**: Check docs/PRD.md for Epic/Story/Task requirements
@@ -620,7 +630,7 @@ ctx.logger.error(f"Error: {e}")
 11. **Respect the 22-day timeline** - Follow milestone sequence, don't skip ahead
 12. **Keep .env synchronized** - Update agent addresses after each Agentverse deployment
 13. **Test locally before deploying** - Agentverse debugging is harder than local
-14. **Review docs/hackathon-analysis.md** - Contains strategic insights for competitive advantage
+14. **Review docs/reference/hackathon-analysis.md** - Contains strategic insights for competitive advantage
 15. **No ad-hoc features** - If it's not in PRD, don't build it (or add to PRD first and get approval)
 16. **Monitor agent logs during chat testing** - Use `tail -f /tmp/{agent}_mailbox.log` to see real-time message flow
 
