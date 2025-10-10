@@ -153,6 +153,15 @@ Example query:
 
 ## 📚 Documentation
 
+### Planning & Requirements
+- [Product Requirements Document (PRD)](docs/PRD.md) - Epic → Story → Task hierarchy
+- [Execution Plan & Progress Tracker](docs/EXECUTION-PLAN.md) - Daily task tracking
+- [Development Timeline](docs/TIMELINE.md) - 22-day milestone schedule
+- [Submission Requirements Checklist](docs/TRACK-REQUIREMENTS.md) - Hackathon requirements
+
+### Technical Documentation
+- [Getting Started Guide](docs/GETTING-STARTED.md) - Quick start for contributors
+- [Hackathon Strategic Analysis](docs/hackathon-analysis.md) - Competitive strategy
 - [Architecture Diagram](docs/architecture.md) (coming soon)
 - [MeTTa Knowledge Graph Structure](docs/metta-knowledge.md) (coming soon)
 - [API Documentation](docs/api.md) (coming soon)
@@ -222,38 +231,40 @@ asi-agents-track/
 │   └── test_protocols.py
 ├── data/
 │   └── knowledge_base.metta        # Main knowledge base
-├── docs/
-│   └── architecture.md
-├── resources/                       # Hackathon resources
-│   ├── hackathon-original.md       # Original content backup
+├── docs/                            # All documentation
+│   ├── PRD.md                      # Product Requirements Document
+│   ├── EXECUTION-PLAN.md           # Progress tracker
+│   ├── TIMELINE.md                 # Development timeline
+│   ├── TRACK-REQUIREMENTS.md       # Submission checklist
+│   ├── GETTING-STARTED.md          # Quick start guide
 │   ├── hackathon-analysis.md       # Strategic analysis
-│   └── official-docs/              # Reference documentation
+│   ├── hackathon-original.md       # Original content backup
+│   └── architecture.md             # System architecture (coming soon)
 ├── .env.example
 ├── .gitignore
 ├── requirements.txt
-├── README.md
-├── TRACK-REQUIREMENTS.md           # Submission checklist
-└── TIMELINE.md                     # Development timeline
+├── README.md                        # Main documentation
+└── CLAUDE.md                        # AI assistant context
 ```
 
 ---
 
 ## 🛠️ Development Roadmap
 
-Track progress in [TIMELINE.md](TIMELINE.md)
+Track progress in [TIMELINE.md](docs/TIMELINE.md)
 
 - [x] Week 1: Foundation - Basic agents and Chat Protocol
 - [ ] Week 2: Advanced - MeTTa integration and polish
 - [ ] Week 3: Demo - Video production and testing
 - [ ] Week 4: Submission - Final review and submit
 
-See detailed milestones in [TIMELINE.md](TIMELINE.md)
+See detailed milestones in [TIMELINE.md](docs/TIMELINE.md)
 
 ---
 
 ## 🏆 Hackathon Requirements
 
-All requirements tracked in [TRACK-REQUIREMENTS.md](TRACK-REQUIREMENTS.md)
+All requirements tracked in [TRACK-REQUIREMENTS.md](docs/TRACK-REQUIREMENTS.md)
 
 **Mandatory:**
 - ✅ uAgents Framework implementation

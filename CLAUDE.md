@@ -237,9 +237,14 @@ asi-agents-track/
 ├── requirements.txt                 # Python dependencies
 ├── setup.sh                         # Quick setup script
 ├── README.md                        # Project documentation
-├── TRACK-REQUIREMENTS.md            # Submission checklist
-├── TIMELINE.md                      # 22-day development plan
-└── GETTING-STARTED.md               # Quick start guide
+├── docs/
+│   ├── TRACK-REQUIREMENTS.md        # Submission checklist
+│   ├── TIMELINE.md                  # 22-day development plan
+│   ├── GETTING-STARTED.md           # Quick start guide
+│   ├── PRD.md                       # Product Requirements Document
+│   ├── EXECUTION-PLAN.md            # Progress tracker
+│   ├── hackathon-analysis.md        # Strategic analysis
+│   └── hackathon-original.md        # Original hackathon content
 ```
 
 ---
@@ -279,23 +284,23 @@ LOG_FILE=./logs/agents.log
 
 ### Day-by-Day Timeline
 
-This project follows a structured 22-day timeline (see `TIMELINE.md`):
+This project follows a structured 22-day timeline (see `docs/TIMELINE.md`):
 
 **Week 1 (Oct 9-15):** Foundation - Basic agents + Chat Protocol + MeTTa basics
 **Week 2 (Oct 16-22):** Advanced - Deep MeTTa integration + multi-agent coordination
 **Week 3 (Oct 23-29):** Polish - Demo video + testing + final fixes
 **Week 4 (Oct 30-31):** Submission + buffer
 
-**Current Phase:** Check `TIMELINE.md` for today's milestone and tasks.
+**Current Phase:** Check `docs/TIMELINE.md` for today's milestone and tasks.
 
 ### Daily Development Routine
 
-1. **Review milestone:** Check `TIMELINE.md` for day's goals
+1. **Review milestone:** Check `docs/TIMELINE.md` for day's goals
 2. **Implement features:** Focus on milestone deliverables
 3. **Test locally:** Run agents and verify functionality
 4. **Update docs:** Keep README and comments current
 5. **Commit progress:** Push to GitHub with descriptive messages
-6. **Check requirements:** Review `TRACK-REQUIREMENTS.md` weekly
+6. **Check requirements:** Review `docs/TRACK-REQUIREMENTS.md` weekly
 
 ---
 
@@ -315,12 +320,43 @@ python src/agents/specialist_1.py
 tail -f logs/agents.log
 ```
 
+**Agentverse Chat Interface Testing (RECOMMENDED FIRST):**
+
+After creating mailbox via inspector, each agent gets a dedicated chat interface:
+
+1. **Access Agent Profile:**
+   ```
+   https://agentverse.ai/agents/details/{AGENT_ADDRESS}/profile
+   ```
+
+2. **Find Chat Interface Link:**
+   - Agent profile page shows agent status (Active/Inactive)
+   - Shows published protocols (AgentChatProtocol)
+   - May have "Chat with Agent" button or direct session link
+
+3. **Direct Chat URL Pattern:**
+   ```
+   https://chat.agentverse.ai/sessions/{SESSION_ID}
+   ```
+   - Each new session gets a unique ID
+   - Interface shows agent name and timestamp
+   - Test conversation flow here BEFORE ASI:One
+
+4. **Testing Workflow:**
+   - Send test messages to verify Chat Protocol
+   - Monitor agent logs for received messages
+   - Verify responses appear in chat interface
+   - Test session lifecycle (start → messages → end)
+
+**Important:** The chat interface is the best way to test agents immediately after mailbox creation, without waiting for ASI:One indexing.
+
 **ASI:One Testing:**
 1. Deploy agent to Agentverse
-2. Visit https://asi1.ai/
-3. Search for agent by name or address
-4. Test conversation flow
-5. Verify StartSession, TextContent, EndSession handling
+2. Create mailbox via inspector (REQUIRED)
+3. Visit https://asi1.ai/
+4. Search for agent by name or `@agent-name`
+5. Test conversation flow
+6. Verify agent responds (not ASI:One default AI)
 
 **MeTTa Testing:**
 ```python
@@ -331,14 +367,65 @@ python src/metta/query_engine.py
 pytest tests/test_metta.py
 ```
 
+### Mailbox Creation Process (CRITICAL)
+
+**Why Mailboxes Are Required:**
+- `mailbox=True` in agent code enables mailbox CLIENT
+- Actual mailbox must be created via Agentverse Inspector
+- Without mailbox creation, agent won't appear in dashboard or be discoverable
+
+**Step-by-Step Mailbox Creation:**
+
+1. **Start agent locally** with `mailbox=True`:
+   ```python
+   agent = Agent(
+       name="your-agent-name",
+       port=8000,  # Local inspector port
+       mailbox=True,  # Enable mailbox client
+       publish_agent_details=True,  # Improves discoverability
+   )
+   ```
+
+2. **Open Inspector URL** (from agent startup logs):
+   ```
+   https://agentverse.ai/inspect/?uri=http%3A//127.0.0.1%3A{PORT}&address={AGENT_ADDRESS}
+   ```
+
+3. **Click "Connect" button** (top right of inspector page)
+
+4. **Select "Mailbox"** option and click "Next"
+   - Mailbox: Easiest way to connect agent to internet
+   - Proxy: For advanced routing configurations
+   - Custom: Manual network configuration
+
+5. **Click "OK, got it"** after reading instructions
+
+6. **Verify in logs:**
+   ```
+   INFO: [mailbox]: Successfully registered as mailbox agent in Agentverse
+   INFO: [mailbox]: Agent details updated in Agentverse
+   ```
+
+7. **Check Agent Dashboard:**
+   - Visit https://agentverse.ai/agents
+   - Agent should appear with "Active" status and "Mailbox" badge
+
+**Common Issues:**
+
+- **Agent not in dashboard:** Mailbox not created yet - repeat inspector steps
+- **"test-agent://" prefix in inspector:** Normal for local agents before mailbox creation
+- **Agent shows "Inactive":** Agent may have stopped running, check process
+- **Inspector shows wrong agent:** URL might be truncated - use complete address
+
 ### Important Testing Notes
 
-- Always test Chat Protocol via ASI:One before considering feature complete
+- **Test via Agentverse chat interface FIRST** before ASI:One
 - Verify ChatAcknowledgement is sent for every received message
 - Test multi-agent routing with realistic user queries
 - Validate MeTTa queries return expected results
 - Check error handling with invalid inputs
 - Test session lifecycle (start → messages → end)
+- Monitor agent logs during testing to see message flow
 
 ---
 
@@ -372,7 +459,7 @@ pytest tests/test_metta.py
 - Agents discoverable via ASI:One
 - Agent addresses documented in README
 
-**Complete Checklist:** See `TRACK-REQUIREMENTS.md` for full requirements.
+**Complete Checklist:** See `docs/TRACK-REQUIREMENTS.md` for full requirements.
 
 ---
 
@@ -458,11 +545,23 @@ ctx.logger.error(f"Error: {e}")
 
 ## Key Documentation Files
 
+### Planning & Execution (Critical - Review Daily)
+- **docs/PRD.md** - Product Requirements Document with Epic → Story → Task hierarchy (SINGLE SOURCE OF TRUTH)
+- **docs/EXECUTION-PLAN.md** - Progress tracker mapped to PRD, update daily with task status
+- **docs/TIMELINE.md** - 22-day development plan with weekly milestones
+
+### Project Context & Strategy
 - **README.md** - Main project documentation, update with agent details
-- **TRACK-REQUIREMENTS.md** - Complete submission checklist, review weekly
-- **TIMELINE.md** - 22-day development plan, track daily progress
-- **GETTING-STARTED.md** - Quick start guide for new contributors
-- **hackathon-analysis.md** - Strategic analysis and winning strategies
+- **CLAUDE.md** - This file - project guidance for Claude Code
+- **docs/hackathon-analysis.md** - Strategic analysis and winning strategies
+- **docs/TRACK-REQUIREMENTS.md** - Complete submission checklist, review weekly
+- **docs/GETTING-STARTED.md** - Quick start guide for new contributors
+
+### Planning Workflow
+1. **Before starting any task**: Check docs/PRD.md for Epic/Story/Task requirements
+2. **Daily updates**: Update docs/EXECUTION-PLAN.md with task progress (🔲 → 🟡 → ✅)
+3. **Weekly checkpoints**: Review docs/TIMELINE.md and update week progress
+4. **All work must trace back to PRD items** - No ad-hoc features without PRD entry
 
 ---
 
@@ -508,16 +607,22 @@ ctx.logger.error(f"Error: {e}")
 
 ## Tips for Future Claude Instances
 
-1. **Always check TIMELINE.md first** - Understand current development phase and daily goals
-2. **Review TRACK-REQUIREMENTS.md weekly** - Ensure submission requirements are met
-3. **Test via ASI:One frequently** - Don't wait until the end to test Chat Protocol
-4. **Focus on MeTTa depth** - Quality > quantity (10 well-modeled conditions > 50 superficial)
-5. **Preserve agent communication patterns** - Chat Protocol implementation is critical
-6. **Update README incrementally** - Don't leave documentation for the end
-7. **Respect the 22-day timeline** - Follow milestone sequence, don't skip ahead
-8. **Keep .env synchronized** - Update agent addresses after each Agentverse deployment
-9. **Test locally before deploying** - Agentverse debugging is harder than local
-10. **Review hackathon-analysis.md** - Contains strategic insights for competitive advantage
+1. **Always check docs/PRD.md first** - All work must trace back to Epic/Story/Task requirements (SINGLE SOURCE OF TRUTH)
+2. **Update docs/EXECUTION-PLAN.md daily** - Track task progress (🔲 → 🟡 → ✅), update daily standup log
+3. **Follow the planning workflow** - PRD defines WHAT to build, EXECUTION-PLAN tracks progress, TIMELINE shows WHEN
+4. **Review docs/TRACK-REQUIREMENTS.md weekly** - Ensure submission requirements are met
+5. **Test via Agentverse chat interface FIRST** - Use `https://chat.agentverse.ai/sessions/{ID}` before ASI:One for immediate testing
+6. **Mailbox creation is MANDATORY** - `mailbox=True` is not enough; must create via inspector at `https://agentverse.ai/inspect/`
+7. **Verify agent profile** - Check `https://agentverse.ai/agents/details/{ADDRESS}/profile` to confirm Active status and protocols
+8. **Focus on MeTTa depth** - Quality > quantity (10 well-modeled conditions > 50 superficial)
+9. **Preserve agent communication patterns** - Chat Protocol implementation is critical
+10. **Update README incrementally** - Don't leave documentation for the end
+11. **Respect the 22-day timeline** - Follow milestone sequence, don't skip ahead
+12. **Keep .env synchronized** - Update agent addresses after each Agentverse deployment
+13. **Test locally before deploying** - Agentverse debugging is harder than local
+14. **Review docs/hackathon-analysis.md** - Contains strategic insights for competitive advantage
+15. **No ad-hoc features** - If it's not in PRD, don't build it (or add to PRD first and get approval)
+16. **Monitor agent logs during chat testing** - Use `tail -f /tmp/{agent}_mailbox.log` to see real-time message flow
 
 ---
 
