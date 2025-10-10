@@ -88,17 +88,22 @@ class MeTTaQueryEngine:
         results = self.query(query)
         return [str(r) for r in results]
 
-    def add_fact(self, fact: str):
+    def add_fact(self, fact: str) -> bool:
         """
         Add a new fact to the knowledge base.
 
         Args:
             fact: MeTTa fact to add (e.g., "(has-symptom flu fever)")
+
+        Returns:
+            True if successful, False otherwise
         """
         try:
             self.metta.run(fact)
+            return True
         except Exception as e:
             print(f"Error adding fact: {e}")
+            return False
 
     def get_all_facts(self, predicate: str) -> List[Any]:
         """
@@ -127,7 +132,8 @@ class MeTTaQueryEngine:
         """
         query = "!(match &self (has-urgency $condition emergency) $condition)"
         results = self.query(query)
-        return [str(r) for r in results]
+        # Use _parse_metta_list to handle nested list results
+        return self._parse_metta_list(results)
 
     def _parse_metta_list(self, results: List[Any]) -> List[str]:
         """
@@ -196,7 +202,12 @@ class MeTTaQueryEngine:
         """
         query = f"!(match &self (has-urgency {condition} $urgency) $urgency)"
         results = self.query(query)
-        return str(results[0]) if results else "unknown"
+        if results:
+            # Strip brackets and quotes from result
+            urgency = str(results[0]).strip("'[]")
+            # Return "unknown" if result is empty after stripping
+            return urgency if urgency else "unknown"
+        return "unknown"
 
     def find_severity_level(self, condition: str) -> str:
         """
@@ -210,7 +221,10 @@ class MeTTaQueryEngine:
         """
         query = f"!(match &self (has-severity {condition} $severity) $severity)"
         results = self.query(query)
-        return str(results[0]) if results else "unknown"
+        if results:
+            # Strip brackets and quotes from result
+            return str(results[0]).strip("'[]")
+        return "unknown"
 
     def find_differential_diagnoses(self, condition: str) -> List[str]:
         """
