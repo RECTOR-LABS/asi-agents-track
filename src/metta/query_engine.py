@@ -129,6 +129,35 @@ class MeTTaQueryEngine:
         results = self.query(query)
         return [str(r) for r in results]
 
+    def _parse_metta_list(self, results: List[Any]) -> List[str]:
+        """
+        Parse MeTTa query results that return as nested lists.
+
+        MeTTa returns results like: [[fever, headache, cough, ...]]
+        We need to extract individual atoms as strings.
+
+        Args:
+            results: Raw MeTTa query results
+
+        Returns:
+            List of individual atom strings
+        """
+        parsed = []
+        for result in results:
+            # Result is typically a nested structure
+            # Convert to string and parse
+            result_str = str(result).strip()
+
+            # Remove outer brackets if present
+            if result_str.startswith('[') and result_str.endswith(']'):
+                result_str = result_str[1:-1]
+
+            # Split by comma and clean up each item
+            items = [item.strip() for item in result_str.split(',')]
+            parsed.extend([item for item in items if item])
+
+        return parsed
+
     def find_symptoms_by_condition(self, condition: str) -> List[str]:
         """
         Find all symptoms for a specific condition.
@@ -141,7 +170,8 @@ class MeTTaQueryEngine:
         """
         query = f"!(match &self (has-symptom {condition} $symptom) $symptom)"
         results = self.query(query)
-        return [str(r) for r in results]
+        # Parse the nested MeTTa list structure
+        return self._parse_metta_list(results)
 
     def find_red_flag_symptoms(self) -> List[str]:
         """

@@ -30,6 +30,12 @@ from .messages import (
     # Utility messages
     AgentAcknowledgement,
     ErrorMessage,
+
+    # Epic 3: Mailbox communication models
+    SymptomAnalysisRequestMsg,
+    SymptomAnalysisResponseMsg,
+    TreatmentRequestMsg,
+    TreatmentResponseMsg,
 )
 
 __all__ = [
@@ -47,4 +53,8 @@ __all__ = [
     "FinalDiagnosticReport",
     "AgentAcknowledgement",
     "ErrorMessage",
+    "SymptomAnalysisRequestMsg",
+    "SymptomAnalysisResponseMsg",
+    "TreatmentRequestMsg",
+    "TreatmentResponseMsg",
 ]

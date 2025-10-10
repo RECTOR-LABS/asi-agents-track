@@ -46,39 +46,46 @@ inter_agent_proto = Protocol(name="PatientIntakeProtocol")
 # ============================================================================
 
 # Common symptom keywords for pattern matching (expandable)
+# Ordered from most specific to least specific (check longer phrases first)
 SYMPTOM_KEYWORDS = {
-    # Fever & Temperature
-    "fever": ["fever", "high temperature", "temp", "hot", "burning up"],
+    # Fever & Temperature - specific variants first
+    "high-fever": ["high fever", "very high temperature", "burning up with fever"],
+    "fever": ["fever", "high temperature", "temp", "hot"],
     "chills": ["chills", "shivering", "shaking", "cold"],
 
-    # Head & Neurological
-    "headache": ["headache", "head pain", "head hurts", "migraine"],
+    # Head & Neurological - specific variants first
+    "severe-headache": ["severe headache", "terrible headache", "worst headache", "intense headache"],
+    "headache": ["headache", "head pain", "head hurts", "migraine", "head ache"],
     "dizziness": ["dizzy", "lightheaded", "vertigo", "spinning"],
     "confusion": ["confused", "disoriented", "foggy", "can't think"],
 
+    # Neck symptoms - multiple variations
+    "neck-stiffness": ["neck is very stiff", "neck is stiff", "very stiff neck", "extremely stiff neck"],
+    "stiff-neck": ["stiff neck", "neck stiff", "can't move neck", "neck hurts to move"],
+
     # Respiratory
+    "difficulty-breathing": ["difficulty breathing", "hard to breathe", "can't breathe well"],
+    "shortness-of-breath": ["short of breath", "can't breathe", "breathless", "gasping"],
     "cough": ["cough", "coughing", "hacking"],
-    "shortness_of_breath": ["short of breath", "can't breathe", "breathing hard", "breathless"],
-    "sore_throat": ["sore throat", "throat pain", "hurts to swallow"],
+    "sore-throat": ["sore throat", "throat pain", "hurts to swallow"],
 
     # Gastrointestinal
     "nausea": ["nausea", "nauseous", "queasy", "sick to stomach"],
     "vomiting": ["vomiting", "throwing up", "vomit", "puking"],
     "diarrhea": ["diarrhea", "loose stool", "runny stool"],
-    "abdominal_pain": ["stomach pain", "abdominal pain", "belly pain", "stomach ache"],
+    "abdominal-pain": ["stomach pain", "abdominal pain", "belly pain", "stomach ache"],
 
     # Muscular & Pain
-    "muscle_pain": ["muscle pain", "body aches", "sore muscles", "aching"],
-    "joint_pain": ["joint pain", "joints hurt", "stiff joints"],
-    "chest_pain": ["chest pain", "chest hurts", "chest pressure"],
+    "chest-pain": ["chest pain", "chest hurts", "chest pressure"],
+    "muscle-pain": ["muscle pain", "body aches", "sore muscles", "aching"],
+    "joint-pain": ["joint pain", "joints hurt", "stiff joints"],
 
     # Skin
     "rash": ["rash", "skin rash", "spots", "bumps"],
-    "stiff_neck": ["stiff neck", "neck stiff", "can't move neck"],
 
     # Energy & Consciousness
     "fatigue": ["tired", "fatigue", "exhausted", "weakness", "weak"],
-    "loss_of_consciousness": ["passed out", "fainted", "blacked out", "unconscious"],
+    "loss-of-consciousness": ["passed out", "fainted", "blacked out", "unconscious"],
 }
 
 # Severity indicators

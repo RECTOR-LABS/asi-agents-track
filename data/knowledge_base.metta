@@ -43,6 +43,31 @@
 (: routine-care urgency-level)  ;; Schedule appointment
 
 ;; ========================================
+;; CONDITION DEFINITIONS (Required for queries)
+;; ========================================
+(: is-condition (-> Condition))
+
+;; Critical Conditions
+(is-condition meningitis)
+(is-condition stroke)
+(is-condition heart-attack)
+(is-condition myocardial-infarction)
+(is-condition appendicitis)
+(is-condition pulmonary-embolism)
+(is-condition sepsis)
+
+;; Urgent Conditions
+(is-condition pneumonia)
+(is-condition covid-19)
+
+;; Common Conditions
+(is-condition migraine)
+(is-condition influenza)
+(is-condition gastroenteritis)
+(is-condition tension-headache)
+(is-condition common-cold)
+
+;; ========================================
 ;; CRITICAL CONDITIONS (Life-Threatening)
 ;; ========================================
 
