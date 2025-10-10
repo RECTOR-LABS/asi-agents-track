@@ -211,12 +211,11 @@ reasoning = engine.generate_reasoning_chain(symptoms, 'meningitis')
 - [Submission Requirements Checklist](docs/TRACK-REQUIREMENTS.md) - Hackathon requirements
 
 ### Technical Documentation
+- [**System Architecture**](docs/ARCHITECTURE.md) - Complete architecture with diagrams ✅
 - [Getting Started Guide](docs/GETTING-STARTED.md) - Quick start for contributors
-- [Hackathon Strategic Analysis](docs/hackathon-analysis.md) - Competitive strategy
-- [Architecture Diagram](docs/architecture.md) (coming soon)
-- [MeTTa Knowledge Graph Structure](docs/metta-knowledge.md) (coming soon)
-- [API Documentation](docs/api.md) (coming soon)
-- [Deployment Guide](docs/deployment.md) (coming soon)
+- [Hackathon Strategic Analysis](docs/reference/hackathon-analysis.md) - Competitive strategy
+- [ASI:One Deployment Guide](docs/deployment/ASI-ONE-DEPLOYMENT-GUIDE.md) - Deployment procedures
+- [Deployment Status](docs/deployment/DEPLOYMENT-STATUS.md) - Current deployment state
 
 ---
 
