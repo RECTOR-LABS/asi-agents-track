@@ -153,10 +153,13 @@ class SymptomAnalyzer:
         # Pattern matching for critical combinations
         symptom_set = set(s.lower() for s in symptoms)
 
-        # Meningitis triad: severe headache + fever + neck stiffness
-        if {"severe-headache", "fever", "neck-stiffness"}.issubset(
-            set(s.replace(" ", "-") for s in symptom_set)
-        ):
+        # Meningitis triad: severe headache + fever + neck stiffness/stiff neck
+        normalized_symptom_set = set(s.replace(" ", "-") for s in symptom_set)
+        has_headache = any(s in normalized_symptom_set for s in ["severe-headache", "headache"])
+        has_fever = "fever" in normalized_symptom_set or "high-fever" in normalized_symptom_set
+        has_stiff_neck = any(s in normalized_symptom_set for s in ["neck-stiffness", "stiff-neck", "neck-pain"])
+
+        if has_headache and has_fever and has_stiff_neck:
             red_flags.append("Meningitis triad (headache + fever + neck stiffness)")
 
         # Stroke FAST: face drooping, arm weakness, speech difficulty
