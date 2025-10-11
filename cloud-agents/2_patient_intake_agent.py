@@ -1,65 +1,85 @@
 """
-Patient Intake Agent - Extracts and structures patient symptom data
-MediChain AI - ASI Agents Track Hackathon
+MediChain AI - Patient Intake Agent (Cloud Deployment)
+Cloud-ready version with symptom extraction and NLP pattern matching.
+
+DEPLOYMENT: Copy this entire file to Agentverse Build tab for MediChain Patient Intake agent.
 """
 
-from uagents import Agent, Context, Model, Protocol
-from uagents.setup import fund_agent_if_low
-import os
-import re
-from typing import List, Dict, Optional
 from datetime import datetime
-from dotenv import load_dotenv
+from typing import List, Dict, Optional
+import re
 
-# Import our message protocols
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from src.protocols import (
-    Symptom,
-    PatientIntakeData,
-    DiagnosticRequest,
-    AgentAcknowledgement,
-    IntakeTextMessage,
-)
+# Import uagents framework (available in Agentverse)
+from uagents import Agent, Context, Protocol, Model
 
-# Load environment variables
-load_dotenv()
+# ============================================================================
+# AGENT ADDRESSES - Cloud Deployment Configuration
+# ============================================================================
+
+COORDINATOR_ADDRESS = "agent1qdp74ezv3eas5q60s4650xt97ew5kmyt9de77w2ku55jxys8uq2uk0u440d"
+
+# ============================================================================
+# MESSAGE MODELS (Inline - no external imports)
+# ============================================================================
+
+class Symptom(Model):
+    """Patient symptom data"""
+    name: str
+    raw_text: str
+    severity: Optional[int] = 5
+    duration: Optional[str] = None
+
+
+class PatientIntakeData(Model):
+    """Structured patient intake data"""
+    session_id: str
+    symptoms: List[Symptom]
+    age: Optional[int] = None
+    timestamp: datetime
+    medical_history: Optional[List[str]] = None
+    allergies: Optional[List[str]] = None
+    current_medications: Optional[List[str]] = None
+
+
+class IntakeTextMessage(Model):
+    """Message from coordinator/user with symptom text"""
+    text: str
+    session_id: str
+
+
+class AgentAcknowledgement(Model):
+    """Acknowledgement message back to coordinator"""
+    session_id: str
+    agent_name: str
+    message: str
+
+
+class DiagnosticRequest(Model):
+    """Request for diagnostic analysis (sent to coordinator)"""
+    session_id: str
+    patient_data: PatientIntakeData
+    requesting_agent: str
+    analysis_type: str = "symptom_analysis"
 
 
 # ============================================================================
-# Patient Intake Agent Configuration
+# SYMPTOM EXTRACTION KEYWORDS
 # ============================================================================
 
-agent = Agent(
-    name="medichain-patient-intake",
-    seed=os.getenv("AGENT_SEED", "patient_intake_seed_dev") + "_intake",
-    mailbox=True,  # Enable Agentverse mailbox for ASI:One discoverability
-    publish_agent_details=True,  # Publish agent details for better discoverability
-)
-
-# Create protocol for inter-agent communication
-inter_agent_proto = Protocol(name="PatientIntakeProtocol")
-
-
-# ============================================================================
-# Symptom Extraction & Normalization
-# ============================================================================
-
-# Common symptom keywords for pattern matching (expandable)
-# Ordered from most specific to least specific (check longer phrases first)
+# Common symptom keywords (ordered from most specific to least specific)
 SYMPTOM_KEYWORDS = {
-    # Fever & Temperature - specific variants first
+    # Fever & Temperature
     "high-fever": ["high fever", "very high temperature", "burning up with fever"],
     "fever": ["fever", "high temperature", "temp", "hot"],
     "chills": ["chills", "shivering", "shaking", "cold"],
 
-    # Head & Neurological - specific variants first
+    # Head & Neurological
     "severe-headache": ["severe headache", "terrible headache", "worst headache", "intense headache"],
     "headache": ["headache", "head pain", "head hurts", "migraine", "head ache"],
     "dizziness": ["dizzy", "lightheaded", "vertigo", "spinning"],
     "confusion": ["confused", "disoriented", "foggy", "can't think"],
 
-    # Neck symptoms - multiple variations
+    # Neck symptoms
     "neck-stiffness": ["neck is very stiff", "neck is stiff", "very stiff neck", "extremely stiff neck"],
     "stiff-neck": ["stiff neck", "neck stiff", "can't move neck", "neck hurts to move"],
 
@@ -93,6 +113,10 @@ SEVERITY_HIGH = ["severe", "extreme", "worst", "unbearable", "terrible", "intens
 SEVERITY_MEDIUM = ["moderate", "significant", "bad", "strong"]
 SEVERITY_LOW = ["mild", "slight", "little bit", "somewhat"]
 
+
+# ============================================================================
+# SYMPTOM EXTRACTION ENGINE
+# ============================================================================
 
 class SymptomExtractor:
     """Extracts and normalizes symptoms from natural language text"""
@@ -177,7 +201,7 @@ class SymptomExtractor:
 
 
 # ============================================================================
-# Message Handlers
+# SESSION TRACKING
 # ============================================================================
 
 # Session tracking for follow-up questions
@@ -197,7 +221,7 @@ def needs_clarification(symptoms: List[Symptom], age: Optional[int], text: str) 
                 "• 'I'm having chest pain and shortness of breath'")
 
     # Check for critical symptoms without duration
-    critical_symptoms = ["chest_pain", "shortness_of_breath", "confusion", "loss_of_consciousness"]
+    critical_symptoms = ["chest-pain", "shortness-of-breath", "confusion", "loss-of-consciousness"]
     critical_without_duration = [s for s in symptoms if s.name in critical_symptoms and not s.duration]
 
     if critical_without_duration:
@@ -205,30 +229,34 @@ def needs_clarification(symptoms: List[Symptom], age: Optional[int], text: str) 
         return (f"You mentioned {symptom_names}. This could be important.\n\n"
                 f"How long have you been experiencing this? (e.g., '2 hours', '3 days')")
 
-    # Check if age is missing for fever cases (important for diagnosis)
+    # Check if age is missing for fever cases
     has_fever = any(s.name == "fever" for s in symptoms)
     if has_fever and not age:
         return ("I see you have a fever. Your age helps with accurate assessment.\n\n"
                 "How old are you?")
 
-    # Check for symptoms without severity on second pass
-    symptoms_without_severity = [s for s in symptoms if not s.severity or s.severity == 5]
-    if len(symptoms_without_severity) > 0 and len(symptoms) <= 2:
-        # Only ask for severity if we have few symptoms
-        symptom_name = symptoms_without_severity[0].name.replace('_', ' ')
-        return (f"How would you describe the severity of your {symptom_name}?\n\n"
-                f"• Mild (1-3)\n"
-                f"• Moderate (4-6)\n"
-                f"• Severe (7-10)")
-
     return None
 
+
+# ============================================================================
+# AGENT INITIALIZATION
+# ============================================================================
+
+agent = Agent()
+
+# Create inter-agent protocol
+inter_agent_proto = Protocol(name="PatientIntakeProtocol")
+
+
+# ============================================================================
+# MESSAGE HANDLERS
+# ============================================================================
 
 @inter_agent_proto.on_message(model=IntakeTextMessage)
 async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessage):
     """
     Process incoming patient symptom descriptions
-    Extract structured data and send to coordinator with clarifying questions
+    Extract structured data and send to coordinator
     """
     ctx.logger.info(f"Received intake message from {sender}")
     ctx.logger.info(f"Session: {msg.session_id}")
@@ -253,12 +281,9 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     # Check if we need clarification
     clarification = needs_clarification(symptoms, age, msg.text)
 
-    # Skip clarification for HTTP sessions (one-shot diagnostic)
-    is_http_session = msg.session_id.startswith("http-")
-
     # Limit clarification attempts to 2 to avoid endless loops
     max_clarifications = 2
-    if clarification and not is_http_session and session_context[msg.session_id]["clarification_count"] <= max_clarifications:
+    if clarification and session_context[msg.session_id]["clarification_count"] <= max_clarifications:
         ctx.logger.info(f"Requesting clarification for session {msg.session_id}")
         response = AgentAcknowledgement(
             session_id=msg.session_id,
@@ -292,17 +317,13 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     ctx.logger.info(f"✅ Complete patient data extracted:")
     ctx.logger.info(f"   Symptoms: {[s.name for s in symptoms]}")
     ctx.logger.info(f"   Age: {age}")
-    ctx.logger.info(f"   Session messages: {len(session_context[msg.session_id]['messages'])}")
 
     # Send structured acknowledgement
-    symptom_list = ', '.join([s.name.replace('_', ' ') for s in symptoms])
-    severity_info = ', '.join([f"{s.name.replace('_', ' ')} (severity {s.severity}/10)"
-                               for s in symptoms if s.severity])
+    symptom_list = ', '.join([s.name.replace('_', ' ').replace('-', ' ') for s in symptoms])
 
     ack_message = (
         f"✅ Information received:\n\n"
         f"Symptoms: {symptom_list}\n"
-        f"{severity_info if severity_info else ''}\n"
         f"{'Age: ' + str(age) if age else 'Age: Not provided'}\n\n"
         f"Analyzing your symptoms..."
     )
@@ -322,28 +343,24 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
         analysis_type="symptom_analysis"
     )
 
-    # Send to coordinator (get address from env)
-    coordinator_addr = os.getenv("COORDINATOR_ADDRESS")
-    if coordinator_addr and coordinator_addr != "agent1q...":
-        ctx.logger.info(f"📤 Sending diagnostic request to coordinator: {coordinator_addr[:20]}...")
-        await ctx.send(coordinator_addr, diagnostic_request)
-    else:
-        ctx.logger.warning("Coordinator address not configured in .env")
+    ctx.logger.info(f"📤 Sending diagnostic request to coordinator: {COORDINATOR_ADDRESS}")
+    await ctx.send(COORDINATOR_ADDRESS, diagnostic_request)
 
+
+# ============================================================================
+# STARTUP & INITIALIZATION
+# ============================================================================
 
 @agent.on_event("startup")
 async def startup(ctx: Context):
-    """Log agent startup information"""
-    ctx.logger.info(f"Patient Intake Agent started!")
+    """Initialize patient intake agent"""
+    ctx.logger.info("=" * 60)
+    ctx.logger.info("MediChain AI - Patient Intake Agent (Cloud)")
+    ctx.logger.info("=" * 60)
     ctx.logger.info(f"Agent address: {agent.address}")
-    ctx.logger.info(f"Agent name: {agent.name}")
-    ctx.logger.info(f"Mailbox: Enabled (ASI:One compatible)")
     ctx.logger.info(f"Ready to extract patient symptoms")
+    ctx.logger.info("=" * 60)
 
 
 # Include the inter-agent protocol
 agent.include(inter_agent_proto)
-
-
-if __name__ == "__main__":
-    agent.run()

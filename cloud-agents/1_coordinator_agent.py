@@ -1,12 +1,17 @@
 """
-Coordinator Agent - Main routing agent with Chat Protocol for ASI:One
-Enhanced with session management and multi-agent routing
+MediChain AI - Coordinator Agent (Cloud Deployment)
+Cloud-ready version with embedded MeTTa knowledge base and all dependencies inlined.
+
+DEPLOYMENT: Copy this entire file to Agentverse Build tab for MediChain Coordinator agent.
 """
 
 from datetime import datetime
-from uuid import uuid4, UUID
-from uagents import Agent, Context, Protocol
-from uagents.setup import fund_agent_if_low
+from uuid import uuid4
+from typing import Dict, Optional, List, Any
+from enum import Enum
+
+# Import uagents framework (available in Agentverse)
+from uagents import Agent, Context, Protocol, Model
 from uagents_core.contrib.protocols.chat import (
     ChatAcknowledgement,
     ChatMessage,
@@ -15,33 +20,119 @@ from uagents_core.contrib.protocols.chat import (
     TextContent,
     chat_protocol_spec,
 )
-import os
-from typing import Dict, Optional
-from dotenv import load_dotenv
 
-# Import message protocols
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from src.protocols import (
-    DiagnosticRequest,
-    DiagnosticResponse,
-    TreatmentResponse,
-    FinalDiagnosticReport,
-    PatientIntakeData,
-    IntakeTextMessage,
-    # Epic 3: Symptom Analysis & Treatment Recommendation
-    SymptomAnalysisRequestMsg,
-    SymptomAnalysisResponseMsg,
-    TreatmentRequestMsg,
-    TreatmentResponseMsg,
-)
+# ============================================================================
+# AGENT ADDRESSES - Cloud Deployment Configuration
+# ============================================================================
 
-# Load environment variables
-load_dotenv()
+# Hard-coded agent addresses for cloud inter-agent communication
+PATIENT_INTAKE_ADDRESS = "agent1qfxfjs7y6gxa8psr5mzugcg45j46znra4qg0t5mxljjv5g9mx7dw6238e4a"
+SYMPTOM_ANALYSIS_ADDRESS = "agent1q036yw3pwsal2qsrq502k546lyxvnf6wt5l83qfhzhvceg6nm2la7nd6d5n"
+TREATMENT_RECOMMENDATION_ADDRESS = "agent1q0q46ztah7cyw4z7gcg3mued9ncnrcvrcqc8kjku3hywqdzp03e36hk5qsl"
+
+# ============================================================================
+# MESSAGE MODELS (Inline - no external imports)
+# ============================================================================
+
+class UrgencyLevel(str, Enum):
+    """Urgency classification for medical conditions"""
+    EMERGENCY = "emergency"
+    URGENT = "urgent"
+    ROUTINE = "routine"
+
+
+class Symptom(Model):
+    """Patient symptom data"""
+    name: str
+    raw_text: str
+    severity: Optional[int] = 5
+    duration: Optional[str] = None
+
+
+class PatientIntakeData(Model):
+    """Structured patient intake data"""
+    session_id: str
+    symptoms: List[Symptom]
+    age: Optional[int] = None
+    timestamp: datetime
+    medical_history: Optional[List[str]] = None
+    allergies: Optional[List[str]] = None
+    current_medications: Optional[List[str]] = None
+
+
+class IntakeTextMessage(Model):
+    """Message from user to patient intake agent"""
+    text: str
+    session_id: str
+
+
+class AgentAcknowledgement(Model):
+    """Acknowledgement message from specialist agents"""
+    session_id: str
+    agent_name: str
+    message: str
+
+
+class DiagnosticRequest(Model):
+    """Request for diagnostic analysis"""
+    session_id: str
+    patient_data: PatientIntakeData
+    requesting_agent: str
+    analysis_type: str = "symptom_analysis"
+
+
+class SymptomAnalysisRequestMsg(Model):
+    """Request for symptom analysis from coordinator to symptom analysis agent"""
+    session_id: str
+    symptoms: List[str]
+    age: Optional[int] = None
+    severity_scores: Optional[Dict[str, int]] = None
+    duration_info: Optional[Dict[str, str]] = None
+    medical_history: Optional[List[str]] = None
+    requesting_agent: str
+
+
+class SymptomAnalysisResponseMsg(Model):
+    """Response from symptom analysis agent"""
+    session_id: str
+    urgency_level: str
+    red_flags: List[str]
+    differential_diagnoses: List[str]
+    confidence_scores: Dict[str, float]
+    reasoning_chain: List[str]
+    recommended_next_step: str
+    responding_agent: str
+
+
+class TreatmentRequestMsg(Model):
+    """Request for treatment recommendations"""
+    session_id: str
+    primary_condition: str
+    alternative_conditions: Optional[List[str]] = None
+    urgency_level: str
+    patient_age: Optional[int] = None
+    allergies: Optional[List[str]] = None
+    current_medications: Optional[List[str]] = None
+    medical_history: Optional[List[str]] = None
+    requesting_agent: str
+
+
+class TreatmentResponseMsg(Model):
+    """Response from treatment recommendation agent"""
+    session_id: str
+    condition: str
+    treatments: List[str]
+    evidence_sources: Dict[str, str]
+    contraindications: Dict[str, List[str]]
+    safety_warnings: List[str]
+    specialist_referral: Optional[str] = None
+    follow_up_timeline: Optional[str] = None
+    medical_disclaimer: str
+    responding_agent: str
 
 
 # ============================================================================
-# Session Management
+# SESSION MANAGEMENT
 # ============================================================================
 
 class SessionData:
@@ -51,7 +142,6 @@ class SessionData:
         self.user_address = user_address
         self.started_at = datetime.utcnow()
         self.patient_data: Optional[PatientIntakeData] = None
-        self.diagnostic_response: Optional[DiagnosticResponse] = None
         self.symptom_analysis_response: Optional[SymptomAnalysisResponseMsg] = None
         self.treatment_response: Optional[TreatmentResponseMsg] = None
         self.messages_history = []
@@ -65,7 +155,7 @@ class SessionData:
         })
 
 
-# Global session store (in production, use persistent storage)
+# Global session store
 active_sessions: Dict[str, SessionData] = {}
 
 
@@ -78,30 +168,7 @@ def get_or_create_session(sender: str) -> SessionData:
 
 
 # ============================================================================
-# Coordinator Agent Initialization
-# ============================================================================
-
-# README path for ASI:One discoverability
-AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "coordinator_readme.md")
-
-agent = Agent(
-    name="medichain-coordinator",
-    seed=os.getenv("AGENT_SEED", "coordinator_seed_phrase"),
-    port=8001,  # Local inspector port (different from patient_intake's 8000)
-    mailbox=True,  # Enable Agentverse mailbox for ASI:One discoverability
-    publish_agent_details=True,  # Publish agent details for better discoverability
-    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
-)
-
-# Initialize the chat protocol
-chat_proto = Protocol(spec=chat_protocol_spec)
-
-# Initialize inter-agent protocol
-inter_agent_proto = Protocol(name="MediChainProtocol")
-
-
-# ============================================================================
-# Utility Functions
+# UTILITY FUNCTIONS
 # ============================================================================
 
 def create_text_chat(text: str, end_session: bool = False) -> ChatMessage:
@@ -117,7 +184,20 @@ def create_text_chat(text: str, end_session: bool = False) -> ChatMessage:
 
 
 # ============================================================================
-# Chat Protocol Handlers (ASI:One Interface)
+# AGENT INITIALIZATION
+# ============================================================================
+
+agent = Agent()
+
+# Initialize the chat protocol
+chat_proto = Protocol(spec=chat_protocol_spec)
+
+# Initialize inter-agent protocol
+inter_agent_proto = Protocol(name="MediChainProtocol")
+
+
+# ============================================================================
+# CHAT PROTOCOL HANDLERS (ASI:One Interface)
 # ============================================================================
 
 @chat_proto.on_message(ChatMessage)
@@ -157,34 +237,19 @@ async def handle_chat_message(ctx: Context, sender: str, msg: ChatMessage):
             session.add_message("user", item.text)
 
             # Route to Patient Intake Agent for symptom extraction
-            patient_intake_addr = os.getenv("PATIENT_INTAKE_ADDRESS")
+            intake_msg = IntakeTextMessage(
+                text=item.text,
+                session_id=session.session_id
+            )
 
-            if not patient_intake_addr or patient_intake_addr == "agent1q...":
-                # Patient Intake not configured, send friendly message
-                ctx.logger.warning("Patient Intake Agent address not configured")
+            ctx.logger.info(f"Routing to Patient Intake: {PATIENT_INTAKE_ADDRESS}")
+            await ctx.send(PATIENT_INTAKE_ADDRESS, intake_msg)
 
-                response = create_text_chat(
-                    f"I've received your message: '{item.text}'\n\n"
-                    "Note: Agent communication is being configured. "
-                    "For now, I'm processing your symptoms directly.\n\n"
-                    "Your symptoms will be analyzed shortly..."
-                )
-                await ctx.send(sender, response)
-            else:
-                # Send to Patient Intake agent
-                intake_msg = IntakeTextMessage(
-                    text=item.text,
-                    session_id=session.session_id
-                )
-
-                ctx.logger.info(f"Routing to Patient Intake: {patient_intake_addr}")
-                await ctx.send(patient_intake_addr, intake_msg)
-
-                # Acknowledge to user
-                ack_msg = create_text_chat(
-                    "Analyzing your symptoms... Please wait a moment."
-                )
-                await ctx.send(sender, ack_msg)
+            # Acknowledge to user
+            ack_msg = create_text_chat(
+                "Analyzing your symptoms... Please wait a moment."
+            )
+            await ctx.send(sender, ack_msg)
 
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended: {session.session_id}")
@@ -208,7 +273,7 @@ async def handle_chat_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
 
 
 # ============================================================================
-# Inter-Agent Protocol Handlers
+# INTER-AGENT PROTOCOL HANDLERS
 # ============================================================================
 
 @inter_agent_proto.on_message(model=DiagnosticRequest)
@@ -222,42 +287,17 @@ async def handle_diagnostic_request(ctx: Context, sender: str, msg: DiagnosticRe
 
     # Find the user session
     user_session = None
-    ctx.logger.info(f"Active sessions: {list(active_sessions.keys())}")
-    ctx.logger.info(f"Looking for session_id: {msg.session_id}")
-
     for addr, session in active_sessions.items():
-        ctx.logger.info(f"Checking session: {session.session_id} for address: {addr}")
         if session.session_id == msg.session_id:
             user_session = session
             session.patient_data = msg.patient_data
-            ctx.logger.info(f"✅ Found matching session!")
             break
 
     if not user_session:
         ctx.logger.warning(f"No active session found for {msg.session_id}")
-        ctx.logger.warning(f"Available sessions: {[(addr, s.session_id) for addr, s in active_sessions.items()]}")
         return
 
     ctx.logger.info(f"Processing diagnostic request for user: {user_session.user_address}")
-
-    # Route to Symptom Analysis Agent
-    symptom_analysis_addr = os.getenv("SYMPTOM_ANALYSIS_ADDRESS")
-
-    if not symptom_analysis_addr or symptom_analysis_addr == "agent1q...":
-        ctx.logger.warning("Symptom Analysis Agent address not configured")
-
-        # Fallback response
-        symptoms_list = [s.name.replace('_', ' ') for s in msg.patient_data.symptoms]
-        response_text = (
-            f"📋 Symptom Analysis\n\n"
-            f"Symptoms detected: {', '.join(symptoms_list)}\n\n"
-            f"⚠️ Symptom Analysis Agent not yet configured.\n"
-            f"Please configure SYMPTOM_ANALYSIS_ADDRESS in .env file.\n\n"
-            f"Session ID: {msg.session_id}"
-        )
-        user_msg = create_text_chat(response_text)
-        await ctx.send(user_session.user_address, user_msg)
-        return
 
     # Prepare symptom analysis request
     symptoms_list = [s.name for s in msg.patient_data.symptoms]
@@ -274,51 +314,16 @@ async def handle_diagnostic_request(ctx: Context, sender: str, msg: DiagnosticRe
         requesting_agent="medichain-coordinator",
     )
 
-    ctx.logger.info(f"Routing to Symptom Analysis Agent: {symptom_analysis_addr}")
+    ctx.logger.info(f"Routing to Symptom Analysis Agent: {SYMPTOM_ANALYSIS_ADDRESS}")
     ctx.logger.info(f"  Symptoms: {symptoms_list}")
     ctx.logger.info(f"  Age: {msg.patient_data.age}")
 
     # Send to Symptom Analysis Agent
-    await ctx.send(symptom_analysis_addr, analysis_request)
+    await ctx.send(SYMPTOM_ANALYSIS_ADDRESS, analysis_request)
 
     # Acknowledge to user
     ack_msg = create_text_chat("🔬 Performing comprehensive symptom analysis...")
     await ctx.send(user_session.user_address, ack_msg)
-
-
-@inter_agent_proto.on_message(model=DiagnosticResponse)
-async def handle_diagnostic_response(ctx: Context, sender: str, msg: DiagnosticResponse):
-    """Handle diagnostic responses from Knowledge Graph Agent (Legacy)"""
-    ctx.logger.info(f"Received diagnostic response from {sender}")
-
-    # Find session
-    user_session = None
-    for addr, session in active_sessions.items():
-        if session.session_id == msg.session_id:
-            user_session = session
-            session.diagnostic_response = msg
-            break
-
-    if not user_session:
-        ctx.logger.warning(f"No active session for {msg.session_id}")
-        return
-
-    # Format and send to user
-    conditions_text = "\n".join([
-        f"  {i+1}. {c.condition_name} ({c.confidence_level.value} confidence - {c.confidence*100:.0f}%)"
-        for i, c in enumerate(msg.possible_conditions)
-    ])
-
-    response_text = (
-        f"🔬 Diagnostic Analysis\n\n"
-        f"Urgency Level: {msg.urgency_level.value.upper()}\n\n"
-        f"Possible Conditions:\n{conditions_text}\n\n"
-        f"{'⚠️ RED FLAGS: ' + ', '.join(msg.red_flags) if msg.red_flags else ''}\n\n"
-        f"Agent: {msg.responding_agent}"
-    )
-
-    user_msg = create_text_chat(response_text)
-    await ctx.send(user_session.user_address, user_msg)
 
 
 @inter_agent_proto.on_message(model=SymptomAnalysisResponseMsg)
@@ -330,8 +335,6 @@ async def handle_symptom_analysis_response(ctx: Context, sender: str, msg: Sympt
     ctx.logger.info(f"📥 Received symptom analysis response from {sender}")
     ctx.logger.info(f"   Session: {msg.session_id}")
     ctx.logger.info(f"   Urgency: {msg.urgency_level}")
-    ctx.logger.info(f"   Red flags: {len(msg.red_flags)}")
-    ctx.logger.info(f"   Differential diagnoses: {len(msg.differential_diagnoses)}")
 
     # Find session
     user_session = None
@@ -346,8 +349,6 @@ async def handle_symptom_analysis_response(ctx: Context, sender: str, msg: Sympt
         return
 
     # Send analysis results to user
-    ctx.logger.info("📤 Sending symptom analysis results to user")
-
     red_flags_text = ""
     if msg.red_flags:
         red_flags_text = f"\n\n🚨 **RED FLAGS DETECTED:**\n" + "\n".join([f"  • {rf}" for rf in msg.red_flags])
@@ -370,20 +371,6 @@ async def handle_symptom_analysis_response(ctx: Context, sender: str, msg: Sympt
     await ctx.send(user_session.user_address, user_msg)
 
     # Route to Treatment Recommendation Agent
-    treatment_agent_addr = os.getenv("TREATMENT_RECOMMENDATION_ADDRESS")
-
-    if not treatment_agent_addr or treatment_agent_addr == "agent1q...":
-        ctx.logger.warning("Treatment Recommendation Agent address not configured")
-
-        fallback_text = (
-            "⚠️ Treatment Recommendation Agent not yet configured.\n"
-            "Please configure TREATMENT_RECOMMENDATION_ADDRESS in .env file."
-        )
-        fallback_msg = create_text_chat(fallback_text)
-        await ctx.send(user_session.user_address, fallback_msg)
-        return
-
-    # Prepare treatment request
     primary_condition = msg.differential_diagnoses[0] if msg.differential_diagnoses else "unknown"
     alternative_conditions = msg.differential_diagnoses[1:5] if len(msg.differential_diagnoses) > 1 else None
 
@@ -399,12 +386,10 @@ async def handle_symptom_analysis_response(ctx: Context, sender: str, msg: Sympt
         requesting_agent="medichain-coordinator",
     )
 
-    ctx.logger.info(f"Routing to Treatment Recommendation Agent: {treatment_agent_addr}")
-    ctx.logger.info(f"  Primary condition: {primary_condition}")
-    ctx.logger.info(f"  Urgency: {msg.urgency_level}")
+    ctx.logger.info(f"Routing to Treatment Recommendation Agent: {TREATMENT_RECOMMENDATION_ADDRESS}")
 
     # Send to Treatment Recommendation Agent
-    await ctx.send(treatment_agent_addr, treatment_request)
+    await ctx.send(TREATMENT_RECOMMENDATION_ADDRESS, treatment_request)
 
 
 @inter_agent_proto.on_message(model=TreatmentResponseMsg)
@@ -414,11 +399,6 @@ async def handle_treatment_response(ctx: Context, sender: str, msg: TreatmentRes
     Send final comprehensive report to user
     """
     ctx.logger.info(f"📥 Received treatment recommendations from {sender}")
-    ctx.logger.info(f"   Session: {msg.session_id}")
-    ctx.logger.info(f"   Condition: {msg.condition}")
-    ctx.logger.info(f"   Treatments: {len(msg.treatments)}")
-    ctx.logger.info(f"   Contraindications: {sum(len(v) for v in msg.contraindications.values())}")
-    ctx.logger.info(f"   Safety warnings: {len(msg.safety_warnings)}")
 
     # Find session
     user_session = None
@@ -433,9 +413,6 @@ async def handle_treatment_response(ctx: Context, sender: str, msg: TreatmentRes
         return
 
     # Format final comprehensive report
-    ctx.logger.info("📤 Sending final diagnostic report to user")
-
-    # Treatment recommendations section
     treatments_text = ""
     for i, treatment in enumerate(msg.treatments[:5], 1):
         evidence = msg.evidence_sources.get(treatment, "No source available")
@@ -483,21 +460,19 @@ async def handle_treatment_response(ctx: Context, sender: str, msg: TreatmentRes
     await ctx.send(user_session.user_address, final_msg)
 
     ctx.logger.info(f"✅ Complete diagnostic report sent to user")
-    ctx.logger.info(f"   Report length: {len(final_report)} characters")
 
 
 # ============================================================================
-# Startup & Initialization
+# STARTUP & INITIALIZATION
 # ============================================================================
 
 @agent.on_event("startup")
 async def startup(ctx: Context):
     """Initialize coordinator agent"""
     ctx.logger.info("=" * 60)
-    ctx.logger.info("MediChain AI Coordinator Agent")
+    ctx.logger.info("MediChain AI Coordinator Agent (Cloud)")
     ctx.logger.info("=" * 60)
     ctx.logger.info(f"Agent address: {agent.address}")
-    ctx.logger.info(f"Agent name: {agent.name}")
     ctx.logger.info(f"Mailbox: Enabled (ASI:One compatible)")
     ctx.logger.info(f"Chat Protocol: Enabled")
     ctx.logger.info("=" * 60)
@@ -506,7 +481,3 @@ async def startup(ctx: Context):
 # Include protocols
 agent.include(chat_proto, publish_manifest=True)
 agent.include(inter_agent_proto)
-
-
-if __name__ == "__main__":
-    agent.run()

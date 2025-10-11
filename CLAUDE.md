@@ -702,6 +702,80 @@ ctx.logger.error(f"Error: {e}")
 
 ---
 
+## CRITICAL DISCOVERY: ASI:One vs Agentverse Chat (Day 5 - Oct 11, 2025)
+
+### Two Different Chat Interfaces
+
+**IMPORTANT:** Agentverse has TWO separate chat interfaces with DIFFERENT behavior:
+
+1. **chat.agentverse.ai** (Direct Agent Chat) ✅ WORKS
+   - URL: `https://chat.agentverse.ai/sessions/{SESSION_ID}`
+   - Accessed via "Chat with Agent" button on agent profile
+   - Directly connects to your cloud agent
+   - Agent responds (may error if template without custom logic)
+   - **USE THIS for testing cloud agents**
+
+2. **asi1.ai** (Public ASI:One Discovery) ❌ DOESN'T WORK (yet)
+   - URL: `https://asi1.ai/`
+   - Public-facing agent discovery platform
+   - **ASI:One's default "Doc" AI responds instead of custom agents**
+   - Says: "I cannot directly facilitate communication with other agents outside of approved collaboration parameters"
+   - **Agents NOT discoverable here despite being Active on Agentverse**
+
+### Testing Results (Oct 11, 2025)
+
+**Cloud Agent Created:**
+- Agent: `Medichain AI`
+- Address: `agent1q0q46ztah7cyw4z7gcg3mued9ncnrcvrcqc8kjku3hywqdzp03e36hk5qsl`
+- Status: Active, Hosted on Agentverse
+- Chat Protocol: ✅ Configured
+- README: ✅ Included
+
+**Test Results:**
+- ✅ **chat.agentverse.ai**: Agent responds (errors due to template lacking custom logic)
+- ❌ **asi1.ai**: ASI:One default AI responds, agent not discovered
+- ❌ Searching by `@agent-address` on asi1.ai: Not found
+- ❌ Searching by agent name on asi1.ai: Not found
+
+### Why ASI:One Doesn't Work (Hypothesis)
+
+Possible reasons cloud agent isn't discoverable on public asi1.ai:
+
+1. **Template Agent Limitation**: Basic "Chat Protocol using llm" template may not meet ASI:One standards
+2. **Missing Configuration**: May need additional setup (agent handle, enhanced README, specific metadata)
+3. **Indexing Requirements**: ASI:One might have stricter discovery criteria than Agentverse chat
+4. **Custom Logic Required**: Template agents without domain logic may be excluded from public discovery
+5. **Verification Needed**: ASI:One might require agent verification or approval before public listing
+
+### Implications for Hackathon
+
+**For Demo Video:**
+- ✅ CAN demonstrate Chat Protocol functionality via chat.agentverse.ai
+- ❌ CANNOT demonstrate public asi1.ai discovery (yet)
+- **Solution**: Show Agentverse chat interface as Chat Protocol demo
+
+**For Submission:**
+- Cloud agent proves Chat Protocol implementation ✅
+- May need to deploy custom MediChain code to cloud for full functionality
+- Alternative: Focus on local agent setup with mailbox for ASI:One compatibility
+
+**Next Steps to Achieve asi1.ai Discovery:**
+1. Customize cloud agent code with MediChain logic
+2. Enhanced README with detailed agent capabilities
+3. Add agent handle/custom name for better discoverability
+4. Research ASI:One requirements for public agent listing
+5. Contact Fetch.ai support if issue persists
+
+### Key Learnings for Future Instances
+
+1. **chat.agentverse.ai ≠ asi1.ai** - They are DIFFERENT platforms
+2. **Test on chat.agentverse.ai FIRST** - Immediate validation of Chat Protocol
+3. **asi1.ai discovery requires more** than just Active + Chat Protocol + README
+4. **Template agents may not qualify** for public ASI:One discovery
+5. **Custom logic deployment** may be required for asi1.ai visibility
+
+---
+
 ## Tips for Future Claude Instances
 
 1. **Always check docs/PRD.md first** - All work must trace back to Epic/Story/Task requirements (SINGLE SOURCE OF TRUTH)
@@ -721,6 +795,8 @@ ctx.logger.error(f"Error: {e}")
 15. **No ad-hoc features** - If it's not in PRD, don't build it (or add to PRD first and get approval)
 16. **Monitor agent logs during chat testing** - Use `tail -f /tmp/{agent}_mailbox.log` to see real-time message flow
 17. **MeTTa reasoning chains are the differentiator** - Use `generate_reasoning_chain()` to show transparent diagnostics
+18. **chat.agentverse.ai vs asi1.ai are DIFFERENT** - Test on chat.agentverse.ai first; asi1.ai discovery requires additional setup/approval (see CRITICAL DISCOVERY section above)
+19. **Template agents may not appear on asi1.ai** - Custom logic deployment or enhanced configuration may be required for public ASI:One discovery
 
 ---
 
