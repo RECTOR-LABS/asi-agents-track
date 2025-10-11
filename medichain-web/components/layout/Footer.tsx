@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-2">
             <div className="mb-4 brightness-0 invert">
-              <Logo variant="horizontal" size="sm" />
+              <Logo variant="horizontal" size="md" />
             </div>
             <p className="text-gray-400 text-sm max-w-md mb-4">
               Decentralized healthcare diagnostics powered by ASI Alliance technology.

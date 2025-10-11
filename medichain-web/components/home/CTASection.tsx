@@ -26,7 +26,7 @@ export const CTASection: React.FC = () => {
               size="lg"
               href="https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q"
               external
-              className="bg-white text-medical-blue-700 hover:bg-gray-50 shadow-2xl group"
+              className="bg-white text-medical-blue-700 hover:bg-medical-blue-50 hover:scale-105 shadow-2xl border-4 border-white/20 group"
             >
               Try Demo Now
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -35,7 +35,7 @@ export const CTASection: React.FC = () => {
               variant="outline"
               size="lg"
               href="/docs"
-              className="border-white text-white hover:bg-white/10"
+              className="border-2 border-white text-white hover:bg-white hover:text-medical-blue-700 transition-all duration-300"
             >
               <Book className="mr-2 w-5 h-5" />
               View Documentation

@@ -36,7 +36,7 @@ export const Navbar: React.FC = () => {
         'sticky top-0 z-50 transition-all duration-300',
         isScrolled
           ? 'backdrop-blur-lg bg-white/90 border-b border-gray-200 shadow-sm'
-          : 'bg-transparent'
+          : 'bg-white/80 backdrop-blur-sm shadow-sm'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
