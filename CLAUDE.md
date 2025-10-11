@@ -106,7 +106,7 @@ User → Vercel Landing Page → "Test on Agentverse" Button
 ### Production URLs
 
 **User-Facing:**
-- **Pitch Website:** https://medichain-web.vercel.app
+- **Pitch Website:** https://medichain-web.rectorspace.com
 - **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 
 **Backend (VPS):**

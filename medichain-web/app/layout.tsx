@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: "MediChain AI - Decentralized Healthcare Diagnostics",
     description: "Multi-agent AI diagnostic system with transparent reasoning and evidence-based recommendations.",
     type: "website",
-    url: "https://medichain-web.vercel.app",
+    url: "https://medichain-web.rectorspace.com",
   },
   twitter: {
     card: "summary_large_image",

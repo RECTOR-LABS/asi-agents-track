@@ -16,7 +16,7 @@
 1. Close unnecessary tabs
 2. Clear browser cache
 3. Test both URLs:
-   - Pitch site: https://medichain-web.vercel.app (landing page)
+   - Pitch site: https://medichain-web.rectorspace.com (landing page)
    - Agentverse: https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 4. Prepare 2 test inputs (copy to clipboard):
    - Emergency: `Severe headache, high fever, stiff neck - started 6 hours ago, age 28`
@@ -145,7 +145,7 @@
 MediChain AI
 Decentralized Healthcare Diagnostics
 
-🔗 medichain-web.vercel.app (Pitch Site)
+🔗 medichain-web.rectorspace.com (Pitch Site)
 🤖 Test on Agentverse (Live Demo)
 🐙 github.com/RECTOR-LABS/asi-agents-track
 
@@ -216,7 +216,7 @@ Built for ASI Agents Track Hackathon 2025
    ```
    MediChain AI is a multi-agent diagnostic system built for the ASI Agents Track Hackathon 2025.
 
-   🔗 Live Demo: https://medichain-web.vercel.app
+   🔗 Live Demo: https://medichain-web.rectorspace.com
    🐙 GitHub: https://github.com/RECTOR-LABS/asi-agents-track
 
    Built with:

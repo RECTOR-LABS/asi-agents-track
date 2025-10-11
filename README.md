@@ -144,7 +144,7 @@ Expected: Routine classification, differential diagnoses (Influenza, COVID-19)
 
 ### Production URLs
 
-- **Pitch Website:** https://medichain-web.vercel.app (Beautiful landing page with agent details)
+- **Pitch Website:** https://medichain-web.rectorspace.com (Beautiful landing page with agent details)
 - **VPS Backend:** http://176.222.53.185:8080 (Direct HTTP API for testing)
 
 **Note:** The pitch website provides agent information and links to Agentverse for live testing. All actual diagnostic flows happen through Agentverse!

@@ -25,7 +25,7 @@
 - ✅ Complete custom web interface (Next.js + TypeScript + Tailwind)
 - ✅ VPS production deployment (176.222.53.185:8080)
 - ✅ Queue-based HTTP bridge (solved Flask/async threading issues)
-- ✅ Vercel production deployment (medichain-web.vercel.app)
+- ✅ Vercel production deployment (medichain-web.rectorspace.com)
 - ✅ End-to-end tested: Web → VPS → 4 Agents → Complete diagnosis in ~10 seconds
 
 ### Production Architecture (FULLY OPERATIONAL)
@@ -39,7 +39,7 @@
 
 **Frontend - Vercel**:
 - Next.js 14 production deployment
-- URL: https://medichain-web.vercel.app
+- URL: https://medichain-web.rectorspace.com
 - Professional landing page with live demo
 - Real-time chat interface
 - Color-coded diagnostic reports
@@ -170,7 +170,7 @@ Complete architectural pivot to leverage official ASI infrastructure:
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  1. Visit Vercel Website (Pitch + Info)                     │
-│     └─> https://medichain-web.vercel.app                    │
+│     └─> https://medichain-web.rectorspace.com                    │
 │                                                               │
 │  2. Click "Test on Agentverse" Button                       │
 │     └─> Opens agent profile on agentverse.ai                │
@@ -241,7 +241,7 @@ User → Vercel API Route → VPS Backend → Multi-Agent Flow
 ### Updated Production URLs
 
 **User-Facing:**
-- **Pitch Website:** https://medichain-web.vercel.app (Static landing page with agent info)
+- **Pitch Website:** https://medichain-web.rectorspace.com (Static landing page with agent info)
 - **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 
 **Backend (VPS - Still Running 24/7):**
