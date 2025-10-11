@@ -36,13 +36,13 @@ export const Navbar: React.FC = () => {
         'sticky top-0 z-50 transition-all duration-300',
         isScrolled
           ? 'backdrop-blur-lg bg-white/90 border-b border-gray-200 shadow-sm'
-          : 'bg-white/80 backdrop-blur-sm shadow-sm'
+          : 'bg-transparent'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Logo variant="horizontal" size="sm" />
+          <Logo variant="horizontal" size="md" />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -51,10 +51,10 @@ export const Navbar: React.FC = () => {
                 key={link.href}
                 href={link.href}
                 className={clsx(
-                  'text-sm font-medium transition-colors duration-200',
+                  'text-sm font-medium transition-colors duration-200 drop-shadow-sm',
                   pathname === link.href
                     ? 'text-medical-blue-600'
-                    : 'text-gray-600 hover:text-medical-blue-600'
+                    : isScrolled ? 'text-gray-600 hover:text-medical-blue-600' : 'text-gray-900 hover:text-medical-blue-600'
                 )}
               >
                 {link.label}
