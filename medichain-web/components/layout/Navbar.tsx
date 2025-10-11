@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isDarkHero = pathname === '/about' || pathname === '/architecture' || pathname === '/demo' || pathname === '/docs';
+  const isDarkHero = pathname === '/' || pathname === '/about' || pathname === '/architecture' || pathname === '/demo' || pathname === '/docs';
 
   return (
     <nav
