@@ -1,0 +1,43 @@
+<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon Part (centered at top) -->
+  <g transform="translate(50, 20) scale(1)">
+    <!-- Central Node -->
+    <circle cx="50" cy="50" r="25" fill="#3B82F6" opacity="0.15"/>
+    <circle cx="50" cy="50" r="20" fill="#3B82F6"/>
+    <rect x="46" y="38" width="8" height="24" fill="white" rx="1.5"/>
+    <rect x="38" y="46" width="24" height="8" fill="white" rx="1.5"/>
+
+    <!-- Satellite Nodes -->
+    <circle cx="50" cy="15" r="10" fill="#10B981"/>
+    <circle cx="85" cy="50" r="10" fill="#10B981"/>
+    <circle cx="50" cy="85" r="10" fill="#10B981"/>
+    <circle cx="15" cy="50" r="10" fill="#10B981"/>
+
+    <!-- Connections -->
+    <g stroke="#3B82F6" stroke-width="2" opacity="0.5">
+      <line x1="50" y1="30" x2="50" y2="25" stroke-dasharray="2,2"/>
+      <line x1="70" y1="50" x2="75" y2="50" stroke-dasharray="2,2"/>
+      <line x1="50" y1="70" x2="50" y2="75" stroke-dasharray="2,2"/>
+      <line x1="30" y1="50" x2="25" y2="50" stroke-dasharray="2,2"/>
+    </g>
+  </g>
+
+  <!-- Text Part (centered below icon) -->
+  <g transform="translate(0, 130)">
+    <!-- MediChain -->
+    <text x="100" y="20" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="700" fill="#1F2937">
+      MediChain
+    </text>
+    <!-- AI -->
+    <text x="100" y="50" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="700" fill="#3B82F6">
+      AI
+    </text>
+    <!-- Tagline -->
+    <text x="100" y="75" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#6B7280" letter-spacing="0.3">
+      Decentralized Healthcare
+    </text>
+    <text x="100" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#6B7280" letter-spacing="0.3">
+      Diagnostics
+    </text>
+  </g>
+</svg>

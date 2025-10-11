@@ -30,19 +30,38 @@ Visit: http://localhost:3000
 ```
 medichain-web/
 ├── app/
-│   ├── layout.tsx          # Root layout
-│   ├── page.tsx            # Landing page
-│   ├── globals.css         # Global styles
-│   └── api/
-│       └── diagnose/
-│           └── route.ts    # API route to coordinator
+│   ├── layout.tsx          # Root layout with Navbar + Footer
+│   ├── page.tsx            # Home page (landing)
+│   ├── globals.css         # Global styles + animations
+│   ├── about/
+│   │   └── page.tsx        # About page (vision, hackathon info)
+│   ├── architecture/
+│   │   └── page.tsx        # Architecture page (system diagram, agents)
+│   ├── demo/
+│   │   └── page.tsx        # Demo page (Agentverse access)
+│   └── docs/
+│       └── page.tsx        # Documentation page (guides, FAQs)
 ├── components/
-│   ├── ChatInterface.tsx   # Chat UI component
-│   ├── DiagnosticReport.tsx # Report display
-│   ├── LoadingSpinner.tsx  # Loading states
-│   └── ErrorMessage.tsx    # Error handling
+│   ├── layout/
+│   │   ├── Navbar.tsx      # Navigation with mobile menu
+│   │   ├── Footer.tsx      # Footer with links
+│   │   └── Logo.tsx        # Logo component (3 variants)
+│   ├── home/
+│   │   ├── HeroSection.tsx # Hero with CTA
+│   │   ├── ProblemStatement.tsx # Statistics cards
+│   │   ├── FeaturesGrid.tsx # Key features (3x2 grid)
+│   │   ├── TechStack.tsx   # Technology logos
+│   │   └── CTASection.tsx  # Bottom CTA
+│   └── shared/
+│       ├── Card.tsx        # Reusable card component
+│       ├── Button.tsx      # Button variants
+│       ├── Badge.tsx       # Badge component
+│       ├── AnimatedSection.tsx # Scroll animations
+│       └── StatusIndicator.tsx # Agent status
 └── public/
-    └── logo.png            # MediChain AI logo
+    ├── logo.svg            # Horizontal logo
+    ├── logo-icon.svg       # Icon only (favicon)
+    └── logo-vertical.svg   # Vertical layout
 ```
 
 ## Environment Variables
@@ -85,12 +104,21 @@ vercel --prod
 
 ## Features
 
-- 🏥 Professional medical interface
-- 💬 Real-time chat with AI diagnostic system
-- 📊 Structured diagnostic reports
-- ⚠️ Color-coded urgency indicators
-- 📱 Fully responsive (mobile + desktop)
-- ♿ Accessible (ARIA labels, keyboard navigation)
+### Multi-Page Pitch Website
+- 🏠 **Home** - Hero section, problem statement, features grid, tech stack
+- 📖 **About** - Project vision, hackathon info, impact metrics, judging criteria
+- 🏗️ **Architecture** - System diagram, agent details (4 agents), MeTTa knowledge graph
+- 🎮 **Demo** - Live Agentverse access, example test cases, usage guide
+- 📚 **Docs** - ASI integration details, resources, FAQs, GitHub links
+
+### Design & UX
+- 🎨 Professional medical-grade design system (blue/green palette)
+- ✨ Custom animations (fade-in, slide-up, scale-in) with Intersection Observer
+- 🔄 Glassmorphism navbar with scroll effects
+- 🖼️ Custom logo design (3 SVG variants)
+- 📱 Fully responsive (mobile-first, touch-friendly)
+- ♿ Accessible (WCAG 2.1 AA, keyboard navigation, ARIA labels)
+- 🚀 SEO optimized (metadata, OpenGraph, Twitter Cards)
 
 ## License
 
