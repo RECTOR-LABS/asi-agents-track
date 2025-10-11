@@ -40,7 +40,7 @@ export const Navbar: React.FC = () => {
           ? 'backdrop-blur-lg bg-white/90 border-b border-gray-200 shadow-sm'
           : isDarkHero
             ? 'bg-gray-900/80 backdrop-blur-sm'
-            : 'bg-transparent'
+            : 'bg-white/70 backdrop-blur-sm shadow-sm'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
