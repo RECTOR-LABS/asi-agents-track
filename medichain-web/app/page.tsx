@@ -29,8 +29,8 @@ export default function Home() {
 
             {/* Subtitle */}
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
-              AI-powered multi-agent diagnostic system leveraging SingularityNET's MeTTa knowledge graphs
-              and Fetch.ai's uAgents framework for transparent, evidence-based health assessments.
+              AI-powered multi-agent diagnostic system leveraging SingularityNET&apos;s MeTTa knowledge graphs
+              and Fetch.ai&apos;s uAgents framework for transparent, evidence-based health assessments.
             </p>
 
             {/* CTA Buttons */}
@@ -104,7 +104,7 @@ export default function Home() {
               MeTTa Knowledge Graph
             </h3>
             <p className="text-gray-600">
-              SingularityNET's MeTTa reasoning engine with 13 medical conditions, 200+ facts,
+              SingularityNET&apos;s MeTTa reasoning engine with 13 medical conditions, 200+ facts,
               and evidence-based knowledge from CDC, WHO, and AHA.
             </p>
           </div>
@@ -160,7 +160,7 @@ export default function Home() {
               Real-Time Processing
             </h3>
             <p className="text-gray-600">
-              Fast multi-agent communication via Fetch.ai's uAgents framework,
+              Fast multi-agent communication via Fetch.ai&apos;s uAgents framework,
               delivering comprehensive diagnostics in seconds.
             </p>
           </div>
@@ -234,25 +234,25 @@ export default function Home() {
             <div className="bg-emergency-50 border border-emergency-200 rounded-lg p-3">
               <p className="text-sm font-medium text-emergency-900 mb-1">Emergency Case:</p>
               <p className="text-xs text-emergency-700">
-                "Severe headache, high fever, stiff neck - started 6 hours ago, age 28"
+                &quot;Severe headache, high fever, stiff neck - started 6 hours ago, age 28&quot;
               </p>
             </div>
             <div className="bg-urgent-50 border border-urgent-200 rounded-lg p-3">
               <p className="text-sm font-medium text-urgent-900 mb-1">Urgent Case:</p>
               <p className="text-xs text-urgent-700">
-                "Cough with yellow mucus, chest pain when breathing, fever 101°F for 3 days"
+                &quot;Cough with yellow mucus, chest pain when breathing, fever 101°F for 3 days&quot;
               </p>
             </div>
             <div className="bg-routine-50 border border-routine-200 rounded-lg p-3">
               <p className="text-sm font-medium text-routine-900 mb-1">Routine Case:</p>
               <p className="text-xs text-routine-700">
-                "Runny nose, mild sore throat, sneezing - symptoms for 2 days"
+                &quot;Runny nose, mild sore throat, sneezing - symptoms for 2 days&quot;
               </p>
             </div>
             <div className="bg-primary-50 border border-primary-200 rounded-lg p-3">
               <p className="text-sm font-medium text-primary-900 mb-1">Complex Case:</p>
               <p className="text-xs text-primary-700">
-                "Throbbing headache on one side, nausea, sensitivity to light - happens monthly"
+                &quot;Throbbing headache on one side, nausea, sensitivity to light - happens monthly&quot;
               </p>
             </div>
           </div>
