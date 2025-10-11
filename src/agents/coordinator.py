@@ -29,6 +29,11 @@ from src.protocols import (
     FinalDiagnosticReport,
     PatientIntakeData,
     IntakeTextMessage,
+    # Epic 3: Symptom Analysis & Treatment Recommendation
+    SymptomAnalysisRequestMsg,
+    SymptomAnalysisResponseMsg,
+    TreatmentRequestMsg,
+    TreatmentResponseMsg,
 )
 
 # Load environment variables
@@ -47,7 +52,8 @@ class SessionData:
         self.started_at = datetime.utcnow()
         self.patient_data: Optional[PatientIntakeData] = None
         self.diagnostic_response: Optional[DiagnosticResponse] = None
-        self.treatment_response: Optional[TreatmentResponse] = None
+        self.symptom_analysis_response: Optional[SymptomAnalysisResponseMsg] = None
+        self.treatment_response: Optional[TreatmentResponseMsg] = None
         self.messages_history = []
 
     def add_message(self, role: str, content: str):
@@ -59,8 +65,12 @@ class SessionData:
         })
 
 
-# Global session store (in production, use persistent storage)
+# Global session store (in production, use persistent storage like Redis)
+# TODO: Implement persistent storage for production deployment
 active_sessions: Dict[str, SessionData] = {}
+
+# Session cleanup configuration
+SESSION_TIMEOUT_SECONDS = 7200  # 2 hours
 
 
 def get_or_create_session(sender: str) -> SessionData:
@@ -71,9 +81,33 @@ def get_or_create_session(sender: str) -> SessionData:
     return active_sessions[sender]
 
 
+def cleanup_expired_sessions(ctx: Context):
+    """Remove expired sessions to prevent memory leaks"""
+    now = datetime.utcnow()
+    expired_addresses = []
+
+    for addr, session in active_sessions.items():
+        session_age = (now - session.started_at).total_seconds()
+        if session_age > SESSION_TIMEOUT_SECONDS:
+            expired_addresses.append(addr)
+            ctx.logger.info(f"Session expired for {addr}: {session.session_id} (age: {session_age/3600:.1f} hours)")
+
+    # Remove expired sessions
+    for addr in expired_addresses:
+        del active_sessions[addr]
+
+    if expired_addresses:
+        ctx.logger.info(f"Cleaned up {len(expired_addresses)} expired sessions")
+
+    return len(expired_addresses)
+
+
 # ============================================================================
 # Coordinator Agent Initialization
 # ============================================================================
+
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "coordinator_readme.md")
 
 agent = Agent(
     name="medichain-coordinator",
@@ -81,6 +115,7 @@ agent = Agent(
     port=8001,  # Local inspector port (different from patient_intake's 8000)
     mailbox=True,  # Enable Agentverse mailbox for ASI:One discoverability
     publish_agent_details=True,  # Publish agent details for better discoverability
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Initialize the chat protocol
@@ -230,30 +265,55 @@ async def handle_diagnostic_request(ctx: Context, sender: str, msg: DiagnosticRe
 
     ctx.logger.info(f"Processing diagnostic request for user: {user_session.user_address}")
 
-    # TODO: Route to specialist agents (Knowledge Graph, Symptom Analysis)
-    # For now, create a simple response
+    # Route to Symptom Analysis Agent
+    symptom_analysis_addr = os.getenv("SYMPTOM_ANALYSIS_ADDRESS")
 
-    symptoms_list = [s.name.replace('_', ' ') for s in msg.patient_data.symptoms]
+    if not symptom_analysis_addr or symptom_analysis_addr == "agent1q...":
+        ctx.logger.warning("Symptom Analysis Agent address not configured")
 
-    response_text = (
-        f"📋 Symptom Analysis Complete\n\n"
-        f"Symptoms detected: {', '.join(symptoms_list)}\n"
-        f"Number of symptoms: {len(msg.patient_data.symptoms)}\n\n"
-        f"⚠️ Next steps:\n"
-        f"- Specialist agents are being configured\n"
-        f"- Full diagnostic analysis coming soon\n"
-        f"- For urgent symptoms, seek immediate medical care\n\n"
-        f"Session ID: {msg.session_id}"
+        # Fallback response
+        symptoms_list = [s.name.replace('_', ' ') for s in msg.patient_data.symptoms]
+        response_text = (
+            f"📋 Symptom Analysis\n\n"
+            f"Symptoms detected: {', '.join(symptoms_list)}\n\n"
+            f"⚠️ Symptom Analysis Agent not yet configured.\n"
+            f"Please configure SYMPTOM_ANALYSIS_ADDRESS in .env file.\n\n"
+            f"Session ID: {msg.session_id}"
+        )
+        user_msg = create_text_chat(response_text)
+        await ctx.send(user_session.user_address, user_msg)
+        return
+
+    # Prepare symptom analysis request
+    symptoms_list = [s.name for s in msg.patient_data.symptoms]
+    severity_scores = {s.name: s.severity for s in msg.patient_data.symptoms if s.severity}
+    duration_info = {s.name: s.duration for s in msg.patient_data.symptoms if s.duration}
+
+    analysis_request = SymptomAnalysisRequestMsg(
+        session_id=msg.session_id,
+        symptoms=symptoms_list,
+        age=msg.patient_data.age,
+        severity_scores=severity_scores if severity_scores else None,
+        duration_info=duration_info if duration_info else None,
+        medical_history=msg.patient_data.medical_history,
+        requesting_agent="medichain-coordinator",
     )
 
-    # Send response to user
-    user_msg = create_text_chat(response_text)
-    await ctx.send(user_session.user_address, user_msg)
+    ctx.logger.info(f"Routing to Symptom Analysis Agent: {symptom_analysis_addr}")
+    ctx.logger.info(f"  Symptoms: {symptoms_list}")
+    ctx.logger.info(f"  Age: {msg.patient_data.age}")
+
+    # Send to Symptom Analysis Agent
+    await ctx.send(symptom_analysis_addr, analysis_request)
+
+    # Acknowledge to user
+    ack_msg = create_text_chat("🔬 Performing comprehensive symptom analysis...")
+    await ctx.send(user_session.user_address, ack_msg)
 
 
 @inter_agent_proto.on_message(model=DiagnosticResponse)
 async def handle_diagnostic_response(ctx: Context, sender: str, msg: DiagnosticResponse):
-    """Handle diagnostic responses from specialist agents"""
+    """Handle diagnostic responses from Knowledge Graph Agent (Legacy)"""
     ctx.logger.info(f"Received diagnostic response from {sender}")
 
     # Find session
@@ -286,6 +346,171 @@ async def handle_diagnostic_response(ctx: Context, sender: str, msg: DiagnosticR
     await ctx.send(user_session.user_address, user_msg)
 
 
+@inter_agent_proto.on_message(model=SymptomAnalysisResponseMsg)
+async def handle_symptom_analysis_response(ctx: Context, sender: str, msg: SymptomAnalysisResponseMsg):
+    """
+    Handle symptom analysis response from Symptom Analysis Agent
+    Route to Treatment Recommendation Agent for next step
+    """
+    ctx.logger.info(f"📥 Received symptom analysis response from {sender}")
+    ctx.logger.info(f"   Session: {msg.session_id}")
+    ctx.logger.info(f"   Urgency: {msg.urgency_level}")
+    ctx.logger.info(f"   Red flags: {len(msg.red_flags)}")
+    ctx.logger.info(f"   Differential diagnoses: {len(msg.differential_diagnoses)}")
+
+    # Find session
+    user_session = None
+    for addr, session in active_sessions.items():
+        if session.session_id == msg.session_id:
+            user_session = session
+            session.symptom_analysis_response = msg
+            break
+
+    if not user_session:
+        ctx.logger.warning(f"No active session for {msg.session_id}")
+        return
+
+    # Send analysis results to user
+    ctx.logger.info("📤 Sending symptom analysis results to user")
+
+    red_flags_text = ""
+    if msg.red_flags:
+        red_flags_text = f"\n\n🚨 **RED FLAGS DETECTED:**\n" + "\n".join([f"  • {rf}" for rf in msg.red_flags])
+
+    diff_diagnoses_text = "\n".join([
+        f"  {i+1}. {diagnosis} (confidence: {msg.confidence_scores.get(diagnosis, 0.0)*100:.0f}%)"
+        for i, diagnosis in enumerate(msg.differential_diagnoses[:5])
+    ])
+
+    analysis_text = (
+        f"🔬 **Symptom Analysis Complete**\n\n"
+        f"**Urgency Level:** {msg.urgency_level.upper()}\n\n"
+        f"**Top Differential Diagnoses:**\n{diff_diagnoses_text}"
+        f"{red_flags_text}\n\n"
+        f"**Recommended Action:** {msg.recommended_next_step}\n\n"
+        f"🔄 Fetching treatment recommendations..."
+    )
+
+    user_msg = create_text_chat(analysis_text)
+    await ctx.send(user_session.user_address, user_msg)
+
+    # Route to Treatment Recommendation Agent
+    treatment_agent_addr = os.getenv("TREATMENT_RECOMMENDATION_ADDRESS")
+
+    if not treatment_agent_addr or treatment_agent_addr == "agent1q...":
+        ctx.logger.warning("Treatment Recommendation Agent address not configured")
+
+        fallback_text = (
+            "⚠️ Treatment Recommendation Agent not yet configured.\n"
+            "Please configure TREATMENT_RECOMMENDATION_ADDRESS in .env file."
+        )
+        fallback_msg = create_text_chat(fallback_text)
+        await ctx.send(user_session.user_address, fallback_msg)
+        return
+
+    # Prepare treatment request
+    primary_condition = msg.differential_diagnoses[0] if msg.differential_diagnoses else "unknown"
+    alternative_conditions = msg.differential_diagnoses[1:5] if len(msg.differential_diagnoses) > 1 else None
+
+    treatment_request = TreatmentRequestMsg(
+        session_id=msg.session_id,
+        primary_condition=primary_condition,
+        alternative_conditions=alternative_conditions,
+        urgency_level=msg.urgency_level,
+        patient_age=user_session.patient_data.age if user_session.patient_data else None,
+        allergies=user_session.patient_data.allergies if user_session.patient_data else None,
+        current_medications=user_session.patient_data.current_medications if user_session.patient_data else None,
+        medical_history=user_session.patient_data.medical_history if user_session.patient_data else None,
+        requesting_agent="medichain-coordinator",
+    )
+
+    ctx.logger.info(f"Routing to Treatment Recommendation Agent: {treatment_agent_addr}")
+    ctx.logger.info(f"  Primary condition: {primary_condition}")
+    ctx.logger.info(f"  Urgency: {msg.urgency_level}")
+
+    # Send to Treatment Recommendation Agent
+    await ctx.send(treatment_agent_addr, treatment_request)
+
+
+@inter_agent_proto.on_message(model=TreatmentResponseMsg)
+async def handle_treatment_response(ctx: Context, sender: str, msg: TreatmentResponseMsg):
+    """
+    Handle treatment recommendation response from Treatment Recommendation Agent
+    Send final comprehensive report to user
+    """
+    ctx.logger.info(f"📥 Received treatment recommendations from {sender}")
+    ctx.logger.info(f"   Session: {msg.session_id}")
+    ctx.logger.info(f"   Condition: {msg.condition}")
+    ctx.logger.info(f"   Treatments: {len(msg.treatments)}")
+    ctx.logger.info(f"   Contraindications: {sum(len(v) for v in msg.contraindications.values())}")
+    ctx.logger.info(f"   Safety warnings: {len(msg.safety_warnings)}")
+
+    # Find session
+    user_session = None
+    for addr, session in active_sessions.items():
+        if session.session_id == msg.session_id:
+            user_session = session
+            session.treatment_response = msg
+            break
+
+    if not user_session:
+        ctx.logger.warning(f"No active session for {msg.session_id}")
+        return
+
+    # Format final comprehensive report
+    ctx.logger.info("📤 Sending final diagnostic report to user")
+
+    # Treatment recommendations section
+    treatments_text = ""
+    for i, treatment in enumerate(msg.treatments[:5], 1):
+        evidence = msg.evidence_sources.get(treatment, "No source available")
+        contraindications = msg.contraindications.get(treatment, [])
+
+        treatments_text += f"\n  **{i}. {treatment}**\n"
+        treatments_text += f"     Evidence: {evidence}\n"
+        if contraindications:
+            treatments_text += f"     ⚠️ Contraindications: {', '.join(contraindications)}\n"
+
+    # Safety warnings section
+    safety_text = ""
+    if msg.safety_warnings:
+        safety_text = "\n\n🔐 **SAFETY WARNINGS:**\n" + "\n".join([f"  • {w}" for w in msg.safety_warnings])
+
+    # Specialist referral section
+    specialist_text = ""
+    if msg.specialist_referral:
+        specialist_text = f"\n\n👨‍⚕️ **Specialist Referral:** {msg.specialist_referral}"
+
+    # Follow-up section
+    followup_text = ""
+    if msg.follow_up_timeline:
+        followup_text = f"\n\n📅 **Follow-Up:** {msg.follow_up_timeline}"
+
+    # Compile final report
+    final_report = (
+        f"═══════════════════════════════════\n"
+        f"🏥 **MEDICHAIN AI - DIAGNOSTIC REPORT**\n"
+        f"═══════════════════════════════════\n\n"
+        f"**PRIMARY ASSESSMENT:** {msg.condition.replace('-', ' ').title()}\n\n"
+        f"**TREATMENT RECOMMENDATIONS:**{treatments_text}"
+        f"{safety_text}"
+        f"{specialist_text}"
+        f"{followup_text}\n\n"
+        f"═══════════════════════════════════\n"
+        f"⚠️ **IMPORTANT DISCLAIMER**\n"
+        f"═══════════════════════════════════\n"
+        f"{msg.medical_disclaimer}\n\n"
+        f"Session ID: {msg.session_id}"
+    )
+
+    # Send final report to user
+    final_msg = create_text_chat(final_report)
+    await ctx.send(user_session.user_address, final_msg)
+
+    ctx.logger.info(f"✅ Complete diagnostic report sent to user")
+    ctx.logger.info(f"   Report length: {len(final_report)} characters")
+
+
 # ============================================================================
 # Startup & Initialization
 # ============================================================================
@@ -300,7 +525,15 @@ async def startup(ctx: Context):
     ctx.logger.info(f"Agent name: {agent.name}")
     ctx.logger.info(f"Mailbox: Enabled (ASI:One compatible)")
     ctx.logger.info(f"Chat Protocol: Enabled")
+    ctx.logger.info(f"Session cleanup: Every hour (timeout: {SESSION_TIMEOUT_SECONDS/3600:.1f} hours)")
     ctx.logger.info("=" * 60)
+
+
+@agent.on_interval(period=3600)  # Run every hour
+async def periodic_session_cleanup(ctx: Context):
+    """Periodically clean up expired sessions"""
+    cleaned = cleanup_expired_sessions(ctx)
+    ctx.logger.info(f"Periodic cleanup: {len(active_sessions)} active sessions, {cleaned} cleaned up")
 
 
 # Include protocols

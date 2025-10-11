@@ -208,3 +208,68 @@ class ErrorMessage(BaseModel):
     error_type: str
     error_details: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# Epic 3: uAgents.Model Wrappers for Mailbox Communication
+# ============================================================================
+
+class SymptomAnalysisRequestMsg(Model):
+    """
+    Mailbox-compatible request for Symptom Analysis Agent
+    Wraps patient intake data for inter-agent communication
+    """
+    session_id: str
+    symptoms: List[str]  # Simplified symptom names
+    age: Optional[int]
+    severity_scores: Optional[Dict[str, int]]  # symptom -> severity (1-10)
+    duration_info: Optional[Dict[str, str]]  # symptom -> duration
+    medical_history: Optional[List[str]]
+    requesting_agent: str
+
+
+class SymptomAnalysisResponseMsg(Model):
+    """
+    Mailbox-compatible response from Symptom Analysis Agent
+    Contains urgency assessment and differential diagnoses
+    """
+    session_id: str
+    urgency_level: str  # "emergency" | "urgent" | "routine"
+    red_flags: List[str]
+    differential_diagnoses: List[str]  # condition names
+    confidence_scores: Dict[str, float]  # condition -> confidence (0-1)
+    reasoning_chain: List[str]
+    recommended_next_step: str
+    responding_agent: str
+
+
+class TreatmentRequestMsg(Model):
+    """
+    Mailbox-compatible request for Treatment Recommendation Agent
+    """
+    session_id: str
+    primary_condition: str
+    alternative_conditions: Optional[List[str]]
+    urgency_level: str
+    patient_age: Optional[int]
+    allergies: Optional[List[str]]
+    current_medications: Optional[List[str]]
+    medical_history: Optional[List[str]]
+    requesting_agent: str
+
+
+class TreatmentResponseMsg(Model):
+    """
+    Mailbox-compatible response from Treatment Recommendation Agent
+    Contains evidence-based treatment recommendations with safety checks
+    """
+    session_id: str
+    condition: str
+    treatments: List[str]  # Treatment descriptions
+    evidence_sources: Dict[str, str]  # treatment -> source URL
+    contraindications: Dict[str, List[str]]  # treatment -> contraindication list
+    safety_warnings: List[str]
+    specialist_referral: Optional[str]
+    follow_up_timeline: Optional[str]
+    medical_disclaimer: str
+    responding_agent: str

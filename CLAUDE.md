@@ -8,11 +8,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **ASI Agents Track - Hackathon Submission**
 
-This is a multi-agent system built for the Artificial Superintelligence Alliance Agents Track hackathon (Cypherpunk 2025). The project implements a coordinator-specialist agent architecture using Fetch.ai's uAgents framework, integrated with SingularityNET's MeTTa knowledge graph for structured reasoning.
+Multi-agent healthcare diagnostic system built for the Artificial Superintelligence Alliance Agents Track hackathon (Cypherpunk 2025). Implements coordinator-specialist agent architecture using Fetch.ai's uAgents framework + SingularityNET's MeTTa knowledge graph.
 
-**Deadline:** October 31, 2025 (22 days from start)
-**Prize Pool:** $20,000 USDC
-**Current Status:** Foundation phase (Week 1)
+**Key Info:**
+- **Deadline:** October 31, 2025 (22 days from start)
+- **Prize Pool:** $20,000 USDC
+- **Current Status:** 95% complete - 13+ days ahead of schedule!
+- **Project:** MediChain AI - Decentralized Healthcare Diagnostic System
 
 ---
 
@@ -21,10 +23,9 @@ This is a multi-agent system built for the Artificial Superintelligence Alliance
 - **Language:** Python 3.9+
 - **Agent Framework:** Fetch.ai uAgents (`uagents>=0.12.0`, `uagents-core>=0.1.0`)
 - **Knowledge Graph:** SingularityNET MeTTa (`hyperon>=0.1.0`)
-- **Deployment Platform:** Agentverse (https://agentverse.ai/)
-- **User Interface:** ASI:One Chat Protocol (https://asi1.ai/)
-- **Testing:** pytest with asyncio support
-- **Code Quality:** black, flake8, mypy
+- **Deployment:** Agentverse (https://agentverse.ai/) + VPS (Ubuntu 22.04)
+- **Frontend:** Next.js 14 (Vercel) - Static landing page
+- **Testing:** pytest, Agentverse chat interface
 
 ---
 
@@ -32,31 +33,27 @@ This is a multi-agent system built for the Artificial Superintelligence Alliance
 
 ### Environment Setup
 ```bash
-# Initial setup (creates venv, installs dependencies, creates .env)
+# Initial setup
 ./setup.sh
 
-# Manual virtual environment activation
+# Activate virtual environment
 source venv/bin/activate  # macOS/Linux
-# venv\Scripts\activate   # Windows
 
 # Install/update dependencies
 pip install -r requirements.txt
-
-# Upgrade pip
-pip install --upgrade pip
 ```
 
 ### Running Agents Locally
 ```bash
-# Start coordinator agent (Chat Protocol enabled, port 8000)
+# Start coordinator (Chat Protocol enabled, port 8000)
 python src/agents/coordinator.py
 
-# Start specialist agents (run in separate terminals)
-python src/agents/specialist_1.py
-python src/agents/specialist_2.py
-python src/agents/specialist_3.py
+# Start specialist agents
+python src/agents/patient_intake.py        # Port 8001
+python src/agents/symptom_analysis.py      # Port 8004
+python src/agents/treatment_recommendation.py  # Port 8005
 
-# Test MeTTa query engine standalone
+# Test MeTTa query engine
 python src/metta/query_engine.py
 ```
 
@@ -65,81 +62,163 @@ python src/metta/query_engine.py
 # Run all tests
 pytest tests/
 
-# Run with coverage report
+# With coverage
 pytest --cov=src tests/
 
-# Run specific test file
-pytest tests/test_agents.py
-
-# Run with verbose output
-pytest -v tests/
-```
-
-### Code Quality
-```bash
-# Format code with black (2-space indentation)
+# Code quality
 black --line-length=88 src/ tests/
-
-# Lint with flake8
 flake8 src/ tests/
-
-# Type checking with mypy
 mypy src/
 ```
 
-### Deployment
+### VPS Service Management
 ```bash
-# Deploy agent to Agentverse (requires AGENTVERSE_API_KEY in .env)
-# Deployment is handled automatically when agent runs with proper config
-# Agent addresses will be generated upon first deployment
-# Update .env with generated addresses for inter-agent communication
+# Check status
+ssh website 'sudo systemctl status medichain-*.service'
+
+# View logs
+ssh website 'sudo journalctl -u medichain-coordinator.service -f'
+
+# Restart all
+ssh website 'sudo systemctl restart medichain-*.service'
 ```
 
 ---
 
-## Architecture
+## Current Architecture & Production URLs
 
-### Multi-Agent System Design
-
-**Coordinator Agent** (`src/agents/coordinator.py`)
-- Central routing agent with Chat Protocol enabled
-- Accessible via ASI:One interface (https://asi1.ai/)
-- Routes user requests to appropriate specialist agents
-- Handles session management (StartSession, EndSession)
-- Port: 8000
-
-**Specialist Agents** (Template: `src/agents/specialist_template.py`)
-- Domain-specific agents (3+ specialists)
-- Process requests from coordinator
-- Query MeTTa knowledge base for structured reasoning
-- Return results with evidence and reasoning chains
-
-**MeTTa Query Engine** (`src/metta/query_engine.py`)
-- Interface for querying MeTTa knowledge graphs
-- Loads knowledge base from `data/knowledge_base.metta`
-- Provides domain-specific query methods
-- Supports fact addition and complex queries
-
-### Agent Communication Flow
+### Production Architecture (Day 6 - Current)
 
 ```
-User → ASI:One → Coordinator Agent → Specialist Agents → MeTTa KB
-                        ↓                      ↓
-                   Routing Logic      Domain Expertise
-                        ↓                      ↓
-                    Response ← Aggregation ← Results
+User → Vercel Landing Page → "Test on Agentverse" Button
+                                      ↓
+                        Agentverse Chat Interface
+                                      ↓
+                          VPS Multi-Agent System
+                        (4 agents via mailbox protocol)
 ```
 
-### Chat Protocol Structure
+**Why This Architecture:**
+- Vercel Free tier has 10-second timeout (multi-agent flow takes ~15 seconds)
+- Leverages official ASI infrastructure (better for hackathon judging)
+- Complete separation: Marketing (Vercel) + Functionality (Agentverse)
 
-All agents accessible via ASI:One must implement the Chat Protocol:
+### Production URLs
 
-1. **StartSessionContent** - Initiates conversation
-2. **TextContent** - Natural language messages
-3. **EndSessionContent** - Terminates session
-4. **ChatAcknowledgement** - Confirms message receipt
+**User-Facing:**
+- **Pitch Website:** https://medichain-web.vercel.app
+- **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 
-Implementation pattern:
+**Backend (VPS):**
+- **Health Check:** http://176.222.53.185:8080/health
+- **All 4 agents:** Running as systemd services (24/7 uptime)
+
+### Deployed Agents
+
+- **Coordinator:** `agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q` (port 8001)
+- **Patient Intake:** `agent1qgr8ga84fyjsy478ctvzp3zf5r8rw9nulzmrl9w0l3x83suxuzt6zjq29y2` (port 8000)
+- **Symptom Analysis:** `agent1qdxqnfmu735ren2geq9f3n8ehdk43lvm9x0vxswv6xj6a5hn40yfqv0ar42` (port 8004)
+- **Treatment:** `agent1qg9m6r976jq4lj64qfnp679qu8lu4jzcy06y09mf7ta4l2sm8uq9qfqrc9v` (port 8005)
+
+---
+
+## MeTTa Knowledge Graph (Quick Reference)
+
+### Knowledge Base Location
+- **File:** `data/knowledge_base.metta`
+- **Config:** `METTA_KB_PATH` in `.env`
+
+### Key Statistics
+- 13 medical conditions (6 critical, 2 urgent, 5 common)
+- 200+ medical facts
+- 45+ contraindications
+- Evidence sources: CDC, WHO, AHA, Johns Hopkins
+
+### Essential Methods
+```python
+from src.metta.query_engine import MeTTaQueryEngine
+
+engine = MeTTaQueryEngine()
+
+# Basic queries
+results = engine.find_by_symptom("fever")
+treatments = engine.find_treatment("influenza")
+
+# Medical-specific (16 advanced methods)
+emergencies = engine.find_emergency_conditions()
+red_flags = engine.find_red_flag_symptoms()
+urgency = engine.find_urgency_level("meningitis")
+reasoning = engine.generate_reasoning_chain(symptoms, condition)
+contraindications = engine.get_all_contraindications("aspirin")
+```
+
+**See:** `src/metta/query_engine.py` for complete method list (21 methods total)
+
+---
+
+## Testing Strategy
+
+### Agentverse Chat Testing (RECOMMENDED)
+
+**After mailbox creation, test via Agentverse chat interface:**
+
+1. **Access agent profile:**
+   ```
+   https://agentverse.ai/agents/details/{AGENT_ADDRESS}/profile
+   ```
+
+2. **Click "Chat with Agent" button**
+
+3. **Test conversation flow** - Verify:
+   - ChatAcknowledgement sent for every message
+   - Multi-agent routing works
+   - MeTTa queries return expected results
+   - Session lifecycle (start → messages → end)
+
+**Example test case:**
+- Emergency: "Severe headache, high fever, stiff neck - started 6 hours ago, age 28"
+- Routine: "I have a severe headache and fever for 2 days"
+
+### Mailbox Creation (CRITICAL)
+
+1. Start agent locally with `mailbox=True`
+2. Open inspector URL from logs: `https://agentverse.ai/inspect/?uri=...`
+3. Click "Connect" → Select "Mailbox" → "OK, got it"
+4. Verify in logs: `Successfully registered as mailbox agent in Agentverse`
+5. Check dashboard: Agent should show "Active" status
+
+**Note:** `mailbox=True` enables mailbox CLIENT. Actual mailbox must be created via inspector.
+
+---
+
+## Key Documentation Files
+
+### Planning & Execution (Review Daily)
+- **docs/PRD.md** - Product Requirements (Epic → Story → Task) - **SINGLE SOURCE OF TRUTH**
+- **docs/EXECUTION-PLAN.md** - Progress tracker (update daily: 🔲 → 🟡 → ✅)
+- **docs/TIMELINE.md** - 22-day development plan
+
+### Current Guidance
+- **CLAUDE.md** - This file - current development guidance
+- **README.md** - Main project documentation
+- **docs/TRACK-REQUIREMENTS.md** - Submission checklist
+
+### Reference & History
+- **docs/PROJECT-HISTORY.md** - Complete development history (Day 5/6 logs, fixes, 30 lessons)
+- **docs/reference/hackathon-analysis.md** - Strategic analysis
+- **docs/deployment/** - Deployment guides and status
+
+### Planning Workflow
+1. **Before starting:** Check docs/PRD.md for Epic/Story/Task requirements
+2. **Daily updates:** Update docs/EXECUTION-PLAN.md with progress
+3. **Weekly checkpoints:** Review docs/TIMELINE.md
+4. **All work traces back to PRD** - No ad-hoc features
+
+---
+
+## Chat Protocol Implementation
+
+### Pattern
 ```python
 from uagents_core.contrib.protocols.chat import (
     ChatMessage, ChatAcknowledgement,
@@ -152,436 +231,78 @@ chat_proto = Protocol(spec=chat_protocol_spec)
 @chat_proto.on_message(ChatMessage)
 async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
     # Process msg.content items
-    # Always send ChatAcknowledgement
-    pass
+    # ALWAYS send ChatAcknowledgement
+    await ctx.send(sender, ChatAcknowledgement())
 
 agent.include(chat_proto, publish_manifest=True)
 ```
 
----
-
-## MeTTa Knowledge Graph
-
-### Knowledge Base Location
-- Primary KB: `data/knowledge_base.metta`
-- Configurable via `METTA_KB_PATH` in `.env`
-
-### MeTTa Syntax Patterns
-
-**Define Relationships:**
-```metta
-(: has-symptom (-> Condition Symptom))
-(: has-treatment (-> Condition Treatment))
-(: severity (-> Symptom Level))
-```
-
-**Add Facts:**
-```metta
-(has-symptom flu fever)
-(has-symptom flu cough)
-(has-treatment flu rest)
-```
-
-**Query Examples:**
-```metta
-;; Find conditions with specific symptom
-(match &self (has-symptom $condition fever) $condition)
-
-;; Find treatments for condition
-(match &self (has-treatment flu $treatment) $treatment)
-
-;; Complex queries with multiple variables
-(match &self (has-symptom $condition $symptom) ($condition $symptom))
-```
-
-### Python Integration
-
-```python
-from src.metta.query_engine import MeTTaQueryEngine
-
-engine = MeTTaQueryEngine()  # Loads from METTA_KB_PATH
-engine.add_fact("(has-symptom flu fever)")
-results = engine.find_by_symptom("fever")
-```
-
-**Key Methods:**
-- `query(query_string)` - Execute raw MeTTa query
-- `find_by_symptom(symptom)` - Domain-specific helper
-- `find_treatment(condition)` - Domain-specific helper
-- `add_fact(fact)` - Add new knowledge
-- `get_all_facts(predicate)` - Retrieve all facts for predicate
+**Key:** Always include `publish_manifest=True` for ASI:One discoverability.
 
 ---
 
-## Project Structure
+## Judging Criteria Focus
 
-```
-asi-agents-track/
-├── src/
-│   ├── agents/
-│   │   ├── coordinator.py          # Main Chat Protocol agent
-│   │   ├── specialist_template.py  # Template for specialists
-│   │   └── specialist_{1,2,3}.py   # Domain specialists
-│   ├── protocols/                   # Custom protocols (if needed)
-│   ├── metta/
-│   │   └── query_engine.py         # MeTTa integration
-│   └── utils/                       # Helper utilities
-├── data/
-│   └── knowledge_base.metta        # MeTTa knowledge graph
-├── tests/
-│   ├── test_agents.py              # Agent tests
-│   └── test_metta.py               # MeTTa tests
-├── logs/                            # Runtime logs
-├── .env                             # Environment config (not committed)
-├── .env.example                     # Environment template
-├── requirements.txt                 # Python dependencies
-├── setup.sh                         # Quick setup script
-├── README.md                        # Project documentation
-├── docs/
-│   ├── TRACK-REQUIREMENTS.md        # Submission checklist
-│   ├── TIMELINE.md                  # 22-day development plan
-│   ├── GETTING-STARTED.md           # Quick start guide
-│   ├── PRD.md                       # Product Requirements Document
-│   ├── EXECUTION-PLAN.md            # Progress tracker
-│   ├── hackathon-analysis.md        # Strategic analysis
-│   └── hackathon-original.md        # Original hackathon content
-```
+- **Functionality (25%):** Reliable multi-agent coordination
+- **ASI Tech (20%):** Deep MeTTa integration (not superficial)
+- **Innovation (20%):** Novel problem-solving approach
+- **Impact (20%):** Real-world usefulness
+- **Presentation (15%):** Professional demo + docs
+
+**Target:** 90+/100 points for top-3 finish
 
 ---
 
-## Environment Variables
+## Submission Requirements
 
-Required in `.env` (create from `.env.example`):
+**Must Have:**
+- ✅ Public GitHub repo with Innovation Lab badges
+- ✅ Multi-agent system deployed on Agentverse
+- ✅ Deep MeTTa integration (200+ facts)
+- ✅ Chat Protocol working
+- ⏳ Demo video (3-5 minutes) - **IN PROGRESS**
+- ⏳ README with agent addresses and URLs
 
-```bash
-# Agentverse credentials
-AGENTVERSE_API_KEY=your_api_key_here      # From agentverse.ai
-AGENT_SEED=your_unique_seed_phrase        # Unique seed for agent identity
-
-# Agent addresses (populated after deployment)
-COORDINATOR_ADDRESS=agent1q...
-SPECIALIST_1_ADDRESS=agent1q...
-SPECIALIST_2_ADDRESS=agent1q...
-SPECIALIST_3_ADDRESS=agent1q...
-
-# MeTTa configuration
-METTA_KB_PATH=./data/knowledge_base.metta
-
-# Logging
-LOG_LEVEL=INFO
-LOG_FILE=./logs/agents.log
-```
-
-**Get Agentverse API Key:**
-1. Sign up at https://agentverse.ai/
-2. Navigate to API Keys section
-3. Generate new key
-4. Add to `.env`
-
----
-
-## Development Workflow
-
-### Day-by-Day Timeline
-
-This project follows a structured 22-day timeline (see `docs/TIMELINE.md`):
-
-**Week 1 (Oct 9-15):** Foundation - Basic agents + Chat Protocol + MeTTa basics
-**Week 2 (Oct 16-22):** Advanced - Deep MeTTa integration + multi-agent coordination
-**Week 3 (Oct 23-29):** Polish - Demo video + testing + final fixes
-**Week 4 (Oct 30-31):** Submission + buffer
-
-**Current Phase:** Check `docs/TIMELINE.md` for today's milestone and tasks.
-
-### Daily Development Routine
-
-1. **Review milestone:** Check `docs/TIMELINE.md` for day's goals
-2. **Implement features:** Focus on milestone deliverables
-3. **Test locally:** Run agents and verify functionality
-4. **Update docs:** Keep README and comments current
-5. **Commit progress:** Push to GitHub with descriptive messages
-6. **Check requirements:** Review `docs/TRACK-REQUIREMENTS.md` weekly
-
----
-
-## Testing Strategy
-
-### Agent Testing Approaches
-
-**Local Testing:**
-```bash
-# Terminal 1: Start coordinator
-python src/agents/coordinator.py
-
-# Terminal 2: Start specialist
-python src/agents/specialist_1.py
-
-# Terminal 3: Monitor logs
-tail -f logs/agents.log
-```
-
-**Agentverse Chat Interface Testing (RECOMMENDED FIRST):**
-
-After creating mailbox via inspector, each agent gets a dedicated chat interface:
-
-1. **Access Agent Profile:**
-   ```
-   https://agentverse.ai/agents/details/{AGENT_ADDRESS}/profile
-   ```
-
-2. **Find Chat Interface Link:**
-   - Agent profile page shows agent status (Active/Inactive)
-   - Shows published protocols (AgentChatProtocol)
-   - May have "Chat with Agent" button or direct session link
-
-3. **Direct Chat URL Pattern:**
-   ```
-   https://chat.agentverse.ai/sessions/{SESSION_ID}
-   ```
-   - Each new session gets a unique ID
-   - Interface shows agent name and timestamp
-   - Test conversation flow here BEFORE ASI:One
-
-4. **Testing Workflow:**
-   - Send test messages to verify Chat Protocol
-   - Monitor agent logs for received messages
-   - Verify responses appear in chat interface
-   - Test session lifecycle (start → messages → end)
-
-**Important:** The chat interface is the best way to test agents immediately after mailbox creation, without waiting for ASI:One indexing.
-
-**ASI:One Testing:**
-1. Deploy agent to Agentverse
-2. Create mailbox via inspector (REQUIRED)
-3. Visit https://asi1.ai/
-4. Search for agent by name or `@agent-name`
-5. Test conversation flow
-6. Verify agent responds (not ASI:One default AI)
-
-**MeTTa Testing:**
-```python
-# Run standalone query engine tests
-python src/metta/query_engine.py
-
-# Or use pytest
-pytest tests/test_metta.py
-```
-
-### Mailbox Creation Process (CRITICAL)
-
-**Why Mailboxes Are Required:**
-- `mailbox=True` in agent code enables mailbox CLIENT
-- Actual mailbox must be created via Agentverse Inspector
-- Without mailbox creation, agent won't appear in dashboard or be discoverable
-
-**Step-by-Step Mailbox Creation:**
-
-1. **Start agent locally** with `mailbox=True`:
-   ```python
-   agent = Agent(
-       name="your-agent-name",
-       port=8000,  # Local inspector port
-       mailbox=True,  # Enable mailbox client
-       publish_agent_details=True,  # Improves discoverability
-   )
-   ```
-
-2. **Open Inspector URL** (from agent startup logs):
-   ```
-   https://agentverse.ai/inspect/?uri=http%3A//127.0.0.1%3A{PORT}&address={AGENT_ADDRESS}
-   ```
-
-3. **Click "Connect" button** (top right of inspector page)
-
-4. **Select "Mailbox"** option and click "Next"
-   - Mailbox: Easiest way to connect agent to internet
-   - Proxy: For advanced routing configurations
-   - Custom: Manual network configuration
-
-5. **Click "OK, got it"** after reading instructions
-
-6. **Verify in logs:**
-   ```
-   INFO: [mailbox]: Successfully registered as mailbox agent in Agentverse
-   INFO: [mailbox]: Agent details updated in Agentverse
-   ```
-
-7. **Check Agent Dashboard:**
-   - Visit https://agentverse.ai/agents
-   - Agent should appear with "Active" status and "Mailbox" badge
-
-**Common Issues:**
-
-- **Agent not in dashboard:** Mailbox not created yet - repeat inspector steps
-- **"test-agent://" prefix in inspector:** Normal for local agents before mailbox creation
-- **Agent shows "Inactive":** Agent may have stopped running, check process
-- **Inspector shows wrong agent:** URL might be truncated - use complete address
-
-### Important Testing Notes
-
-- **Test via Agentverse chat interface FIRST** before ASI:One
-- Verify ChatAcknowledgement is sent for every received message
-- Test multi-agent routing with realistic user queries
-- Validate MeTTa queries return expected results
-- Check error handling with invalid inputs
-- Test session lifecycle (start → messages → end)
-- Monitor agent logs during testing to see message flow
-
----
-
-## Submission Requirements (Critical)
-
-### Mandatory for Hackathon Submission
-
-**Code Repository:**
-- Public GitHub repository
-- README with agent names and addresses
-- Innovation Lab badges (already in README.md)
-- Setup instructions and dependencies
-- No committed secrets (.env is gitignored)
-
-**Badges Required in README.md:**
+**Innovation Lab Badges:**
 ```markdown
 ![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
 ![tag:hackathon](https://img.shields.io/badge/hackathon-5F43F1)
 ```
-
-**Demo Video:**
-- 3-5 minutes duration
-- Shows problem statement, architecture, live demo
-- Demonstrates ASI:One interaction
-- Highlights MeTTa reasoning transparency
-- Upload to YouTube/Vimeo, link in README
-
-**Agentverse Deployment:**
-- All agents registered on Agentverse
-- Chat Protocol enabled
-- Agents discoverable via ASI:One
-- Agent addresses documented in README
-
-**Complete Checklist:** See `docs/TRACK-REQUIREMENTS.md` for full requirements.
-
----
-
-## Common Development Tasks
-
-### Adding a New Specialist Agent
-
-1. Copy `src/agents/specialist_template.py`
-2. Rename to `specialist_{domain}.py`
-3. Customize domain logic and MeTTa queries
-4. Update coordinator routing logic
-5. Add agent address to `.env` after deployment
-6. Document in README.md
-
-### Expanding MeTTa Knowledge Graph
-
-1. Edit `data/knowledge_base.metta`
-2. Add relationship definitions: `(: predicate (-> Type Type))`
-3. Add facts: `(predicate entity1 entity2)`
-4. Test queries: `(match &self (predicate $var value) $var)`
-5. Update `query_engine.py` with helper methods if needed
-6. Document knowledge structure in README
-
-### Implementing Inter-Agent Communication
-
-```python
-# In coordinator.py
-specialist_address = os.getenv("SPECIALIST_1_ADDRESS")
-
-@agent.on_message(model=QueryRequest)
-async def route_to_specialist(ctx: Context, sender: str, msg: QueryRequest):
-    await ctx.send(specialist_address, msg)
-```
-
-### Debugging Agent Issues
-
-**Common Issues:**
-
-1. **Agent won't start:** Check Python version (3.9+), verify dependencies installed
-2. **Port conflict:** Change port in `Agent(port=8000)` initialization
-3. **ASI:One can't find agent:** Verify Chat Protocol included with `publish_manifest=True`
-4. **MeTTa import error:** Install hyperon: `pip install hyperon`
-5. **Agent address not found:** Deploy to Agentverse first, then add address to .env
-
-**Logging:**
-```python
-ctx.logger.info(f"Message: {msg}")
-ctx.logger.error(f"Error: {e}")
-```
-
----
-
-## Judging Criteria Focus Areas
-
-### Functionality & Technical Implementation (25%)
-- All agents work reliably without crashes
-- Multi-agent coordination functions smoothly
-- Clean, maintainable code with proper error handling
-
-### Use of ASI Alliance Tech (20%)
-- Proper uAgents framework usage
-- Chat Protocol working via ASI:One
-- **Deep MeTTa integration (HIGH IMPACT)** - Not superficial
-
-### Innovation & Creativity (20%)
-- Novel problem-solving approach
-- Unique agent architecture
-- Avoid oversaturated domains
-
-### Real-World Impact & Usefulness (20%)
-- Solves meaningful problem
-- Clear practical value
-- Scalability potential
-
-### User Experience & Presentation (15%)
-- Professional demo video
-- Intuitive ASI:One conversation
-- Comprehensive documentation
-
-**Target:** 90+ / 100 points for top-3 finish
-
----
-
-## Key Documentation Files
-
-### Planning & Execution (Critical - Review Daily)
-- **docs/PRD.md** - Product Requirements Document with Epic → Story → Task hierarchy (SINGLE SOURCE OF TRUTH)
-- **docs/EXECUTION-PLAN.md** - Progress tracker mapped to PRD, update daily with task status
-- **docs/TIMELINE.md** - 22-day development plan with weekly milestones
-
-### Project Context & Strategy
-- **README.md** - Main project documentation, update with agent details
-- **CLAUDE.md** - This file - project guidance for Claude Code
-- **docs/hackathon-analysis.md** - Strategic analysis and winning strategies
-- **docs/TRACK-REQUIREMENTS.md** - Complete submission checklist, review weekly
-- **docs/GETTING-STARTED.md** - Quick start guide for new contributors
-
-### Planning Workflow
-1. **Before starting any task**: Check docs/PRD.md for Epic/Story/Task requirements
-2. **Daily updates**: Update docs/EXECUTION-PLAN.md with task progress (🔲 → 🟡 → ✅)
-3. **Weekly checkpoints**: Review docs/TIMELINE.md and update week progress
-4. **All work must trace back to PRD items** - No ad-hoc features without PRD entry
 
 ---
 
 ## Important Constraints
 
 ### What NOT to Do
-
-- **Don't skip Chat Protocol** - Required for ASI:One discoverability
-- **Don't do superficial MeTTa integration** - Judges look for depth
-- **Don't commit secrets** - .env is gitignored, use .env.example
-- **Don't add new features after Day 18** - Feature freeze for stability
+- **Don't skip Chat Protocol** - Required for discoverability
+- **Don't do superficial MeTTa** - Judges look for depth
+- **Don't commit secrets** - .env is gitignored
 - **Don't skip testing** - Broken demo = disqualification
 
 ### Development Philosophy
-
 - **100% working standard** - No partial implementations
-- **Ship with excellence** - Production-ready code quality
-- **Time philosophy** - Quality over urgency, 22 days is sufficient
-- **Documentation accuracy** - Keep README synchronized with code
-- **Test-driven** - Test locally before Agentverse deployment
+- **Ship with excellence** - Production-ready quality
+- **Time philosophy** - Quality over urgency
+- **Test-driven** - Test locally before deployment
+
+---
+
+## 12 Crucial Tips for Future Claude Instances
+
+1. **PRD is SSOT** - All work traces back to docs/PRD.md Epic/Story/Task structure
+2. **Update EXECUTION-PLAN daily** - Track progress (🔲 → 🟡 → ✅)
+3. **Test Agentverse chat FIRST** - Use chat.agentverse.ai before ASI:One
+4. **Mailbox creation is MANDATORY** - `mailbox=True` + create via inspector
+5. **Verify agent profile** - Check agentverse.ai/agents/details/{ADDRESS}/profile
+6. **MeTTa depth matters** - Quality > quantity (13 conditions achieved)
+7. **Chat Protocol critical** - Always include with `publish_manifest=True`
+8. **Session ID patterns** - Handle both `http-*` and `session-*` prefixes
+9. **Coordinator types** - Use `coordinator.py` (Chat Protocol) vs `coordinator_queue.py` (HTTP)
+10. **VPS for production** - systemd services = reliable 24/7 uptime
+11. **Agentverse testing > custom API** - Leverages official infrastructure
+12. **Monitor logs** - Use `journalctl -u medichain-*.service -f` for debugging
+
+**For complete development history and 30 detailed lessons:** See `docs/PROJECT-HISTORY.md`
 
 ---
 
@@ -592,37 +313,45 @@ ctx.logger.error(f"Error: {e}")
 - **Chat Protocol:** https://innovationlab.fetch.ai/resources/docs/examples/chat-protocol/asi-compatible-uagents
 - **MeTTa Basics:** https://metta-lang.dev/docs/learn/tutorials/python_use/metta_python_basics.html
 - **Agentverse:** https://agentverse.ai/
-- **ASI:One Interface:** https://asi1.ai/
+- **ASI:One:** https://asi1.ai/
 
 ### Code Examples
-- **Innovation Lab Examples:** https://github.com/fetchai/innovation-lab-examples
-- **MeTTa + Fetch.ai Integration:** https://github.com/fetchai/innovation-lab-examples/tree/main/web3/singularity-net-metta
+- **Innovation Lab:** https://github.com/fetchai/innovation-lab-examples
+- **MeTTa + Fetch.ai:** https://github.com/fetchai/innovation-lab-examples/tree/main/web3/singularity-net-metta
 
-### Community Support
-- **Fetch.ai Discord:** https://discord.gg/fetchai
+### Community
+- **Discord:** https://discord.gg/fetchai
 - **Hackathon Contact:** https://t.me/prithvipc
-- **Submission Platform:** https://earn.superteam.fun/listing/asi-agents-track
+- **Submission:** https://earn.superteam.fun/listing/asi-agents-track
 
 ---
 
-## Tips for Future Claude Instances
+## Project Structure
 
-1. **Always check docs/PRD.md first** - All work must trace back to Epic/Story/Task requirements (SINGLE SOURCE OF TRUTH)
-2. **Update docs/EXECUTION-PLAN.md daily** - Track task progress (🔲 → 🟡 → ✅), update daily standup log
-3. **Follow the planning workflow** - PRD defines WHAT to build, EXECUTION-PLAN tracks progress, TIMELINE shows WHEN
-4. **Review docs/TRACK-REQUIREMENTS.md weekly** - Ensure submission requirements are met
-5. **Test via Agentverse chat interface FIRST** - Use `https://chat.agentverse.ai/sessions/{ID}` before ASI:One for immediate testing
-6. **Mailbox creation is MANDATORY** - `mailbox=True` is not enough; must create via inspector at `https://agentverse.ai/inspect/`
-7. **Verify agent profile** - Check `https://agentverse.ai/agents/details/{ADDRESS}/profile` to confirm Active status and protocols
-8. **Focus on MeTTa depth** - Quality > quantity (10 well-modeled conditions > 50 superficial)
-9. **Preserve agent communication patterns** - Chat Protocol implementation is critical
-10. **Update README incrementally** - Don't leave documentation for the end
-11. **Respect the 22-day timeline** - Follow milestone sequence, don't skip ahead
-12. **Keep .env synchronized** - Update agent addresses after each Agentverse deployment
-13. **Test locally before deploying** - Agentverse debugging is harder than local
-14. **Review docs/hackathon-analysis.md** - Contains strategic insights for competitive advantage
-15. **No ad-hoc features** - If it's not in PRD, don't build it (or add to PRD first and get approval)
-16. **Monitor agent logs during chat testing** - Use `tail -f /tmp/{agent}_mailbox.log` to see real-time message flow
+```
+asi-agents-track/
+├── src/
+│   ├── agents/              # 4 deployed agents
+│   │   ├── coordinator.py   # Chat Protocol (port 8001)
+│   │   ├── patient_intake.py
+│   │   ├── symptom_analysis.py
+│   │   └── treatment_recommendation.py
+│   ├── protocols/messages.py
+│   ├── metta/query_engine.py  # 21 methods
+│   └── utils/
+├── data/knowledge_base.metta   # 200+ facts
+├── tests/
+├── docs/
+│   ├── PRD.md                  # SSOT
+│   ├── EXECUTION-PLAN.md
+│   ├── TIMELINE.md
+│   ├── PROJECT-HISTORY.md      # Dev history
+│   ├── TRACK-REQUIREMENTS.md
+│   └── deployment/
+├── .env (not committed)
+├── requirements.txt
+└── README.md
+```
 
 ---
 

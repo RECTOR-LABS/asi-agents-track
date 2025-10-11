@@ -1,0 +1,106 @@
+# Render.com Blueprint Configuration
+# MediChain AI - Multi-Agent System with Mailbox Deployment
+#
+# This configuration deploys 4 Background Workers (long-running processes)
+# Each agent connects to Agentverse via mailbox for ASI:One discoverability
+#
+# Deployment: Push to GitHub, then connect Render to repository
+
+services:
+  # ============================================================================
+  # 1. Coordinator Agent - Main routing agent with Chat Protocol + HTTP Bridge
+  # ============================================================================
+  - type: web  # Changed from worker - now has HTTP endpoint!
+    name: medichain-coordinator
+    runtime: python
+    env: python
+    region: oregon  # or singapore, frankfurt (choose closest to you)
+    plan: starter  # Free tier
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/agents/coordinator_http.py  # HTTP-enabled version
+    envVars:
+      - key: PORT
+        value: 8080  # HTTP server port
+      - key: AGENT_SEED
+        generateValue: true  # Auto-generate secure seed
+      - key: PATIENT_INTAKE_ADDRESS
+        sync: false  # Will be set manually after deployment
+      - key: SYMPTOM_ANALYSIS_ADDRESS
+        sync: false
+      - key: TREATMENT_RECOMMENDATION_ADDRESS
+        sync: false
+      - key: METTA_KB_PATH
+        value: ./data/knowledge_base.metta
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONUNBUFFERED
+        value: "1"  # Real-time logging
+
+  # ============================================================================
+  # 2. Patient Intake Agent - Symptom extraction via NLP
+  # ============================================================================
+  - type: worker
+    name: medichain-patient-intake
+    runtime: python
+    env: python
+    region: oregon
+    plan: starter  # Free tier
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/agents/patient_intake.py
+    envVars:
+      - key: AGENT_SEED
+        generateValue: true
+      - key: COORDINATOR_ADDRESS
+        sync: false  # Will be set manually after deployment
+      - key: METTA_KB_PATH
+        value: ./data/knowledge_base.metta
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  # ============================================================================
+  # 3. Symptom Analysis Agent - MeTTa diagnostic reasoning
+  # ============================================================================
+  - type: worker
+    name: medichain-symptom-analysis
+    runtime: python
+    env: python
+    region: oregon
+    plan: starter  # Free tier
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/agents/symptom_analysis.py
+    envVars:
+      - key: AGENT_SEED
+        generateValue: true
+      - key: COORDINATOR_ADDRESS
+        sync: false
+      - key: METTA_KB_PATH
+        value: ./data/knowledge_base.metta
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  # ============================================================================
+  # 4. Treatment Recommendation Agent - Evidence-based treatments with safety
+  # ============================================================================
+  - type: worker
+    name: medichain-treatment
+    runtime: python
+    env: python
+    region: oregon
+    plan: starter  # Free tier
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/agents/treatment_recommendation.py
+    envVars:
+      - key: AGENT_SEED
+        generateValue: true
+      - key: COORDINATOR_ADDRESS
+        sync: false
+      - key: METTA_KB_PATH
+        value: ./data/knowledge_base.metta
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONUNBUFFERED
+        value: "1"

@@ -46,39 +46,46 @@ inter_agent_proto = Protocol(name="PatientIntakeProtocol")
 # ============================================================================
 
 # Common symptom keywords for pattern matching (expandable)
+# Ordered from most specific to least specific (check longer phrases first)
 SYMPTOM_KEYWORDS = {
-    # Fever & Temperature
-    "fever": ["fever", "high temperature", "temp", "hot", "burning up"],
+    # Fever & Temperature - specific variants first
+    "high-fever": ["high fever", "very high temperature", "burning up with fever"],
+    "fever": ["fever", "high temperature", "temp", "hot"],
     "chills": ["chills", "shivering", "shaking", "cold"],
 
-    # Head & Neurological
-    "headache": ["headache", "head pain", "head hurts", "migraine"],
+    # Head & Neurological - specific variants first
+    "severe-headache": ["severe headache", "terrible headache", "worst headache", "intense headache"],
+    "headache": ["headache", "head pain", "head hurts", "migraine", "head ache"],
     "dizziness": ["dizzy", "lightheaded", "vertigo", "spinning"],
     "confusion": ["confused", "disoriented", "foggy", "can't think"],
 
+    # Neck symptoms - multiple variations
+    "neck-stiffness": ["neck is very stiff", "neck is stiff", "very stiff neck", "extremely stiff neck"],
+    "stiff-neck": ["stiff neck", "neck stiff", "can't move neck", "neck hurts to move"],
+
     # Respiratory
+    "difficulty-breathing": ["difficulty breathing", "hard to breathe", "can't breathe well"],
+    "shortness-of-breath": ["short of breath", "can't breathe", "breathless", "gasping"],
     "cough": ["cough", "coughing", "hacking"],
-    "shortness_of_breath": ["short of breath", "can't breathe", "breathing hard", "breathless"],
-    "sore_throat": ["sore throat", "throat pain", "hurts to swallow"],
+    "sore-throat": ["sore throat", "throat pain", "hurts to swallow"],
 
     # Gastrointestinal
     "nausea": ["nausea", "nauseous", "queasy", "sick to stomach"],
     "vomiting": ["vomiting", "throwing up", "vomit", "puking"],
     "diarrhea": ["diarrhea", "loose stool", "runny stool"],
-    "abdominal_pain": ["stomach pain", "abdominal pain", "belly pain", "stomach ache"],
+    "abdominal-pain": ["stomach pain", "abdominal pain", "belly pain", "stomach ache"],
 
     # Muscular & Pain
-    "muscle_pain": ["muscle pain", "body aches", "sore muscles", "aching"],
-    "joint_pain": ["joint pain", "joints hurt", "stiff joints"],
-    "chest_pain": ["chest pain", "chest hurts", "chest pressure"],
+    "chest-pain": ["chest pain", "chest hurts", "chest pressure"],
+    "muscle-pain": ["muscle pain", "body aches", "sore muscles", "aching"],
+    "joint-pain": ["joint pain", "joints hurt", "stiff joints"],
 
     # Skin
     "rash": ["rash", "skin rash", "spots", "bumps"],
-    "stiff_neck": ["stiff neck", "neck stiff", "can't move neck"],
 
     # Energy & Consciousness
     "fatigue": ["tired", "fatigue", "exhausted", "weakness", "weak"],
-    "loss_of_consciousness": ["passed out", "fainted", "blacked out", "unconscious"],
+    "loss-of-consciousness": ["passed out", "fainted", "blacked out", "unconscious"],
 }
 
 # Severity indicators
@@ -176,6 +183,52 @@ class SymptomExtractor:
 # Session tracking for follow-up questions
 session_context: Dict[str, Dict] = {}
 
+# Rate limiting configuration
+rate_limit_store: Dict[str, List[datetime]] = {}
+MAX_REQUESTS_PER_HOUR = 20
+MAX_MESSAGE_LENGTH = 2000
+
+
+def check_rate_limit(sender: str) -> bool:
+    """Check if sender has exceeded rate limit"""
+    now = datetime.utcnow()
+
+    # Initialize or clean up old requests
+    if sender not in rate_limit_store:
+        rate_limit_store[sender] = []
+
+    # Remove requests older than 1 hour
+    rate_limit_store[sender] = [
+        t for t in rate_limit_store[sender]
+        if (now - t).total_seconds() < 3600
+    ]
+
+    # Check if under limit
+    if len(rate_limit_store[sender]) >= MAX_REQUESTS_PER_HOUR:
+        return False
+
+    # Add current request
+    rate_limit_store[sender].append(now)
+    return True
+
+
+def validate_input(text: str) -> Optional[str]:
+    """
+    Validate input message
+    Returns error message if invalid, None if valid
+    """
+    if not text or len(text.strip()) == 0:
+        return "Empty message received. Please describe your symptoms."
+
+    if len(text) > MAX_MESSAGE_LENGTH:
+        return f"Message too long ({len(text)} characters). Please keep messages under {MAX_MESSAGE_LENGTH} characters."
+
+    # Basic sanity check - must contain at least some alphabetic characters
+    if not any(c.isalpha() for c in text):
+        return "Please describe your symptoms using text."
+
+    return None
+
 
 def needs_clarification(symptoms: List[Symptom], age: Optional[int], text: str) -> Optional[str]:
     """
@@ -227,6 +280,34 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     ctx.logger.info(f"Session: {msg.session_id}")
     ctx.logger.info(f"Text: {msg.text}")
 
+    # Rate limiting check
+    if not check_rate_limit(sender):
+        ctx.logger.warning(f"Rate limit exceeded for {sender}")
+        response = AgentAcknowledgement(
+            session_id=msg.session_id,
+            agent_name="patient_intake",
+            message=(
+                "⚠️ Too many requests. You've exceeded the rate limit of "
+                f"{MAX_REQUESTS_PER_HOUR} requests per hour.\n\n"
+                "Please wait a moment before sending more messages.\n\n"
+                "If you're experiencing a medical emergency, please call emergency services immediately."
+            )
+        )
+        await ctx.send(sender, response)
+        return
+
+    # Input validation
+    validation_error = validate_input(msg.text)
+    if validation_error:
+        ctx.logger.warning(f"Input validation failed for {sender}: {validation_error}")
+        response = AgentAcknowledgement(
+            session_id=msg.session_id,
+            agent_name="patient_intake",
+            message=validation_error
+        )
+        await ctx.send(sender, response)
+        return
+
     # Track session context
     if msg.session_id not in session_context:
         session_context[msg.session_id] = {
@@ -246,9 +327,12 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     # Check if we need clarification
     clarification = needs_clarification(symptoms, age, msg.text)
 
+    # Skip clarification for HTTP sessions (one-shot diagnostic)
+    is_http_session = msg.session_id.startswith("http-")
+
     # Limit clarification attempts to 2 to avoid endless loops
     max_clarifications = 2
-    if clarification and session_context[msg.session_id]["clarification_count"] <= max_clarifications:
+    if clarification and not is_http_session and session_context[msg.session_id]["clarification_count"] <= max_clarifications:
         ctx.logger.info(f"Requesting clarification for session {msg.session_id}")
         response = AgentAcknowledgement(
             session_id=msg.session_id,
