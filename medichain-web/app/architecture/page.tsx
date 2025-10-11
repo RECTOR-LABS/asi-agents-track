@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Network, Database, Cpu, Activity } from 'lucide-react';
 import { Card, AnimatedSection, StatusIndicator, Badge } from '@/components/shared';
+import { ArchitectureDiagram } from '@/components/architecture/ArchitectureDiagram';
 
 const agents = [
   {
@@ -74,37 +75,7 @@ export default function ArchitecturePage() {
 
           <AnimatedSection animation="scale-in" delay={200}>
             <Card padding="lg" className="bg-gradient-to-br from-gray-50 to-medical-blue-50">
-              <pre className="text-sm text-gray-700 overflow-x-auto font-mono leading-relaxed">
-{`┌─────────────────────────────────────────────────────────────┐
-│                    USER (Agentverse Chat)                   │
-│                        ↓  ↑                                 │
-│                   Chat Protocol                             │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-                  ┌────────▼─────────┐
-                  │   COORDINATOR    │
-                  │    (Port 8001)   │
-                  │ • Session Mgmt   │
-                  │ • Agent Routing  │
-                  └─┬──────┬────────┬┘
-                    │      │        │
-        ┌───────────▼──┐ ┌─▼────┐ ┌▼──────────────┐
-        │   INTAKE     │ │SYMPTOM│ │  TREATMENT    │
-        │ (Port 8000)  │ │(8004) │ │  (Port 8005)  │
-        │              │ │       │ │               │
-        │• NLP Extract │ │• Triage│ │• Safety Check │
-        │• Demographics│ │• Flags │ │• Drug Interact│
-        └──────┬───────┘ └───┬───┘ └───────┬───────┘
-               │             │              │
-               └─────────────▼──────────────┘
-                             │
-                    ┌────────▼────────┐
-                    │  METTA KB       │
-                    │ • 13 Conditions │
-                    │ • 200+ Facts    │
-                    │ • 45+ Contraind.│
-                    └─────────────────┘`}
-              </pre>
+              <ArchitectureDiagram />
             </Card>
           </AnimatedSection>
         </div>

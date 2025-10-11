@@ -30,19 +30,25 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isDarkHero = pathname === '/architecture' || pathname === '/docs';
+
   return (
     <nav
       className={clsx(
         'sticky top-0 z-50 transition-all duration-300',
         isScrolled
           ? 'backdrop-blur-lg bg-white/90 border-b border-gray-200 shadow-sm'
-          : 'bg-transparent'
+          : isDarkHero
+            ? 'bg-gray-900/80 backdrop-blur-sm'
+            : 'bg-transparent'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Logo variant="horizontal" size="md" />
+          <div className={clsx(!isScrolled && isDarkHero && 'brightness-0 invert')}>
+            <Logo variant="horizontal" size="md" />
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -53,8 +59,12 @@ export const Navbar: React.FC = () => {
                 className={clsx(
                   'text-sm font-medium transition-colors duration-200 drop-shadow-sm',
                   pathname === link.href
-                    ? 'text-medical-blue-600'
-                    : isScrolled ? 'text-gray-600 hover:text-medical-blue-600' : 'text-gray-900 hover:text-medical-blue-600'
+                    ? isScrolled || !isDarkHero ? 'text-medical-blue-600' : 'text-medical-blue-300'
+                    : isScrolled
+                      ? 'text-gray-600 hover:text-medical-blue-600'
+                      : isDarkHero
+                        ? 'text-gray-200 hover:text-white'
+                        : 'text-gray-900 hover:text-medical-blue-600'
                 )}
               >
                 {link.label}
@@ -76,7 +86,11 @@ export const Navbar: React.FC = () => {
                 size={28}
                 className={clsx(
                   'relative transition-all duration-300 group-hover:scale-110 group-hover:rotate-12',
-                  isScrolled ? 'text-gray-700 group-hover:text-medical-blue-600' : 'text-gray-900 group-hover:text-medical-blue-600'
+                  isScrolled
+                    ? 'text-gray-700 group-hover:text-medical-blue-600'
+                    : isDarkHero
+                      ? 'text-gray-200 group-hover:text-white'
+                      : 'text-gray-900 group-hover:text-medical-blue-600'
                 )}
                 strokeWidth={1.5}
               />
