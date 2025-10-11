@@ -813,6 +813,152 @@ Response (10 seconds):
 
 ---
 
+## Current Project State (Day 6 - Oct 11, 2025) ⚡️ ARCHITECTURAL PIVOT
+
+**Progress:** 95% complete - **13+ DAYS AHEAD OF SCHEDULE!**
+
+### CRITICAL DECISION: Agentverse-Based Testing Architecture 🎯
+
+**Problem Identified:**
+- Vercel Free tier has 10-second default timeout for serverless functions
+- Multi-agent diagnostic flow takes ~15 seconds to complete
+- Custom web interface API routes causing 504 Gateway Timeout errors
+- Even with correct environment variables, timeout persisted
+
+**Solution Implemented:**
+Complete architectural pivot to leverage official ASI infrastructure:
+
+**New Architecture (Day 6):**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    User Testing Flow                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  1. Visit Vercel Website (Pitch + Info)                     │
+│     └─> https://medichain-web.vercel.app                    │
+│                                                               │
+│  2. Click "Test on Agentverse" Button                       │
+│     └─> Opens agent profile on agentverse.ai                │
+│                                                               │
+│  3. Click "Chat with Agent" on Agentverse                   │
+│     └─> Direct chat interface to coordinator agent          │
+│                                                               │
+│  4. Multi-Agent Flow (VPS)                                   │
+│     └─> 4 agents collaborate via mailbox protocol           │
+│         └─> Response in ~15 seconds (no timeout!)           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Old Architecture (Day 5 - DEPRECATED):**
+```
+User → Vercel API Route → VPS Backend → Multi-Agent Flow
+                ❌ 10s timeout here!
+```
+
+### Changes Made (Autonomous Execution)
+
+**Phase 1: Agent Address Collection ✅**
+- Retrieved all 4 agent addresses from VPS .env
+- Verified mailbox connections active
+- Confirmed Agentverse chat URLs available
+
+**Phase 2: Remove Custom API Routes ✅**
+- **DELETED** entire `/medichain-web/app/api/` directory
+- Removed all Next.js backend API functionality
+- Website now 100% static (no serverless functions)
+
+**Phase 3: Replace Chat Interface with Agentverse Links ✅**
+- Updated `medichain-web/app/page.tsx`
+- Replaced `<ChatInterface />` component with Agentverse testing section
+- Added 4 agent cards with "Test on Agentverse" buttons
+- Each card shows: agent name, description, address, test link
+- Added testing instructions (4-step workflow)
+- Included note about VPS 24/7 uptime and ~15 second response time
+
+**Phase 4: Update README.md ✅**
+- Added new section: "🧪 Testing via Agentverse (Recommended)"
+- Documented 4-step testing workflow
+- Listed all agent addresses with direct Agentverse links
+- Added example test cases (Emergency and Routine)
+- Clarified: "All actual diagnostic flows happen through Agentverse!"
+
+**Phase 5: Update VIDEO-DEMO-GUIDE.md ✅**
+- Updated "Before Recording" to test Agentverse URL
+- Rewrote [1:30-3:30] Live Demo section to use Agentverse chat
+- Modified script to emphasize "official Fetch.ai platform"
+- Updated actions: visit agent profile → "Chat with Agent" → paste symptoms
+- Changed closing to highlight "deployed on the official ASI ecosystem"
+
+### Benefits of New Architecture
+
+**Technical:**
+- ✅ Zero timeout issues (no Vercel backend calls)
+- ✅ No Vercel Pro upgrade needed ($0 cost)
+- ✅ Simpler architecture with fewer failure points
+- ✅ Complete separation: Marketing (Vercel) + Functionality (Agentverse)
+
+**Hackathon Strategy:**
+- ✅ Uses official ASI Alliance infrastructure (better for judging)
+- ✅ Demonstrates proper Fetch.ai integration
+- ✅ Judges can test agents themselves on Agentverse
+- ✅ Professional presentation (pitch site + live testing platform)
+
+### Updated Production URLs
+
+**User-Facing:**
+- **Pitch Website:** https://medichain-web.vercel.app (Static landing page with agent info)
+- **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
+
+**Backend (VPS - Still Running 24/7):**
+- **VPS API:** http://176.222.53.185:8080 (Direct HTTP access if needed)
+- **Health Check:** http://176.222.53.185:8080/health
+- **All 4 agents:** Running as systemd services with mailbox connections
+
+### Testing Workflow (NEW - Day 6)
+
+**For Users/Judges:**
+1. Visit https://medichain-web.vercel.app
+2. Read about MediChain AI architecture
+3. Click "Test on Agentverse" button (Coordinator Agent card)
+4. On Agentverse profile page, click "Chat with Agent"
+5. Try example cases:
+   - Emergency: "Severe headache, high fever, stiff neck - started 6 hours ago, age 28"
+   - Routine: "I have a severe headache and fever for 2 days"
+6. Watch multi-agent system respond (~15 seconds)
+
+**For Development:**
+- VPS agents accessible via SSH for debugging
+- Direct HTTP API still available: `http://176.222.53.185:8080/api/diagnose`
+- Logs: `ssh website 'sudo journalctl -u medichain-coordinator.service -f'`
+
+### Next Steps (Day 6 - Remaining)
+
+- ✅ Phase 1-5: Architecture pivot complete
+- ⏳ Phase 6: Update CLAUDE.md (in progress)
+- ⏳ Phase 7: Deploy to Vercel (verify static site)
+- ⏳ Phase 8: Commit all changes to git
+
+**After Day 6:**
+- **PRIORITY**: Epic 6: Documentation & Demo Video
+  - Record 3-5 minute demo video (Agentverse-based demo)
+  - Update README with final URLs
+  - Prepare submission materials
+  - Submit to earn.superteam.fun
+
+**Submission Checklist (95% Complete):**
+- ✅ Public GitHub repository
+- ✅ Multi-agent system (4 agents, all deployed)
+- ✅ MeTTa knowledge graph integration (deep, 200+ facts)
+- ✅ Production deployment (VPS + Vercel)
+- ✅ Testing platform (Agentverse integration)
+- ✅ Innovation Lab badges in README
+- ✅ Agentverse chat interface working
+- ⏳ Demo video (3-5 minutes) - **TO DO**
+- ⏳ Final README polish - **TO DO**
+- ⏳ Submit to earn.superteam.fun - **TO DO**
+
+---
+
 ## CRITICAL DISCOVERY: ASI:One vs Agentverse Chat (Day 5 - Oct 11, 2025)
 
 ### Two Different Chat Interfaces
@@ -916,6 +1062,7 @@ Possible reasons cloud agent isn't discoverable on public asi1.ai:
 25. **Vercel CLI deployment** - Use `vercel --prod --yes` for fast production deployments; handle ESLint errors with HTML entities (&apos;, &quot;)
 26. **VPS service management** - Use `sudo systemctl status medichain-*.service` to check all agents; logs via `journalctl -u medichain-coordinator.service -f`
 27. **Production URLs are documentation** - Always update CLAUDE.md and README with live deployment URLs for easy reference
+28. **Agentverse-based testing > custom web API** - Day 6 pivot: Vercel timeout issues solved by removing API routes entirely; direct users to Agentverse chat interface for testing (leverages official infrastructure, better for hackathon judging)
 
 ---
 

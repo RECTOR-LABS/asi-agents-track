@@ -15,7 +15,9 @@
 ### Before Recording
 1. Close unnecessary tabs
 2. Clear browser cache
-3. Test https://medichain-web.vercel.app (make sure it loads)
+3. Test both URLs:
+   - Pitch site: https://medichain-web.vercel.app (landing page)
+   - Agentverse: https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 4. Prepare 2 test inputs (copy to clipboard):
    - Emergency: `Severe headache, high fever, stiff neck - started 6 hours ago, age 28`
    - Routine: `I have a severe headache and fever for 2 days`
@@ -61,35 +63,37 @@
 
 ### [1:30-3:30] Live Demo - Emergency Case (2 minutes) ⭐ **MOST IMPORTANT**
 
-**Show: Scroll to demo section**
+**Show: Navigate to Agentverse agent page**
 
 **Say:**
-> "Let me show you a live example. Here's an emergency case - symptoms of possible meningitis."
+> "Let me show you a live example via Agentverse - the official Fetch.ai platform. Here's an emergency case - symptoms of possible meningitis."
 
 **Action:**
-1. Click on "Emergency Case" example OR paste:
+1. Visit: https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
+2. Click "Chat with Agent" button
+3. In chat interface, paste:
    ```
    Severe headache, high fever, stiff neck - started 6 hours ago, age 28
    ```
-2. Click Send
-3. **While waiting (10-15 seconds):**
-   > "The agents are now communicating. Patient Intake extracts symptoms, Symptom Analysis queries the MeTTa knowledge base for matching conditions, and evaluates urgency..."
+4. **While waiting (10-15 seconds):**
+   > "The agents are now communicating through the ASI ecosystem. Patient Intake extracts symptoms, Symptom Analysis queries the MeTTa knowledge base for matching conditions, and evaluates urgency..."
 
-4. **When response appears:**
-   > "Notice the RED emergency badge - the system correctly identified this as critical.
+5. **When response appears:**
+   > "The system correctly identified this as EMERGENCY.
    >
-   > It detected red flags: stiff neck and sudden onset.
+   > It detected the meningitis triad - red flags that require immediate attention.
    >
    > The differential diagnosis shows Meningitis with confidence scores.
    >
    > And most importantly - it says 'Call 911 immediately' with time-sensitive warnings.
    >
-   > This is MeTTa reasoning in action - transparent, explainable AI."
+   > This is MeTTa reasoning in action - transparent, explainable AI running on the official Fetch.ai infrastructure."
 
 **Action:** Slowly scroll through response, highlighting:
-- RED urgency badge
-- Red flags section
+- Emergency classification
+- Red flags detected
 - Differential diagnoses with confidence
+- Treatment recommendations
 - Emergency action message
 
 ---
@@ -97,18 +101,17 @@
 ### [3:30-4:30] Live Demo - Routine Case (1 minute)
 
 **Say:**
-> "Now let's contrast with a routine case."
+> "Now let's contrast with a routine case in the same Agentverse chat."
 
 **Action:**
-1. Clear previous message
-2. Paste: `I have a severe headache and fever for 2 days`
-3. Click Send
+1. In the same chat session, paste: `I have a severe headache and fever for 2 days`
+2. Send
 
 **While waiting:**
 > "Same multi-agent process, but the MeTTa knowledge graph will classify this differently..."
 
 **When response appears:**
-> "This time we see a GREEN routine badge.
+> "This time we see ROUTINE classification.
 >
 > Differential diagnoses include Influenza and COVID-19 with confidence scores around 15-20%.
 >
@@ -116,7 +119,7 @@
 >
 > Referral to primary care, not emergency.
 >
-> The system adapts based on urgency - this is intelligent triage."
+> The system adapts based on urgency - this is intelligent triage running on the official ASI infrastructure."
 
 **Action:** Scroll through response
 
@@ -127,22 +130,23 @@
 **Show: Return to top of page or architecture**
 
 **Say:**
-> "MediChain AI demonstrates the power of multi-agent systems with deep MeTTa integration.
+> "MediChain AI demonstrates the power of multi-agent systems with deep MeTTa integration - deployed on the official ASI ecosystem.
 >
-> It's production-ready, running 24/7 on cloud infrastructure.
+> It's production-ready, running 24/7 on VPS with mailbox connections to Agentverse.
 >
 > The transparent reasoning, safety checks, and evidence-based approach make it suitable for real-world healthcare triage.
 >
-> This is the future of explainable AI in healthcare."
+> This is the future of explainable AI in healthcare - decentralized, transparent, and accessible through the ASI Alliance infrastructure."
 
-**Action:** Pause on landing page
+**Action:** Return to landing page or agent profile
 
 **End screen text (optional):**
 ```
 MediChain AI
 Decentralized Healthcare Diagnostics
 
-🔗 medichain-web.vercel.app
+🔗 medichain-web.vercel.app (Pitch Site)
+🤖 Test on Agentverse (Live Demo)
 🐙 github.com/RECTOR-LABS/asi-agents-track
 
 Built for ASI Agents Track Hackathon 2025

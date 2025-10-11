@@ -97,13 +97,57 @@ python src/agents/treatment_recommendation.py    # Port 8005
 ```bash
 # Run comprehensive test suite
 pytest tests/
-
-# Test via ASI:One chat interface
-# Visit: https://asi1.ai/
-# Search for: @medichain-coordinator or use agent address
 ```
 
 **Note:** All agents run with `mailbox=True` for Agentverse connectivity. Local testing simulates the production environment.
+
+---
+
+## 🧪 Testing via Agentverse (Recommended)
+
+All agents are deployed 24/7 on VPS with mailbox connections to Agentverse. Test them directly using the official Fetch.ai platform!
+
+### Live Testing Instructions
+
+**1. Visit Agent Profile**
+- Coordinator Agent: [https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q](https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q)
+
+**2. Click "Chat with Agent" Button**
+- Opens Agentverse chat interface
+- Direct connection to coordinator agent
+
+**3. Try Example Cases**
+
+**Emergency Case (RED Badge):**
+```
+Severe headache, high fever, stiff neck - started 6 hours ago, age 28
+```
+Expected: Emergency classification, red flag detection, "Call 911" recommendation
+
+**Routine Case (GREEN Badge):**
+```
+I have a severe headache and fever for 2 days
+```
+Expected: Routine classification, differential diagnoses (Influenza, COVID-19)
+
+**4. Watch Multi-Agent Flow**
+- Response time: ~15 seconds
+- 4 agents collaborate: Coordinator → Patient Intake → Symptom Analysis → Treatment
+- Complete diagnostic report with MeTTa reasoning
+
+### All Agent Addresses
+
+- **Coordinator:** `agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q`
+- **Patient Intake:** `agent1qgr8ga84fyjsy478ctvzp3zf5r8rw9nulzmrl9w0l3x83suxuzt6zjq29y2`
+- **Symptom Analysis:** `agent1qdxqnfmu735ren2geq9f3n8ehdk43lvm9x0vxswv6xj6a5hn40yfqv0ar42`
+- **Treatment:** `agent1qg9m6r976jq4lj64qfnp679qu8lu4jzcy06y09mf7ta4l2sm8uq9qfqrc9v`
+
+### Production URLs
+
+- **Pitch Website:** https://medichain-web.vercel.app (Beautiful landing page with agent details)
+- **VPS Backend:** http://176.222.53.185:8080 (Direct HTTP API for testing)
+
+**Note:** The pitch website provides agent information and links to Agentverse for live testing. All actual diagnostic flows happen through Agentverse!
 
 ---
 

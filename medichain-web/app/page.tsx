@@ -1,7 +1,6 @@
 'use client';
 
 import { Activity, Brain, Shield, Zap, GitBranch, Search } from 'lucide-react';
-import ChatInterface from '@/components/ChatInterface';
 
 export default function Home() {
   return (
@@ -258,9 +257,142 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Chat Interface */}
-        <div className="max-w-4xl mx-auto" style={{ height: '600px' }}>
-          <ChatInterface />
+        {/* Agentverse Testing Section */}
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                🚀 Test via Agentverse (Official Fetch.ai Platform)
+              </h3>
+              <p className="text-gray-600">
+                Our agents are deployed on Agentverse with mailbox connections. Test them directly using the official Fetch.ai chat interface!
+              </p>
+            </div>
+
+            {/* Agent Cards */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Coordinator Agent */}
+              <div className="border-2 border-primary-200 rounded-lg p-6 bg-primary-50">
+                <h4 className="font-semibold text-lg text-gray-900 mb-2">
+                  🎯 Coordinator Agent
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  Main entry point - orchestrates all specialist agents
+                </p>
+                <div className="bg-white rounded p-2 mb-3">
+                  <code className="text-xs text-gray-700 break-all">
+                    agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
+                  </code>
+                </div>
+                <a
+                  href="https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
+                >
+                  Test on Agentverse →
+                </a>
+              </div>
+
+              {/* Patient Intake Agent */}
+              <div className="border-2 border-blue-200 rounded-lg p-6 bg-blue-50">
+                <h4 className="font-semibold text-lg text-gray-900 mb-2">
+                  📋 Patient Intake Agent
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  Extracts symptoms and patient data using NLP
+                </p>
+                <div className="bg-white rounded p-2 mb-3">
+                  <code className="text-xs text-gray-700 break-all">
+                    agent1qgr8ga84fyjsy478ctvzp3zf5r8rw9nulzmrl9w0l3x83suxuzt6zjq29y2
+                  </code>
+                </div>
+                <a
+                  href="https://agentverse.ai/agents/details/agent1qgr8ga84fyjsy478ctvzp3zf5r8rw9nulzmrl9w0l3x83suxuzt6zjq29y2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Details →
+                </a>
+              </div>
+
+              {/* Symptom Analysis Agent */}
+              <div className="border-2 border-purple-200 rounded-lg p-6 bg-purple-50">
+                <h4 className="font-semibold text-lg text-gray-900 mb-2">
+                  🔬 Symptom Analysis Agent
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  MeTTa-powered diagnostic reasoning with red flag detection
+                </p>
+                <div className="bg-white rounded p-2 mb-3">
+                  <code className="text-xs text-gray-700 break-all">
+                    agent1qdxqnfmu735ren2geq9f3n8ehdk43lvm9x0vxswv6xj6a5hn40yfqv0ar42
+                  </code>
+                </div>
+                <a
+                  href="https://agentverse.ai/agents/details/agent1qdxqnfmu735ren2geq9f3n8ehdk43lvm9x0vxswv6xj6a5hn40yfqv0ar42"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                >
+                  View Details →
+                </a>
+              </div>
+
+              {/* Treatment Recommendation Agent */}
+              <div className="border-2 border-green-200 rounded-lg p-6 bg-green-50">
+                <h4 className="font-semibold text-lg text-gray-900 mb-2">
+                  💊 Treatment Recommendation Agent
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  Evidence-based treatments with safety checks
+                </p>
+                <div className="bg-white rounded p-2 mb-3">
+                  <code className="text-xs text-gray-700 break-all">
+                    agent1qg9m6r976jq4lj64qfnp679qu8lu4jzcy06y09mf7ta4l2sm8uq9qfqrc9v
+                  </code>
+                </div>
+                <a
+                  href="https://agentverse.ai/agents/details/agent1qg9m6r976jq4lj64qfnp679qu8lu4jzcy06y09mf7ta4l2sm8uq9qfqrc9v"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+                >
+                  View Details →
+                </a>
+              </div>
+            </div>
+
+            {/* Testing Instructions */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="font-semibold text-gray-900 mb-3">📝 How to Test:</h4>
+              <ol className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary-600">1.</span>
+                  <span>Click &quot;Test on Agentverse&quot; on the Coordinator Agent card</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary-600">2.</span>
+                  <span>On the agent profile page, click &quot;Chat with Agent&quot; button</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary-600">3.</span>
+                  <span>Try one of the example cases above (Emergency, Urgent, or Routine)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary-600">4.</span>
+                  <span>Watch the multi-agent system analyze your symptoms and provide comprehensive diagnosis!</span>
+                </li>
+              </ol>
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-xs text-yellow-800">
+                  <strong>Note:</strong> All agents are deployed on VPS with 24/7 uptime and mailbox connections to Agentverse.
+                  Response time: ~15 seconds for complete multi-agent diagnostic flow.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
