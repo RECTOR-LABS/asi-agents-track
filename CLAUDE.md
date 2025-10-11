@@ -959,6 +959,169 @@ User → Vercel API Route → VPS Backend → Multi-Agent Flow
 
 ---
 
+## Day 6 Production Fixes (Oct 11, 2025 - Critical) 🔧
+
+**Context:** After Day 6 architectural pivot to Agentverse-based testing, two critical issues emerged that prevented the multi-agent flow from working via Agentverse chat interface.
+
+### Issue #1: Chat Protocol Not Available on Agentverse ❌
+
+**Problem:**
+- VPS was running `coordinator_queue.py` (HTTP API only, no Chat Protocol)
+- Agentverse agent profile showed no "Chat with Agent" button
+- Agent had empty README placeholder text
+- No AgentChatProtocol published
+
+**Root Cause:**
+After removing Vercel API routes (Day 6 pivot), VPS was still running the HTTP bridge coordinator instead of the Chat Protocol-enabled coordinator.
+
+**Fix Applied:**
+```bash
+# Stop coordinator service
+sudo systemctl stop medichain-coordinator.service
+
+# Update systemd service file
+sudo sed -i "s/coordinator_queue\.py/coordinator.py/g" /etc/systemd/system/medichain-coordinator.service
+
+# Reload and restart
+sudo systemctl daemon-reload
+sudo systemctl start medichain-coordinator.service
+```
+
+**Verification:**
+```
+INFO: [medichain-coordinator]: Chat Protocol: Enabled
+INFO: [medichain-coordinator]: Manifest published successfully: AgentChatProtocol
+INFO: [medichain-coordinator]: Mailbox access token acquired
+```
+
+**Result:**
+- ✅ "Chat with Agent" button appeared on Agentverse profile
+- ✅ AgentChatProtocol v0.3.0 listed in Protocols section
+- ✅ Agent profile updated with Chat Protocol details
+
+---
+
+### Issue #2: Patient Intake Clarification Loop ❌
+
+**Problem:**
+- Multi-agent flow stuck at "Analyzing your symptoms..."
+- Patient Intake requesting clarification instead of processing directly
+- Designed for multi-turn conversation to extract complete patient data
+
+**Root Cause:**
+Patient Intake had logic to skip clarification only for HTTP sessions (`session_id.startswith("http-")`), but Agentverse chat sessions start with `session-*`.
+
+**Fix Applied:**
+```bash
+# Update patient_intake.py line 257
+ssh website 'sed -i "257s/.*/    # Skip clarification for HTTP and Agentverse chat sessions (one-shot diagnostic)\n    is_http_session = msg.session_id.startswith(\"http-\") or msg.session_id.startswith(\"session-\")/" ~/medichain-ai/src/agents/patient_intake.py'
+
+# Remove duplicate comment
+ssh website 'sed -i "256d" ~/medichain-ai/src/agents/patient_intake.py'
+
+# Restart service
+sudo systemctl restart medichain-patient-intake.service
+```
+
+**Code Change:**
+```python
+# Before
+is_http_session = msg.session_id.startswith("http-")
+
+# After
+is_http_session = msg.session_id.startswith("http-") or msg.session_id.startswith("session-")
+```
+
+**Verification (Patient Intake logs):**
+```
+INFO: [medichain-patient-intake]: Text: Severe headache, high fever, stiff neck - started 6 hours ago, age 28
+INFO: [medichain-patient-intake]: ✅ Complete patient data extracted:
+INFO: [medichain-patient-intake]:    Symptoms: ['high-fever', 'fever', 'severe-headache', 'headache', 'stiff-neck']
+INFO: [medichain-patient-intake]: 📤 Sending diagnostic request to coordinator
+```
+
+**Result:**
+- ✅ Single-message inputs processed directly without clarification
+- ✅ Multi-agent flow completes in ~15 seconds
+- ✅ Complete diagnostic report returned to user
+
+---
+
+### Complete Multi-Agent Flow Verified (Oct 11, 2025) ✅
+
+**Test Case:** "Severe headache, high fever, stiff neck - started 6 hours ago, age 28"
+
+**Coordinator Logs:**
+```
+INFO: [medichain-coordinator]: Routing to Patient Intake: agent1qgr8ga84fyjsy...
+INFO: [medichain-coordinator]: Received diagnostic request from Patient Intake
+INFO: [medichain-coordinator]: Routing to Symptom Analysis Agent
+INFO: [medichain-coordinator]: 📥 Received symptom analysis response
+INFO: [medichain-coordinator]:    Urgency: EMERGENCY, Red flags: 1, Differential diagnoses: 2
+INFO: [medichain-coordinator]: Routing to Treatment Recommendation Agent
+INFO: [medichain-coordinator]: 📥 Received treatment recommendations
+INFO: [medichain-coordinator]: ✅ Complete diagnostic report sent to user (952 characters)
+```
+
+**Patient Intake Logs:**
+```
+INFO: [medichain-patient-intake]: Received intake message from coordinator
+INFO: [medichain-patient-intake]: ✅ Complete patient data extracted
+INFO: [medichain-patient-intake]:    Symptoms: ['high-fever', 'fever', 'severe-headache', 'headache', 'stiff-neck']
+INFO: [medichain-patient-intake]: 📤 Sending diagnostic request to coordinator
+```
+
+**Symptom Analysis Logs:**
+```
+INFO: [medichain-symptom-analysis]: 🔬 Starting symptom analysis...
+INFO: [medichain-symptom-analysis]:    ⚠️ RED FLAGS DETECTED: Meningitis triad (headache + fever + neck stiffness)
+INFO: [medichain-symptom-analysis]:    🔍 Querying MeTTa knowledge base for matching conditions...
+INFO: [medichain-symptom-analysis]:    📊 Found 5 potential conditions
+INFO: [medichain-symptom-analysis]:    🚨 Urgency Assessment: EMERGENCY
+INFO: [medichain-symptom-analysis]:    🎯 Top differential diagnoses: meningitis (21%), influenza (18%)
+```
+
+**Treatment Logs:**
+```
+INFO: [medichain-treatment-recommendation]: 💊 Generating treatment recommendations for: meningitis
+INFO: [medichain-treatment-recommendation]:    🔍 Querying MeTTa knowledge base for evidence-based treatments...
+INFO: [medichain-treatment-recommendation]:    📚 Retrieving evidence sources (CDC, WHO, medical guidelines)...
+INFO: [medichain-treatment-recommendation]:    ⚕️ Performing safety validation...
+INFO: [medichain-treatment-recommendation]:    🏥 Specialist referral: Neurologist or Infectious Disease Specialist (ER immediately)
+```
+
+**Performance:**
+- Total response time: ~15 seconds
+- All 4 agents coordinated successfully
+- MeTTa reasoning transparent and accurate
+- RED FLAG detection working perfectly
+
+**User Experience:**
+- Immediate greeting message
+- Progress indicators during processing
+- Complete diagnostic report with:
+  - Emergency classification (RED badge)
+  - Meningitis triad red flags detected
+  - Differential diagnoses with confidence scores
+  - Evidence-based treatment recommendations
+  - Contraindications and safety warnings
+  - Specialist referral guidance
+  - Medical disclaimer
+
+---
+
+### Key Takeaways for Future Deployments
+
+1. **Coordinator Agent Type Matters:** Ensure the Chat Protocol-enabled coordinator (`coordinator.py`) is running when Agentverse chat interface is the primary user interaction method
+2. **Session ID Prefixes:** Design agents to handle multiple session ID patterns:
+   - `http-*` for HTTP API sessions
+   - `session-*` for Agentverse chat sessions
+3. **Skip Clarification for Demo Use Cases:** For single-turn diagnostic demos, bypass multi-turn clarification logic
+4. **Verify Chat Protocol Publication:** Always check agent profile after deployment to confirm AgentChatProtocol is published
+5. **Test End-to-End:** Don't assume agent profile presence means functionality works - test the complete multi-agent flow
+
+---
+
 ## CRITICAL DISCOVERY: ASI:One vs Agentverse Chat (Day 5 - Oct 11, 2025)
 
 ### Two Different Chat Interfaces
@@ -1063,6 +1226,8 @@ Possible reasons cloud agent isn't discoverable on public asi1.ai:
 26. **VPS service management** - Use `sudo systemctl status medichain-*.service` to check all agents; logs via `journalctl -u medichain-coordinator.service -f`
 27. **Production URLs are documentation** - Always update CLAUDE.md and README with live deployment URLs for easy reference
 28. **Agentverse-based testing > custom web API** - Day 6 pivot: Vercel timeout issues solved by removing API routes entirely; direct users to Agentverse chat interface for testing (leverages official infrastructure, better for hackathon judging)
+29. **coordinator.py vs coordinator_queue.py** - Use `coordinator.py` (Chat Protocol) for Agentverse chat interface; use `coordinator_queue.py` (HTTP bridge) only for custom web APIs; verify "Chat with Agent" button appears on agent profile after deployment
+30. **Session ID patterns for bypass logic** - Handle both `http-*` (HTTP API) and `session-*` (Agentverse chat) when implementing skip-clarification or single-turn processing logic; don't assume only one pattern
 
 ---
 
