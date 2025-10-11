@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Github } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from '../shared';
 import { clsx } from 'clsx';
@@ -62,8 +62,25 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* CTA Button - Desktop */}
-          <div className="hidden md:block">
+          {/* GitHub Icon & CTA Button - Desktop */}
+          <div className="hidden md:flex items-center gap-4">
+            <a
+              href="https://github.com/RECTOR-LABS/asi-agents-track"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative"
+              aria-label="View GitHub Repository"
+            >
+              <div className="absolute -inset-2 bg-gradient-to-r from-medical-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-20 blur transition-opacity duration-300" />
+              <Github
+                size={28}
+                className={clsx(
+                  'relative transition-all duration-300 group-hover:scale-110 group-hover:rotate-12',
+                  isScrolled ? 'text-gray-700 group-hover:text-medical-blue-600' : 'text-gray-900 group-hover:text-medical-blue-600'
+                )}
+                strokeWidth={1.5}
+              />
+            </a>
             <Button
               variant="primary"
               size="sm"
@@ -103,7 +120,16 @@ export const Navbar: React.FC = () => {
                   {link.label}
                 </Link>
               ))}
-              <div className="px-4 pt-2">
+              <div className="px-4 pt-2 space-y-3">
+                <a
+                  href="https://github.com/RECTOR-LABS/asi-agents-track"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors"
+                >
+                  <Github size={18} />
+                  View on GitHub
+                </a>
                 <Button
                   variant="primary"
                   size="sm"
