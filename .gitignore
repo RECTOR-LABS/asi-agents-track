@@ -66,3 +66,6 @@ agent_data/
 *.tmp
 *.bak
 .cache/
+
+# MCP Tools
+.playwright-mcp/
