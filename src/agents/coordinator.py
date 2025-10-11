@@ -65,8 +65,12 @@ class SessionData:
         })
 
 
-# Global session store (in production, use persistent storage)
+# Global session store (in production, use persistent storage like Redis)
+# TODO: Implement persistent storage for production deployment
 active_sessions: Dict[str, SessionData] = {}
+
+# Session cleanup configuration
+SESSION_TIMEOUT_SECONDS = 7200  # 2 hours
 
 
 def get_or_create_session(sender: str) -> SessionData:
@@ -75,6 +79,27 @@ def get_or_create_session(sender: str) -> SessionData:
         session_id = f"session-{uuid4()}"
         active_sessions[sender] = SessionData(session_id, sender)
     return active_sessions[sender]
+
+
+def cleanup_expired_sessions(ctx: Context):
+    """Remove expired sessions to prevent memory leaks"""
+    now = datetime.utcnow()
+    expired_addresses = []
+
+    for addr, session in active_sessions.items():
+        session_age = (now - session.started_at).total_seconds()
+        if session_age > SESSION_TIMEOUT_SECONDS:
+            expired_addresses.append(addr)
+            ctx.logger.info(f"Session expired for {addr}: {session.session_id} (age: {session_age/3600:.1f} hours)")
+
+    # Remove expired sessions
+    for addr in expired_addresses:
+        del active_sessions[addr]
+
+    if expired_addresses:
+        ctx.logger.info(f"Cleaned up {len(expired_addresses)} expired sessions")
+
+    return len(expired_addresses)
 
 
 # ============================================================================
@@ -500,7 +525,15 @@ async def startup(ctx: Context):
     ctx.logger.info(f"Agent name: {agent.name}")
     ctx.logger.info(f"Mailbox: Enabled (ASI:One compatible)")
     ctx.logger.info(f"Chat Protocol: Enabled")
+    ctx.logger.info(f"Session cleanup: Every hour (timeout: {SESSION_TIMEOUT_SECONDS/3600:.1f} hours)")
     ctx.logger.info("=" * 60)
+
+
+@agent.on_interval(period=3600)  # Run every hour
+async def periodic_session_cleanup(ctx: Context):
+    """Periodically clean up expired sessions"""
+    cleaned = cleanup_expired_sessions(ctx)
+    ctx.logger.info(f"Periodic cleanup: {len(active_sessions)} active sessions, {cleaned} cleaned up")
 
 
 # Include protocols

@@ -183,6 +183,52 @@ class SymptomExtractor:
 # Session tracking for follow-up questions
 session_context: Dict[str, Dict] = {}
 
+# Rate limiting configuration
+rate_limit_store: Dict[str, List[datetime]] = {}
+MAX_REQUESTS_PER_HOUR = 20
+MAX_MESSAGE_LENGTH = 2000
+
+
+def check_rate_limit(sender: str) -> bool:
+    """Check if sender has exceeded rate limit"""
+    now = datetime.utcnow()
+
+    # Initialize or clean up old requests
+    if sender not in rate_limit_store:
+        rate_limit_store[sender] = []
+
+    # Remove requests older than 1 hour
+    rate_limit_store[sender] = [
+        t for t in rate_limit_store[sender]
+        if (now - t).total_seconds() < 3600
+    ]
+
+    # Check if under limit
+    if len(rate_limit_store[sender]) >= MAX_REQUESTS_PER_HOUR:
+        return False
+
+    # Add current request
+    rate_limit_store[sender].append(now)
+    return True
+
+
+def validate_input(text: str) -> Optional[str]:
+    """
+    Validate input message
+    Returns error message if invalid, None if valid
+    """
+    if not text or len(text.strip()) == 0:
+        return "Empty message received. Please describe your symptoms."
+
+    if len(text) > MAX_MESSAGE_LENGTH:
+        return f"Message too long ({len(text)} characters). Please keep messages under {MAX_MESSAGE_LENGTH} characters."
+
+    # Basic sanity check - must contain at least some alphabetic characters
+    if not any(c.isalpha() for c in text):
+        return "Please describe your symptoms using text."
+
+    return None
+
 
 def needs_clarification(symptoms: List[Symptom], age: Optional[int], text: str) -> Optional[str]:
     """
@@ -233,6 +279,34 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     ctx.logger.info(f"Received intake message from {sender}")
     ctx.logger.info(f"Session: {msg.session_id}")
     ctx.logger.info(f"Text: {msg.text}")
+
+    # Rate limiting check
+    if not check_rate_limit(sender):
+        ctx.logger.warning(f"Rate limit exceeded for {sender}")
+        response = AgentAcknowledgement(
+            session_id=msg.session_id,
+            agent_name="patient_intake",
+            message=(
+                "⚠️ Too many requests. You've exceeded the rate limit of "
+                f"{MAX_REQUESTS_PER_HOUR} requests per hour.\n\n"
+                "Please wait a moment before sending more messages.\n\n"
+                "If you're experiencing a medical emergency, please call emergency services immediately."
+            )
+        )
+        await ctx.send(sender, response)
+        return
+
+    # Input validation
+    validation_error = validate_input(msg.text)
+    if validation_error:
+        ctx.logger.warning(f"Input validation failed for {sender}: {validation_error}")
+        response = AgentAcknowledgement(
+            session_id=msg.session_id,
+            agent_name="patient_intake",
+            message=validation_error
+        )
+        await ctx.send(sender, response)
+        return
 
     # Track session context
     if msg.session_id not in session_context:

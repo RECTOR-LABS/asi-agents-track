@@ -1,0 +1,27 @@
+[Unit]
+Description=MediChain AI Treatment Recommendation Agent
+After=network.target
+Documentation=https://github.com/RECTOR-LABS/asi-agents-track
+
+[Service]
+Type=simple
+User=medichain
+WorkingDirectory=/opt/medichain/asi-agents-track
+Environment="PATH=/opt/medichain/asi-agents-track/venv/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=/opt/medichain/asi-agents-track/.env
+ExecStart=/opt/medichain/asi-agents-track/venv/bin/python src/agents/treatment_recommendation.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=medichain-treatment
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/medichain/asi-agents-track
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
