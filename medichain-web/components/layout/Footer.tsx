@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Github, Globe } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -134,15 +135,21 @@ export const Footer: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <img
+              <Image
                 src="https://img.shields.io/badge/innovationlab-3D8BD3?style=flat-square"
                 alt="Innovation Lab"
+                width={110}
+                height={20}
                 className="h-5"
+                unoptimized
               />
-              <img
+              <Image
                 src="https://img.shields.io/badge/hackathon-5F43F1?style=flat-square"
                 alt="Hackathon"
+                width={90}
+                height={20}
                 className="h-5"
+                unoptimized
               />
             </div>
           </div>
