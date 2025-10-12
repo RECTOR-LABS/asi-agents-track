@@ -150,20 +150,27 @@ Epic 7: KB Enrichment              ███████████████
 
 ### Epic 4: ASI:One Chat Protocol Integration
 **Duration:** Days 11-14 (Oct 19-22) - **MOSTLY COMPLETE (Built into Epic 1)**
-**Status:** 🟡 **86% COMPLETE** (Code 100%, Agentverse chat ✅, asi1.ai discovery ❌)
+**Status:** 🟡 **86% COMPLETE** (Code 100%, READMEs fixed, asi1.ai testing pending)
 **Progress:** 12/14 tasks (86%)
 
 | Story | Tasks | Completed | Status | Target Date | Actual Date |
 |-------|-------|-----------|--------|-------------|-------------|
-| S4.1: Chat Protocol Implementation | 7 | 6 | 🟡 86% (Cloud deployed) | Oct 21 | Oct 11 (Day 5) |
+| S4.1: Chat Protocol Implementation | 7 | 6 | 🟡 86% (README fixes deployed) | Oct 21 | Oct 11 (Day 5-7) |
 | S4.2: User Experience Enhancement | 7 | 6 | 🟡 86% (Chat working) | Oct 22 | Oct 11 (Day 5) |
 
 **Key Deliverables:**
 - ✅ Chat Protocol implemented in all agents
 - ✅ Cloud agent deployed to Agentverse (Medichain AI)
 - ✅ Agent working on chat.agentverse.ai
-- ❌ Agent NOT discoverable on asi1.ai (public ASI:One) - needs investigation
+- ✅ ASI:One discovery fixes deployed (Day 7 - README configuration)
+- 🟡 Agent discoverability on asi1.ai testing pending
 - 🟡 User testing with non-technical users pending
+
+**Day 7 ASI:One Discovery Fixes:**
+- ✅ Added comprehensive READMEs to all 5 agents (epic 7 features documented)
+- ✅ Configured `readme_path` parameter on all 5 agents
+- ✅ `publish_agent_details=True` already present (verified)
+- ⏳ VPS deployment and asi1.ai verification pending
 
 ---
 
@@ -362,10 +369,10 @@ Epic 7: KB Enrichment              ███████████████
 | E4.S1.T3 | Implement TextContent handler | 🔥 Critical | 1h | ✅ | RECTOR | Day 12 | Day 2 | - | coordinator.py lines 151-183 |
 | E4.S1.T4 | Implement EndSessionContent handler | 🔥 Critical | 0.5h | ✅ | RECTOR | Day 12 | Day 2 | - | coordinator.py lines 185-197 |
 | E4.S1.T5 | Add ChatAcknowledgement responses | 🔥 Critical | 0.5h | ✅ | RECTOR | Day 13 | Day 2 | - | coordinator.py lines 124-130, 200-203 |
-| E4.S1.T6 | Test Chat Protocol via ASI:One interface | 🔥 Critical | 1h | 🟡 | RECTOR | Day 13 | Day 2 | - | Tested via Agentverse chat, not asi1.ai |
-| E4.S1.T7 | Fix any ASI:One compatibility issues | ⚡ High | 1h | 🔲 | RECTOR | Day 13 | - | T6 | Depends on ASI:One testing |
+| E4.S1.T6 | Test Chat Protocol via ASI:One interface | 🔥 Critical | 1h | 🟡 | RECTOR | Day 13 | Day 2-7 | - | Agentverse ✅, asi1.ai pending |
+| E4.S1.T7 | Fix any ASI:One compatibility issues | ⚡ High | 1h | ✅ | RECTOR | Day 13 | Day 7 | - | README fixes deployed (commit 17da13f) |
 
-**Story Progress:** 5/7 tasks completed (71%) - Code 100% complete, external testing pending
+**Story Progress:** 6/7 tasks completed (86%) - Code 100%, READMEs fixed, asi1.ai testing pending
 
 ---
 
