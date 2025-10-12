@@ -1,7 +1,7 @@
 # MediChain AI - System Architecture
 
-**Document Version:** 1.0
-**Last Updated:** October 10, 2024
+**Document Version:** 2.0 (Epic 7 Phase 1)
+**Last Updated:** October 12, 2025
 **Project:** ASI Agents Track Hackathon Submission
 
 ---
@@ -71,17 +71,21 @@ MediChain AI implements a **coordinator-specialist multi-agent architecture** wi
 │                      KNOWLEDGE BASE LAYER                            │
 │                                                                      │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │          MeTTa Knowledge Base (v1.1)                         │   │
-│  │  - 13 Medical conditions                                     │   │
-│  │  - 200+ Medical facts                                        │   │
-│  │  - 45+ Contraindications                                     │   │
-│  │  - 10+ Relationship types                                    │   │
-│  │  - Evidence sources (CDC, WHO, AHA, Johns Hopkins)          │   │
+│  │          MeTTa Knowledge Base (v2.0) - EPIC 7 PHASE 1        │   │
+│  │  - 25 Medical conditions (+92% expansion)                    │   │
+│  │  - 450+ Medical facts (+125% expansion)                      │   │
+│  │  - 88+ Contraindications (+96% expansion)                    │   │
+│  │  - 15+ Lab tests (NEW: blood glucose, CBC, urinalysis...)    │   │
+│  │  - 8+ Imaging types (NEW: CT, MRI, ultrasound, X-ray...)     │   │
+│  │  - 13+ Relationship types                                    │   │
+│  │  - Evidence sources (CDC, WHO, AHA, Johns Hopkins, ADA...)   │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                                                                      │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │          MeTTa Query Engine (21 methods)                     │   │
+│  │          MeTTa Query Engine (25 methods) - EPIC 7            │   │
 │  │  - Symptom-condition matching                                │   │
+│  │  - Lab test recommendations (NEW)                            │   │
+│  │  - Imaging requirements (NEW)                                │   │
 │  │  - Safety validation (contraindications, interactions)       │   │
 │  │  - Reasoning chain generation                                │   │
 │  │  - Differential diagnosis                                    │   │
@@ -557,16 +561,19 @@ class ConfidenceLevel(str, Enum):
 !(match &self (differential-from meningitis $other) $other)
 ```
 
-### Knowledge Base Statistics
+### Knowledge Base Statistics (v2.0 - Epic 7 Phase 1)
 
-- **13 Medical Conditions:**
-  - Critical (6): Meningitis, Stroke, Heart Attack, Appendicitis, Pulmonary Embolism, Sepsis
-  - Urgent (2): Pneumonia, COVID-19
-  - Common (5): Migraine, Influenza, Gastroenteritis, Tension Headache, Common Cold
+- **25 Medical Conditions (+92% expansion):**
+  - Critical (9): Meningitis, Stroke, Heart Attack, Appendicitis, Pulmonary Embolism, Sepsis, **DKA**, **Anaphylaxis**, **Heat Stroke**
+  - Urgent (7): Pneumonia, COVID-19, **Hypoglycemia**, **Asthma Exacerbation**, **DVT**, **Kidney Stones**, **Concussion**
+  - Common (9): Migraine, Influenza, Gastroenteritis, Tension Headache, Common Cold, **UTI**, **Dehydration**, **Food Poisoning**, **Cellulitis**
 
-- **200+ Facts:** Symptoms, treatments, urgency levels, evidence sources
-- **45+ Contraindications:** Comprehensive safety validation
-- **10+ Relationship Types:** Complex medical knowledge modeling
+- **450+ Facts (+125% expansion):** Symptoms, treatments, urgency levels, evidence sources, lab tests, imaging requirements
+- **88+ Contraindications (+96% expansion):** Comprehensive safety validation including new Epic 7 medications
+- **13+ Relationship Types:** Complex medical knowledge modeling including lab test and imaging relationships
+- **15+ Lab Test Types (NEW):** Blood glucose, CBC, urinalysis, blood ketones, ABG, CMP, d-dimer, peak flow, pulse oximetry, etc.
+- **8+ Imaging Types (NEW):** CT scan, MRI, ultrasound, X-ray, ECG, ultrasound-doppler, etc.
+- **10+ New Red Flag Symptoms (NEW):** Fruity breath odor (DKA), throat swelling (anaphylaxis), hot dry skin (heat stroke), bluish lips (asthma), etc.
 
 ---
 

@@ -27,10 +27,13 @@ Project Completion: █████████████████░░░
 Epic 1: Multi-Agent Foundation    ████████████████████ 100% (18/18 tasks) ✅
 Epic 2: MeTTa Integration          ████████████████████ 100% (18/18 tasks) ✅
 Epic 3: Diagnostic Agents          ████████████████████ 100% (13/13 tasks) ✅
-Epic 4: Chat Protocol              ██████████████░░░░░░ 71% (10/14 tasks) ✅ CODE COMPLETE!
-Epic 5: Production Polish          ████████░░░░░░░░░░░░ 40% (8/20 tasks) ✅ E5.2 COMPLETE!
-Epic 6: Documentation & Demo       ████████░░░░░░░░░░░░ 39% (9/23 tasks) ✅ E6.1 COMPLETE!
+Epic 4: Chat Protocol              ██████████████░░░░░░  71% (10/14 tasks) ✅ CODE COMPLETE!
+Epic 5: Production Polish          ████████░░░░░░░░░░░░  40% (8/20 tasks) ✅ E5.2 COMPLETE!
+Epic 6: Documentation & Demo       ████████░░░░░░░░░░░░  39% (9/23 tasks) ✅ E6.1 COMPLETE!
+Epic 7: KB Enrichment (OPTIONAL)   ░░░░░░░░░░░░░░░░░░░░   0% (0/26 tasks) 🔲 DECISION PENDING
 ```
+
+**Note:** Epic 7 is POST-MVP strategic enhancement for top-3 finish (+16-21 points). See Epic 7 section for ROI analysis.
 
 ### Key Metrics
 | Metric | Current | Target | Status |
@@ -484,6 +487,42 @@ Epic 6: Documentation & Demo       ████████░░░░░░░
 | E6.S3.T10 | Verify submission confirmation received | 🔥 Critical | 0.1h | 🔲 | RECTOR | Day 30 | - | - | Confirmation |
 
 **Story Progress:** 0/10 tasks completed (0%)
+
+---
+
+### Epic 7: Knowledge Base Enrichment (POST-MVP ENHANCEMENT)
+**Duration:** Days 7-11 (Oct 15-19, 2025) - **OPTIONAL STRATEGIC ENHANCEMENT**
+**Status:** 🔲 Not Started (DECISION PENDING)
+**Progress:** 0/26 tasks (0%)
+**Strategic Value:** Move from 77% → 93-98% judging score (Top-3 finish)
+
+| Story | Tasks | Completed | Status | Target ROI | Decision |
+|-------|-------|-----------|--------|-----------|----------|
+| S7.1: Phase 1 - Condition Coverage | 9 | 0 | 🔲 Pending | **0.8-1.0 pt/hr** ⭐ | ✅ **RECOMMENDED** |
+| S7.2: Phase 2 - Clinical Intelligence | 7 | 0 | 🔲 Pending | 0.67-0.8 pt/hr | ✅ For top-3 |
+| S7.3: Phase 3 - Treatment Protocols | 7 | 0 | 🔲 Pending | 0.42-0.5 pt/hr | 🟡 Optional |
+| Testing & Validation | 3 | 0 | 🔲 Pending | - | Required per phase |
+
+**Key Deliverables:**
+- 🔲 Phase 1: 25 conditions, 400+ facts, 25 methods, lab tests + imaging (8-10h)
+- 🔲 Phase 2: Risk factors, diagnostic criteria, clarifying questions, 32 methods (10-12h)
+- 🔲 Phase 3: Treatment protocols, symptom attributes, epidemiology, 38 methods (10-12h)
+
+**ROI Analysis:**
+- **Phase 1 Only:** 8-10h → +8 points (77% → 85%) = **0.8-1.0 pt/hr** (HIGHEST ROI)
+- **Phases 1+2:** 18-22h → +16 points (77% → 93%) = **0.73-0.89 pt/hr** (TOP-3 TERRITORY)
+- **All 3 Phases:** 28-34h → +21 points (77% → 98%) = **0.62-0.75 pt/hr** (NEAR-PERFECT)
+
+**Decision Framework:**
+- ✅ **Execute Phase 1 IF:** You have 8-10h before demo video (RECOMMENDED - highest ROI)
+- ✅ **Execute Phase 2 IF:** Phase 1 done + targeting top-3 (93% score needed)
+- 🟡 **Execute Phase 3 IF:** Extra time after demo video (diminishing returns)
+
+**Detailed Planning:**
+- See `docs/EPIC-7-EXECUTION-PLAN.md` for complete task breakdown
+- See `docs/PRD.md` Epic 7 for acceptance criteria
+
+**Note:** This epic is POST-MVP enhancement. Current system (13 conditions, 200+ facts) already meets hackathon requirements. Epic 7 enriches the "brain" to demonstrate DEEP MeTTa integration for maximum judging score.
 
 ---
 
