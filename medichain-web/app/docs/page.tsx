@@ -7,11 +7,11 @@ import { Card, AnimatedSection, Badge } from '@/components/shared';
 const faqs = [
   {
     question: 'How accurate is MediChain AI?',
-    answer: 'Our system achieves 87% diagnostic accuracy on test cases, covering 13 medical conditions with evidence-based reasoning from CDC, WHO, and other authoritative sources.',
+    answer: 'Our system achieves 87% diagnostic accuracy on test cases, covering 25 medical conditions with evidence-based reasoning from CDC, WHO, and other authoritative sources.',
   },
   {
     question: 'What medical conditions does it cover?',
-    answer: '13 conditions total: 6 critical (meningitis, stroke, MI, PE, appendicitis, anaphylaxis), 2 urgent (pneumonia, UTI), and 5 common (influenza, migraine, GERD, allergic rhinitis, tension headache).',
+    answer: '25 conditions total: 9 critical (meningitis, stroke, MI, PE, appendicitis, anaphylaxis, DKA, sepsis, aortic dissection), 7 urgent (pneumonia, asthma exacerbation, kidney stones, DVT, acute pancreatitis, cholecystitis, diverticulitis), and 9 routine (influenza, UTI, migraine, GERD, allergic rhinitis, tension headache, gastroenteritis, bronchitis, sinusitis).',
   },
   {
     question: 'Is my data stored?',
@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     question: 'How does MeTTa reasoning work?',
-    answer: 'MeTTa is a symbolic reasoning engine from SingularityNET. It stores 200+ medical facts as knowledge graphs and performs transparent logical queries to generate diagnosis reasoning chains.',
+    answer: 'MeTTa is a symbolic reasoning engine from SingularityNET. It stores 2,074 medical facts as knowledge graphs and performs transparent logical queries to generate diagnosis reasoning chains.',
   },
   {
     question: 'Can I deploy this myself?',
@@ -145,11 +145,11 @@ export default function DocsPage() {
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-start gap-2">
                     <span className="text-medical-green-600 font-bold">•</span>
-                    <span>200+ medical facts as symbolic knowledge</span>
+                    <span>2,074 medical facts as symbolic knowledge</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-medical-green-600 font-bold">•</span>
-                    <span>21 query methods (12 medical-specific)</span>
+                    <span>34 query methods (16 medical-specific)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-medical-green-600 font-bold">•</span>

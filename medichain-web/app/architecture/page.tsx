@@ -170,21 +170,21 @@ export default function ArchitecturePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <AnimatedSection animation="scale-in" delay={100}>
               <Card hover padding="lg" className="text-center">
-                <div className="text-4xl font-bold text-purple-600 mb-2">13</div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">25</div>
                 <p className="text-gray-600 font-medium mb-1">Medical Conditions</p>
-                <p className="text-sm text-gray-500">6 critical, 2 urgent, 5 common</p>
+                <p className="text-sm text-gray-500">9 critical, 7 urgent, 9 routine</p>
               </Card>
             </AnimatedSection>
             <AnimatedSection animation="scale-in" delay={200}>
               <Card hover padding="lg" className="text-center">
-                <div className="text-4xl font-bold text-purple-600 mb-2">200+</div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">2,074</div>
                 <p className="text-gray-600 font-medium mb-1">Medical Facts</p>
                 <p className="text-sm text-gray-500">Evidence-based knowledge</p>
               </Card>
             </AnimatedSection>
             <AnimatedSection animation="scale-in" delay={300}>
               <Card hover padding="lg" className="text-center">
-                <div className="text-4xl font-bold text-purple-600 mb-2">45+</div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">83+</div>
                 <p className="text-gray-600 font-medium mb-1">Contraindications</p>
                 <p className="text-sm text-gray-500">Drug safety checks</p>
               </Card>
