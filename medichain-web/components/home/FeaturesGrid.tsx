@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, GitBranch, Shield, Zap, Clock, Globe } from 'lucide-react';
+import { Search, GitBranch, Shield, Zap, Clock, Globe, ShieldCheck } from 'lucide-react';
 import { Card, AnimatedSection } from '../shared';
 
 const features = [
@@ -29,9 +29,16 @@ const features = [
   {
     icon: <Shield className="w-6 h-6" />,
     title: 'Evidence-Based',
-    description: '200+ medical facts from CDC, WHO, AHA, Johns Hopkins with 45+ contraindication checks.',
+    description: '2,074 medical facts covering 25 conditions from CDC, WHO, AHA, Johns Hopkins with 83+ contraindication checks.',
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
+  },
+  {
+    icon: <ShieldCheck className="w-6 h-6" />,
+    title: 'Safety-First Validation',
+    description: '14 input validation scenarios: emergency detection, mental health crisis support, prescription boundaries, and professional UX.',
+    color: 'text-red-600',
+    bgColor: 'bg-red-100',
   },
   {
     icon: <Clock className="w-6 h-6" />,
