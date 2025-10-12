@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Github, Twitter, Globe } from 'lucide-react';
+import { Github, Globe } from 'lucide-react';
 import { Logo } from './Logo';
 
 export const Footer: React.FC = () => {

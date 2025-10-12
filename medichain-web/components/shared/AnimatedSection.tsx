@@ -24,7 +24,7 @@ export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry && entry.isIntersecting) {
           setIsVisible(true);
         }
       },

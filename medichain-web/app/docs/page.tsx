@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Book, Github, ExternalLink, Code, Users, Rocket, FileCode, Database, Network, Terminal } from 'lucide-react';
+import { Book, Github, ExternalLink, Code, Users, Rocket, FileCode, Network, Terminal } from 'lucide-react';
 import { Card, AnimatedSection, Badge } from '@/components/shared';
 
 const faqs = [
