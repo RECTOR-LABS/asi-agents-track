@@ -534,16 +534,28 @@ asi-agents-track/
 ├── docs/                                    # All documentation
 │   ├── PRD.md                               # Product Requirements Document (SSOT)
 │   ├── EXECUTION-PLAN.md                    # Progress tracker
-│   ├── EPIC-7-EXECUTION-PLAN.md             # Epic 7 progress tracker (NEW)
-│   ├── EPIC-7-PHASE-1-TEST-REPORT.md        # Epic 7 Phase 1 test report (NEW)
+│   ├── REMAINING-TASKS.md                   # Remaining tasks breakdown
+│   ├── EPIC-7-EXECUTION-PLAN.md             # Epic 7 progress tracker
 │   ├── TIMELINE.md                          # 22-day development schedule
 │   ├── TRACK-REQUIREMENTS.md                # Submission checklist
-│   ├── GETTING-STARTED.md                   # Quick start guide
-│   ├── EPIC3-TESTING-GUIDE.md               # Epic 3 testing documentation
+│   ├── ARCHITECTURE.md                      # System architecture documentation
+│   ├── PROJECT-HISTORY.md                   # Complete development history
+│   ├── agents/                              # Agent-specific documentation
+│   │   ├── coordinator_readme.md
+│   │   ├── patient_intake_readme.md
+│   │   ├── symptom_analysis_readme.md
+│   │   └── treatment_recommendation_readme.md
+│   ├── cloud-agents/                        # Agentverse cloud deployment
+│   │   ├── 1_coordinator_README.md
+│   │   ├── 2_patient_intake_README.md
+│   │   ├── 4_symptom_analysis_README.md
+│   │   └── 5_treatment_recommendation_README.md
 │   ├── deployment/                          # Deployment guides
 │   │   ├── ASI-ONE-DEPLOYMENT-GUIDE.md
 │   │   ├── ASI-ONE-TEST-RESULTS.md
-│   │   └── DEPLOYMENT-STATUS.md
+│   │   ├── DEPLOYMENT-STATUS.md
+│   │   └── systemd/
+│   │       └── README.md                    # VPS systemd service setup
 │   └── reference/                           # Reference materials
 │       ├── hackathon-analysis.md            # Strategic analysis
 │       └── hackathon-original.md            # Original hackathon content
