@@ -343,7 +343,7 @@ export default function DocsPage() {
 
           {/* Code Display */}
           <AnimatedSection key={selectedExample} animation="fade-in">
-            <Card padding="none" className="overflow-hidden">
+            <Card className="overflow-hidden p-0">
               <div className="bg-gray-900 text-white p-6 overflow-x-auto">
                 <pre className="text-sm font-mono whitespace-pre-wrap">{codeExamples[selectedExample]}</pre>
               </div>

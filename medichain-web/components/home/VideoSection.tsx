@@ -37,8 +37,7 @@ export const VideoSection: React.FC = () => {
 
             {/* Video Card with Glass Morphism */}
             <Card
-              padding="none"
-              className="relative overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl backdrop-blur-sm bg-white/5"
+              className="relative overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl backdrop-blur-sm bg-white/5 p-0"
             >
               {/* Video Wrapper with 16:9 Aspect Ratio */}
               <div className="relative" style={{ paddingBottom: '56.25%' }}>
