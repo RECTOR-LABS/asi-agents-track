@@ -36,6 +36,9 @@ from src.protocols import (
     TreatmentResponseMsg,
 )
 
+# Import input validation
+from src.utils.input_validation import validate_input
+
 # Load environment variables
 load_dotenv()
 
@@ -180,6 +183,31 @@ async def handle_chat_message(ctx: Context, sender: str, msg: ChatMessage):
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text from {sender}: {item.text}")
             session.add_message("user", item.text)
+
+            # ============================================================
+            # INPUT VALIDATION - Handle edge cases before routing
+            # ============================================================
+            validation = validate_input(item.text)
+
+            if not validation.is_valid:
+                # Log validation failure
+                ctx.logger.info(
+                    f"❌ Input validation failed: {validation.reason} "
+                    f"(confidence: {validation.confidence:.2f})"
+                )
+
+                # Send appropriate guidance message
+                guidance_msg = create_text_chat(validation.guidance_message)
+                await ctx.send(sender, guidance_msg)
+
+                # Don't route to patient intake - validation handled the response
+                return
+
+            # Input is valid - log and proceed with normal routing
+            ctx.logger.info(
+                f"✅ Input validation passed: {validation.reason} "
+                f"(confidence: {validation.confidence:.2f})"
+            )
 
             # Route to Patient Intake Agent for symptom extraction
             patient_intake_addr = os.getenv("PATIENT_INTAKE_ADDRESS")
