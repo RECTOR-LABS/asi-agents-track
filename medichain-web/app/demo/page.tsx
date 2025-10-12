@@ -269,7 +269,7 @@ export default function DemoPage() {
       <section id="capabilities" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection animation="slide-up" className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">🏆 System Capabilities (Day 7 Complete)</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">🏆 System Capabilities</h2>
             <p className="text-xl text-gray-600">Production-ready multi-agent diagnostic system with comprehensive safety</p>
           </AnimatedSection>
 
@@ -425,7 +425,7 @@ export default function DemoPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection animation="slide-up" className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              🛡️ Input Validation System <span className="text-medical-green-600">(Day 7 - NEW!)</span>
+              🛡️ Input Validation System
             </h2>
             <p className="text-xl text-gray-600">14 edge case scenarios with safety-first priority</p>
           </AnimatedSection>

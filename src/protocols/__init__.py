@@ -36,6 +36,7 @@ from .messages import (
     SymptomAnalysisResponseMsg,
     TreatmentRequestMsg,
     TreatmentResponseMsg,
+    AgentAcknowledgementMsg,  # Mailbox-compatible acknowledgement
 )
 
 __all__ = [
@@ -57,4 +58,5 @@ __all__ = [
     "SymptomAnalysisResponseMsg",
     "TreatmentRequestMsg",
     "TreatmentResponseMsg",
+    "AgentAcknowledgementMsg",
 ]

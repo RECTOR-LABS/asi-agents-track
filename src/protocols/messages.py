@@ -273,3 +273,13 @@ class TreatmentResponseMsg(Model):
     follow_up_timeline: Optional[str]
     medical_disclaimer: str
     responding_agent: str
+
+
+class AgentAcknowledgementMsg(Model):
+    """
+    Mailbox-compatible acknowledgement message
+    CRITICAL: Used for clarification requests from Patient Intake → Coordinator
+    """
+    session_id: str
+    agent_name: str
+    message: str

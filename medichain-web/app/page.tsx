@@ -1,4 +1,4 @@
-import { HeroSection, ProblemStatement, FeaturesGrid, TechStack, CTASection } from '@/components/home';
+import { HeroSection, ProblemStatement, FeaturesGrid, TechStack, VideoSection, CTASection } from '@/components/home';
 
 export default function Home() {
   return (
@@ -7,6 +7,7 @@ export default function Home() {
       <ProblemStatement />
       <FeaturesGrid />
       <TechStack />
+      <VideoSection />
       <CTASection />
     </main>
   );
