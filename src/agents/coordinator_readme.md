@@ -23,11 +23,27 @@ MediChain AI is a specialized medical diagnostic assistant that helps analyze sy
 
 This agent provides preliminary health information only and is NOT a substitute for professional medical advice, diagnosis, or treatment. Always consult qualified healthcare professionals for medical concerns.
 
-## Supported Conditions
+## Supported Conditions (25 Total)
 
-- Emergency conditions (meningitis, stroke, heart attack, appendicitis, pulmonary embolism, sepsis)
-- Urgent conditions (pneumonia, COVID-19)
-- Common conditions (migraine, influenza, gastroenteritis, tension headache, common cold)
+**Emergency (9 conditions):**
+- Meningitis, Stroke, Heart Attack, Appendicitis, Pulmonary Embolism, Sepsis
+- Diabetic Ketoacidosis (DKA), Anaphylaxis, Heat Stroke
+
+**Urgent (7 conditions):**
+- Pneumonia, COVID-19, Hypoglycemia, Asthma Exacerbation
+- Deep Vein Thrombosis (DVT), Kidney Stones, Concussion
+
+**Common/Routine (9 conditions):**
+- Migraine, Influenza, Gastroenteritis, Tension Headache, Common Cold
+- Urinary Tract Infection (UTI), Dehydration, Food Poisoning, Cellulitis
+
+## Advanced Features
+
+- **Risk-Adjusted Scoring**: Considers age, medical history, and symptom attributes
+- **Clinical Scoring Systems**: PERC, Wells, CURB-65, CHA2DS2-VASc, GCS, Centor
+- **Lab Test Recommendations**: Blood tests, urinalysis, imaging (X-ray, CT, ultrasound)
+- **Treatment Protocol Sequencing**: Step-by-step emergency protocols with timing
+- **Epidemiological Intelligence**: Seasonal and geographic disease patterns
 
 ## How to Use
 

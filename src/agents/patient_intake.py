@@ -30,11 +30,15 @@ load_dotenv()
 # Patient Intake Agent Configuration
 # ============================================================================
 
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "patient_intake_readme.md")
+
 agent = Agent(
     name="medichain-patient-intake",
     seed=os.getenv("AGENT_SEED", "patient_intake_seed_dev") + "_intake",
     mailbox=True,  # Enable Agentverse mailbox for ASI:One discoverability
     publish_agent_details=True,  # Publish agent details for better discoverability
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Create protocol for inter-agent communication

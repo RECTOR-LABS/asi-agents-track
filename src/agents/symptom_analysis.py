@@ -39,6 +39,9 @@ AGENT_PORT = 8004
 BASE_SEED = os.getenv("AGENT_SEED", "default_seed_phrase_change_me")
 AGENT_SEED = f"{BASE_SEED}_symptom_analysis"
 
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "symptom_analysis_readme.md")
+
 # Initialize agent with mailbox
 agent = Agent(
     name=AGENT_NAME,
@@ -46,6 +49,7 @@ agent = Agent(
     seed=AGENT_SEED,
     mailbox=True,
     publish_agent_details=True,
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Initialize MeTTa query engine (singleton pattern)
