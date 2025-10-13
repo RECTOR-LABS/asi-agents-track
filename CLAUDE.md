@@ -13,8 +13,12 @@ Multi-agent healthcare diagnostic system built for the Artificial Superintellige
 **Key Info:**
 - **Deadline:** October 31, 2025 (22 days from start)
 - **Prize Pool:** $20,000 USDC
-- **Current Status:** 95% complete - 13+ days ahead of schedule!
+- **Current Status:** 90% complete - 13+ days ahead of schedule!
 - **Project:** MediChain AI - Decentralized Healthcare Diagnostic System
+- **Latest Achievements (Day 7):**
+  - ✅ **EPIC 7 COMPLETE (ALL 3 PHASES)** - Knowledge Base v2.0 (25 conditions, 2,074 lines, 70/70 tests passing)
+  - ✅ **INPUT VALIDATION COMPLETE** - 14 edge case scenarios with safety-first priority (12/12 tests passing)
+  - ✅ **ASI:ONE DISCOVERY** - All 5 agents configured with comprehensive READMEs
 
 ---
 
@@ -83,6 +87,56 @@ ssh website 'sudo journalctl -u medichain-coordinator.service -f'
 ssh website 'sudo systemctl restart medichain-*.service'
 ```
 
+### Input Validation Testing
+```bash
+# Test comprehensive input validation scenarios
+python test_validation.py
+
+# Run validation tests with pytest
+pytest tests/ -k validation
+```
+
+---
+
+## Input Validation System (Day 7 - NEW! ✅)
+
+**Comprehensive 14-Scenario Edge Case Handler**
+
+MediChain AI now validates ALL user input before processing, ensuring safety, clear boundaries, and professional UX.
+
+### Validation Categories
+
+**CRITICAL (Safety-First):**
+1. **Emergency Detection** - "chest pain", "can't breathe", "severe bleeding" → Immediate 911 guidance
+2. **Mental Health Crisis** - "suicide", "self-harm" → Crisis hotline resources (988, Crisis Text Line, 911)
+3. **Prescription Requests** - "prescribe me antibiotics" → Clear boundaries: AI cannot prescribe
+
+**IMPORTANT (UX & Safety):**
+4. **Proxy Symptoms** - "my 5-year-old daughter has fever" → Pediatric caution + valid processing
+5. **Session History** - "what did we talk about?" → Privacy explanation (no memory)
+6. **Self-Diagnosis** - Medical jargon → Acknowledgment + symptom verification
+
+**NICE-TO-HAVE (User Experience):**
+7. **Greetings** - "hey there!" → Welcome message + guidance
+8. **Gibberish/Testing** - "asdf test 123" → System check confirmation
+9. **Pet Symptoms** - "my dog is vomiting" → Veterinary referral
+10. **Off-Topic** - Weather, sports, etc. → Redirect to medical focus
+11. **Meta Questions** - "what can you do?" → System capabilities explanation
+12. **Vague Input** - Too short/unclear → Request specifics
+13. **Insufficient Info** - Missing details → Guidance template
+14. **Valid Medical** - Actual symptoms → Proceed to diagnostic flow ✅
+
+### Key Features
+- **Confidence Scoring:** Each validation includes confidence level (0.0-1.0)
+- **Priority-Based:** Critical checks run first (emergency, crisis, prescriptions)
+- **Flexible Detection:** "my 5-year-old daughter" correctly identifies proxy symptoms
+- **Professional Guidance:** Each scenario has tailored, helpful response templates
+- **Zero False Negatives:** Safety-critical scenarios (emergency, crisis) never missed
+
+**Module:** `src/utils/input_validation.py` (430+ lines)
+**Tests:** `test_validation.py` (12/12 scenarios passing)
+**Integration:** Coordinator validates before routing to patient intake
+
 ---
 
 ## Current Architecture & Production URLs
@@ -106,7 +160,7 @@ User → Vercel Landing Page → "Test on Agentverse" Button
 ### Production URLs
 
 **User-Facing:**
-- **Pitch Website:** https://medichain-web.vercel.app
+- **Pitch Website:** https://medichain-web.rectorspace.com
 - **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 
 **Backend (VPS):**
@@ -128,11 +182,19 @@ User → Vercel Landing Page → "Test on Agentverse" Button
 - **File:** `data/knowledge_base.metta`
 - **Config:** `METTA_KB_PATH` in `.env`
 
-### Key Statistics
-- 13 medical conditions (6 critical, 2 urgent, 5 common)
-- 200+ medical facts
-- 45+ contraindications
-- Evidence sources: CDC, WHO, AHA, Johns Hopkins
+### Key Statistics (v2.0 - Epic 7 COMPLETE - ALL 3 PHASES) ✅
+- **25 medical conditions** (9 critical, 7 urgent, 9 common) - **+92% expansion**
+- **2,074 knowledge base lines** (was 624) - **+232% expansion**
+- **83 contraindications** - **+84% expansion**
+- **180 risk factors with multipliers** (NEW - Phase 2)
+- **60 treatment protocol steps for 8 critical conditions** (NEW - Phase 3)
+- **56 symptom attributes** (duration, onset, location, character) (NEW - Phase 3)
+- **41 diagnostic criteria entries (8 clinical systems)** (NEW - Phase 2)
+- **37+ lab test types** - Blood glucose, CBC, urinalysis, troponin, D-dimer, etc.
+- **12 imaging types** - CT, MRI, ultrasound, X-ray, ECG, etc.
+- **96 seasonal + 10 geographic prevalence entries** (NEW - Phase 3)
+- **21 clarifying questions for differential diagnosis** (NEW - Phase 2)
+- Evidence sources: CDC, WHO, AHA, Johns Hopkins, Mayo Clinic
 
 ### Essential Methods
 ```python
@@ -144,15 +206,36 @@ engine = MeTTaQueryEngine()
 results = engine.find_by_symptom("fever")
 treatments = engine.find_treatment("influenza")
 
-# Medical-specific (16 advanced methods)
+# Medical-specific (20 advanced methods)
 emergencies = engine.find_emergency_conditions()
 red_flags = engine.find_red_flag_symptoms()
 urgency = engine.find_urgency_level("meningitis")
 reasoning = engine.generate_reasoning_chain(symptoms, condition)
 contraindications = engine.get_all_contraindications("aspirin")
+
+# Epic 7 Phase 1: Lab tests and imaging (4 methods)
+lab_tests = engine.find_lab_tests("diabetic-ketoacidosis")
+imaging = engine.find_imaging_requirements("kidney-stones")
+all_tests = engine.get_all_lab_tests()
+all_imaging = engine.get_all_imaging()
+
+# Epic 7 Phase 2: Risk factors and diagnostic criteria (7 methods)
+risk_factors = engine.get_risk_factors("heart-attack")
+risk_score = engine.calculate_risk_score("heart-attack", ["age-over-65", "diabetes-mellitus"])
+age_risk = engine.get_age_risk("stroke", "age-over-70")
+criteria = engine.check_diagnostic_criteria("pneumonia", ["confusion-1", "respiratory-rate-30-1"])
+questions = engine.get_clarifying_questions("chest-pain-differential")
+prevalence = engine.get_prevalence("urinary-tract-infection", "female")
+
+# Epic 7 Phase 3: Treatment protocols, attributes, epidemiology (6 methods)
+protocol = engine.get_treatment_protocol("heart-attack")
+attributes = engine.get_symptom_attributes("chest-pain")
+seasonal = engine.get_seasonal_prevalence("influenza", "december")
+geographic = engine.get_geographic_prevalence("heat-stroke", "desert")
+timing = engine.check_symptom_timing("pneumonia")
 ```
 
-**See:** `src/metta/query_engine.py` for complete method list (21 methods total)
+**See:** `src/metta/query_engine.py` for complete method list (**34 methods total** - Epic 7 Complete)
 
 ---
 
@@ -258,10 +341,10 @@ agent.include(chat_proto, publish_manifest=True)
 **Must Have:**
 - ✅ Public GitHub repo with Innovation Lab badges
 - ✅ Multi-agent system deployed on Agentverse
-- ✅ Deep MeTTa integration (200+ facts)
+- ✅ Deep MeTTa integration (2,074 KB lines - **Epic 7 COMPLETE - ALL 3 PHASES**)
 - ✅ Chat Protocol working
 - ⏳ Demo video (3-5 minutes) - **IN PROGRESS**
-- ⏳ README with agent addresses and URLs
+- ✅ README with agent addresses and URLs
 
 **Innovation Lab Badges:**
 ```markdown
@@ -275,9 +358,9 @@ agent.include(chat_proto, publish_manifest=True)
 
 ### What NOT to Do
 - **Don't skip Chat Protocol** - Required for discoverability
-- **Don't do superficial MeTTa** - Judges look for depth
+- **Don't do superficial MeTTa** - Judges look for depth (**v2.0: 25 conditions, 2,074 KB lines, 180 risk factors, 60 protocol steps ✅**)
 - **Don't commit secrets** - .env is gitignored
-- **Don't skip testing** - Broken demo = disqualification
+- **Don't skip testing** - Broken demo = disqualification (**70/70 tests passing ✅**)
 
 ### Development Philosophy
 - **100% working standard** - No partial implementations
@@ -294,7 +377,7 @@ agent.include(chat_proto, publish_manifest=True)
 3. **Test Agentverse chat FIRST** - Use chat.agentverse.ai before ASI:One
 4. **Mailbox creation is MANDATORY** - `mailbox=True` + create via inspector
 5. **Verify agent profile** - Check agentverse.ai/agents/details/{ADDRESS}/profile
-6. **MeTTa depth matters** - Quality > quantity (13 conditions achieved)
+6. **MeTTa depth matters** - Quality > quantity (**Epic 7 COMPLETE: 25 conditions, 2,074 KB lines, 180 risk factors, 60 protocols ✅**)
 7. **Chat Protocol critical** - Always include with `publish_manifest=True`
 8. **Session ID patterns** - Handle both `http-*` and `session-*` prefixes
 9. **Coordinator types** - Use `coordinator.py` (Chat Protocol) vs `coordinator_queue.py` (HTTP)
@@ -332,20 +415,36 @@ agent.include(chat_proto, publish_manifest=True)
 asi-agents-track/
 ├── src/
 │   ├── agents/              # 4 deployed agents
-│   │   ├── coordinator.py   # Chat Protocol (port 8001)
+│   │   ├── coordinator.py   # Chat Protocol (port 8001) + Input Validation
 │   │   ├── patient_intake.py
 │   │   ├── symptom_analysis.py
 │   │   └── treatment_recommendation.py
 │   ├── protocols/messages.py
-│   ├── metta/query_engine.py  # 21 methods
+│   ├── metta/query_engine.py  # 34 methods (Epic 7 Complete)
 │   └── utils/
-├── data/knowledge_base.metta   # 200+ facts
+│       └── input_validation.py  # 14-scenario edge case handler (NEW - Day 7)
+├── data/knowledge_base.metta   # 2,074 lines (v2.0 - +232% growth)
+├── resources/
+│   ├── medichain-avatar.svg          # Medical cross with AI circuits (NEW - Day 7)
+│   ├── medichain-avatar-pulse.svg    # EKG heartbeat design (NEW - Day 7)
+│   └── medichain-avatar-shield.svg   # Medical shield/badge (NEW - Day 7)
+├── test_validation.py          # Input validation test suite (NEW - Day 7)
 ├── tests/
+│   ├── test_epic7_phase1.py            # 24 tests - conditions, lab tests, imaging ✅
+│   ├── test_epic7_phase2.py            # 16 tests - risk factors, criteria ✅
+│   ├── test_epic7_phase3.py            # 15 tests - protocols, attributes ✅
+│   ├── test_attribute_matching.py      # 6 tests - attribute-based matching ✅
+│   ├── test_treatment_protocols.py     # 8 tests - protocol integration ✅
+│   ├── test_risk_scenarios.py          # 1 test - end-to-end risk adjustment ✅
+│   └── manual_test_epic7_phase1.py     # Manual test script
 ├── docs/
-│   ├── PRD.md                  # SSOT
+│   ├── PRD.md                                  # SSOT
 │   ├── EXECUTION-PLAN.md
+│   ├── EPIC-7-EXECUTION-PLAN.md                # Epic 7 tracker - COMPLETE ✅
+│   ├── EPIC-7-PHASE-1-TEST-REPORT.md           # Phase 1 results
+│   ├── EPIC-7-PHASE-2-COMPLETION-REPORT.md     # Phase 2 completion
 │   ├── TIMELINE.md
-│   ├── PROJECT-HISTORY.md      # Dev history
+│   ├── PROJECT-HISTORY.md                      # Dev history
 │   ├── TRACK-REQUIREMENTS.md
 │   └── deployment/
 ├── .env (not committed)

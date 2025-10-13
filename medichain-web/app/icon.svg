@@ -1,0 +1,43 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Central Node (Medical Cross) -->
+  <g id="central-node">
+    <circle cx="100" cy="100" r="35" fill="#3B82F6" opacity="0.15"/>
+    <circle cx="100" cy="100" r="28" fill="#3B82F6"/>
+    <!-- Medical Cross -->
+    <rect x="95" y="85" width="10" height="30" fill="white" rx="2"/>
+    <rect x="85" y="95" width="30" height="10" fill="white" rx="2"/>
+  </g>
+
+  <!-- Satellite Nodes (4 Agents) -->
+  <!-- Top Agent -->
+  <g id="agent-1">
+    <circle cx="100" cy="30" r="15" fill="#10B981"/>
+    <text x="100" y="35" text-anchor="middle" fill="white" font-size="12" font-weight="bold">1</text>
+  </g>
+
+  <!-- Right Agent -->
+  <g id="agent-2">
+    <circle cx="170" cy="100" r="15" fill="#10B981"/>
+    <text x="170" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="bold">2</text>
+  </g>
+
+  <!-- Bottom Agent -->
+  <g id="agent-3">
+    <circle cx="100" cy="170" r="15" fill="#10B981"/>
+    <text x="100" y="175" text-anchor="middle" fill="white" font-size="12" font-weight="bold">3</text>
+  </g>
+
+  <!-- Left Agent -->
+  <g id="agent-4">
+    <circle cx="30" cy="100" r="15" fill="#10B981"/>
+    <text x="30" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="bold">4</text>
+  </g>
+
+  <!-- Connection Lines -->
+  <g id="connections" stroke="#3B82F6" stroke-width="2.5" opacity="0.6">
+    <line x1="100" y1="72" x2="100" y2="45" stroke-dasharray="3,3"/>
+    <line x1="128" y1="100" x2="155" y2="100" stroke-dasharray="3,3"/>
+    <line x1="100" y1="128" x2="100" y2="155" stroke-dasharray="3,3"/>
+    <line x1="72" y1="100" x2="45" y2="100" stroke-dasharray="3,3"/>
+  </g>
+</svg>

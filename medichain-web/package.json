@@ -7,7 +7,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "type-check:strict": "tsc --noEmit --strict --noUnusedLocals --noUnusedParameters --noUncheckedIndexedAccess --noImplicitReturns --noFallthroughCasesInSwitch",
+    "type-check:all": "npm run lint && npm run type-check",
+    "type-check:all:strict": "npm run lint && npm run type-check:strict",
+    "validate": "npm run type-check && npm run lint && npm run build",
+    "stop": "lsof -ti:3000,3001,3002 | xargs kill -9 2>/dev/null || true && pkill -f 'next dev' 2>/dev/null || true && echo '✅ Stopped all background processes'",
+    "clean:all": "rm -rf node_modules .next package-lock.json && echo '✅ Cleaned: node_modules, .next, package-lock.json'",
+    "clean:cache": "rm -rf .next node_modules/.cache && echo '✅ Cleaned: .next and node_modules cache'"
   },
   "dependencies": {
     "next": "14.2.5",

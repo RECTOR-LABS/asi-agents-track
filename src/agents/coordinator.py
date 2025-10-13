@@ -29,12 +29,16 @@ from src.protocols import (
     FinalDiagnosticReport,
     PatientIntakeData,
     IntakeTextMessage,
+    AgentAcknowledgementMsg,  # CRITICAL FIX: Mailbox-compatible clarification handler
     # Epic 3: Symptom Analysis & Treatment Recommendation
     SymptomAnalysisRequestMsg,
     SymptomAnalysisResponseMsg,
     TreatmentRequestMsg,
     TreatmentResponseMsg,
 )
+
+# Import input validation
+from src.utils.input_validation import validate_input
 
 # Load environment variables
 load_dotenv()
@@ -181,6 +185,31 @@ async def handle_chat_message(ctx: Context, sender: str, msg: ChatMessage):
             ctx.logger.info(f"Text from {sender}: {item.text}")
             session.add_message("user", item.text)
 
+            # ============================================================
+            # INPUT VALIDATION - Handle edge cases before routing
+            # ============================================================
+            validation = validate_input(item.text)
+
+            if not validation.is_valid:
+                # Log validation failure
+                ctx.logger.info(
+                    f"❌ Input validation failed: {validation.reason} "
+                    f"(confidence: {validation.confidence:.2f})"
+                )
+
+                # Send appropriate guidance message
+                guidance_msg = create_text_chat(validation.guidance_message)
+                await ctx.send(sender, guidance_msg)
+
+                # Don't route to patient intake - validation handled the response
+                return
+
+            # Input is valid - log and proceed with normal routing
+            ctx.logger.info(
+                f"✅ Input validation passed: {validation.reason} "
+                f"(confidence: {validation.confidence:.2f})"
+            )
+
             # Route to Patient Intake Agent for symptom extraction
             patient_intake_addr = os.getenv("PATIENT_INTAKE_ADDRESS")
 
@@ -309,6 +338,34 @@ async def handle_diagnostic_request(ctx: Context, sender: str, msg: DiagnosticRe
     # Acknowledge to user
     ack_msg = create_text_chat("🔬 Performing comprehensive symptom analysis...")
     await ctx.send(user_session.user_address, ack_msg)
+
+
+@inter_agent_proto.on_message(model=AgentAcknowledgementMsg)
+async def handle_agent_acknowledgement(ctx: Context, sender: str, msg: AgentAcknowledgementMsg):
+    """
+    CRITICAL FIX: Handle acknowledgements and clarification requests from specialist agents
+    Forward clarification questions to the user via Chat Protocol
+    Uses mailbox-compatible Model (AgentAcknowledgementMsg) for inter-agent communication
+    """
+    ctx.logger.info(f"📨 Received acknowledgement from {msg.agent_name}")
+    ctx.logger.info(f"   Session: {msg.session_id}")
+    ctx.logger.info(f"   Message: {msg.message[:100]}...")
+
+    # Find the user session
+    user_session = None
+    for addr, session in active_sessions.items():
+        if session.session_id == msg.session_id:
+            user_session = session
+            break
+
+    if not user_session:
+        ctx.logger.warning(f"No active session for {msg.session_id}")
+        return
+
+    # Forward the message to the user via Chat Protocol
+    user_msg = create_text_chat(msg.message)
+    await ctx.send(user_session.user_address, user_msg)
+    ctx.logger.info(f"✅ Forwarded acknowledgement to user")
 
 
 @inter_agent_proto.on_message(model=DiagnosticResponse)

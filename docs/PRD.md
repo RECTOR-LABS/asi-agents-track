@@ -584,6 +584,165 @@ Why this diagnosis
 
 ---
 
+### Epic 7: Knowledge Base Enrichment (POST-MVP ENHANCEMENT)
+**Duration:** Days 7-11 (October 15-19, 2025) - **OPTIONAL ENHANCEMENT**
+**Goal:** Deepen MeTTa knowledge base to maximize "Use of ASI Tech" judging score (20%)
+**Strategic Value:** Move from 77% to 93-98% overall score (+16-21 points)
+
+**Rationale:** Current system (13 conditions, 200+ facts) meets MVP requirements. This epic enriches the "brain" to demonstrate DEEP ASI integration (not superficial usage) - the critical differentiator for top-3 placement.
+
+---
+
+#### Story 7.1: Phase 1 - Condition Coverage Expansion
+**User Story:** As a judge evaluating ASI tech integration, I want to see comprehensive medical knowledge coverage that demonstrates serious MeTTa utilization beyond basic examples.
+
+**Strategic Goal:** Add 12 common-yet-serious conditions to reach 25 total (nearly 2X current coverage)
+
+**Tasks:**
+- **E7.S1.T1**: Research and select 12 additional target conditions
+  - Critical: Diabetic ketoacidosis (DKA), Anaphylaxis, Heat stroke
+  - Urgent: Hypoglycemia, Asthma exacerbation, DVT, Kidney stones, Concussion
+  - Routine: UTI, Dehydration, Food poisoning, Cellulitis
+- **E7.S1.T2**: Populate KB with condition-symptom relationships (12 conditions × 5-8 symptoms = 60-96 new facts)
+- **E7.S1.T3**: Add lab test recommendations schema and data
+  - Define `(: requires-lab-test (-> Condition Test))`
+  - Add 10-15 common lab tests (CBC, CMP, urinalysis, blood culture, troponin, D-dimer, HbA1c, etc.)
+- **E7.S1.T4**: Add imaging requirements schema and data
+  - Define `(: requires-imaging (-> Condition Imaging))`
+  - Add 6-8 imaging types (X-ray, CT, MRI, ultrasound, ECG, etc.)
+- **E7.S1.T5**: Add treatments and evidence sources for all 12 conditions
+- **E7.S1.T6**: Add contraindications for new medications (target 80+ total contraindications)
+- **E7.S1.T7**: Implement 4 new query engine methods:
+  - `find_lab_tests(condition)` - Get required lab tests
+  - `find_imaging_requirements(condition)` - Get imaging needs
+  - `get_all_lab_tests()` - List all tests by condition
+  - `get_all_imaging()` - List all imaging by condition
+- **E7.S1.T8**: Test all 12 new conditions with sample queries
+- **E7.S1.T9**: Update knowledge base documentation
+
+**Acceptance Criteria:**
+- Knowledge base contains 25 conditions (13 existing + 12 new)
+- 400+ total medical facts (200 existing + 200 new)
+- 80+ contraindications (45 existing + 35 new)
+- Lab tests and imaging integrated into diagnostic flow
+- All new query methods tested and documented
+- Knowledge base v2.0 tagged in git
+
+**Estimated Effort:** 8-10 hours
+
+**ROI Analysis:**
+- **Time Investment:** 8-10 hours
+- **Score Improvement:** +8 points (77% → 85%)
+- **ROI:** 0.8-1 point per hour (HIGHEST ROI of all 3 phases)
+
+---
+
+#### Story 7.2: Phase 2 - Clinical Intelligence Depth
+**User Story:** As a diagnostic system, I want advanced clinical reasoning capabilities that go beyond symptom matching to demonstrate sophisticated medical knowledge.
+
+**Strategic Goal:** Add risk factors, diagnostic criteria, and clarifying questions to show Bayesian reasoning
+
+**Tasks:**
+- **E7.S2.T1**: Add risk factor schema and data
+  - Define `(: risk-factor (-> Condition Factor RiskMultiplier))`
+  - Define `(: age-risk (-> Condition AgeRange RiskLevel))`
+  - Add risk factors for all 25 conditions (smoking, hypertension, diabetes, family history, etc.)
+- **E7.S2.T2**: Add diagnostic criteria schema
+  - Define `(: diagnostic-criteria (-> Condition Criteria Score))`
+  - Implement clinical scoring systems (e.g., PERC for PE, Centor for strep throat, CURB-65 for pneumonia)
+- **E7.S2.T3**: Add clarifying question schema
+  - Define `(: clarifying-question (-> Condition Question))`
+  - Define `(: helps-differentiate (-> Question Condition1 Condition2))`
+  - Add smart questions for differential diagnosis (15-20 questions)
+- **E7.S2.T4**: Implement 7 new query engine methods:
+  - `check_risk_factors(condition, patient_profile)` - Calculate risk score
+  - `get_diagnostic_criteria(condition)` - Get clinical criteria
+  - `get_clarifying_questions(differential_list)` - Generate smart questions
+  - `find_conditions_by_criteria(criteria_dict)` - Criteria-based search
+  - `calculate_risk_score(condition, risk_factors)` - Bayesian adjustment
+  - `get_prevalence(condition, demographics)` - Population-based probability
+  - `adjust_confidence_by_risk(base_confidence, risk_factors)` - Risk-adjusted confidence
+- **E7.S2.T5**: Enhance `SymptomAnalyzer` to use risk factors in confidence scoring
+- **E7.S2.T6**: Create 5 test cases demonstrating risk-adjusted diagnosis
+- **E7.S2.T7**: Update reasoning chain generator to include risk factor analysis
+
+**Acceptance Criteria:**
+- Risk factors defined for all 25 conditions
+- 3-5 diagnostic criteria systems implemented
+- 15-20 clarifying questions in knowledge base
+- Confidence scores incorporate risk factors
+- Test cases show improved diagnostic accuracy
+- Reasoning chains explain risk factor contributions
+
+**Estimated Effort:** 10-12 hours
+
+**ROI Analysis:**
+- **Time Investment:** 10-12 hours
+- **Score Improvement:** +8 points (85% → 93%)
+- **ROI:** 0.67-0.8 points per hour (CRITICAL for top-3 finish)
+
+---
+
+#### Story 7.3: Phase 3 - Production-Ready Treatment Protocols
+**User Story:** As a healthcare provider, I want step-by-step treatment protocols with timing and symptom attribute matching for production-grade decision support.
+
+**Strategic Goal:** Add treatment sequencing and symptom attributes to demonstrate complete clinical system
+
+**Tasks:**
+- **E7.S3.T1**: Add treatment protocol sequencing schema
+  - Define `(: treatment-step (-> Protocol StepNumber Action))`
+  - Define `(: treatment-step-timing (-> Protocol StepNumber Minutes))`
+  - Add protocols for 6-8 critical conditions (anaphylaxis, cardiac arrest, stroke, DKA, sepsis, etc.)
+- **E7.S3.T2**: Add symptom attribute schema
+  - Define `(: symptom-duration (-> Symptom Condition TypicalDuration))`
+  - Define `(: symptom-onset (-> Symptom Condition OnsetSpeed))`
+  - Define `(: symptom-location (-> Symptom Condition BodyLocation))`
+  - Add attributes for 30-50 key symptoms
+- **E7.S3.T3**: Add epidemiology data
+  - Define `(: seasonal-prevalence (-> Condition Season Prevalence))`
+  - Add seasonal data for relevant conditions (influenza, allergies, heat stroke, etc.)
+- **E7.S3.T4**: Implement 6 new query engine methods:
+  - `get_treatment_protocol(condition)` - Get step-by-step protocol
+  - `get_treatment_step_timing(protocol)` - Get timing information
+  - `find_symptom_attributes(symptom, condition)` - Get duration/onset/location
+  - `get_seasonal_prevalence(condition, season)` - Seasonal probability
+  - `get_symptom_duration_match(patient_duration, condition)` - Duration matching
+  - `get_symptom_onset_match(patient_onset, condition)` - Onset matching
+- **E7.S3.T5**: Enhance symptom matching to use attributes (duration, onset, location)
+- **E7.S3.T6**: Update treatment agent to return sequenced protocols
+- **E7.S3.T7**: Create 3 test cases for protocol-based treatment
+
+**Acceptance Criteria:**
+- 6-8 treatment protocols with step sequencing
+- 30-50 symptoms have attribute data
+- Symptom matching uses duration/onset/location
+- Treatment agent returns step-by-step protocols
+- Seasonal prevalence integrated into confidence scoring
+- 800+ total facts in knowledge base (200 → 400 → 600 → 800)
+
+**Estimated Effort:** 10-12 hours
+
+**ROI Analysis:**
+- **Time Investment:** 10-12 hours
+- **Score Improvement:** +5 points (93% → 98%)
+- **ROI:** 0.42-0.5 points per hour (diminishing returns, but reaches near-perfect score)
+
+---
+
+**Epic 7 Total Summary:**
+- **Total Time Investment:** 28-34 hours (over 4-5 days)
+- **Total Score Improvement:** +21 points (77% → 98%)
+- **Average ROI:** 0.62-0.75 points per hour
+- **Strategic Value:** Transforms "good" submission into "exceptional" submission
+- **Competitive Advantage:** Deep MeTTa integration demonstrates serious technical capability
+
+**Decision Framework:**
+- **Phase 1 RECOMMENDED:** Highest ROI (0.8-1 pt/hr), moves to competitive tier (85%)
+- **Phase 2 FOR TOP-3:** Essential for 93% score (top-3 territory)
+- **Phase 3 OPTIONAL:** Diminishing returns, only if time permits after demo video
+
+---
+
 ## Acceptance Criteria
 
 ### Global Acceptance Criteria (Apply to All Epics)
@@ -691,6 +850,7 @@ These features would be valuable for a production system but are beyond the scop
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0 | 2025-10-09 | Initial PRD creation | Claude + RECTOR |
+| 1.1 | 2025-10-12 | Added Epic 7: Knowledge Base Enrichment (3 phases, 26 tasks) | Claude + RECTOR |
 
 ---
 

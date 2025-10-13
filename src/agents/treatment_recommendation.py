@@ -40,6 +40,9 @@ AGENT_PORT = 8005
 BASE_SEED = os.getenv("AGENT_SEED", "default_seed_phrase_change_me")
 AGENT_SEED = f"{BASE_SEED}_treatment_recommendation"
 
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "treatment_recommendation_readme.md")
+
 # Initialize agent with mailbox
 agent = Agent(
     name=AGENT_NAME,
@@ -47,6 +50,7 @@ agent = Agent(
     seed=AGENT_SEED,
     mailbox=True,
     publish_agent_details=True,
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Initialize MeTTa query engine (singleton pattern)
@@ -85,10 +89,11 @@ class TreatmentRecommender:
         medical_history: Optional[List[str]] = None,
     ) -> Dict:
         """
-        Main recommendation method - orchestrates all treatment recommendation steps
+        Main recommendation method - orchestrates all treatment recommendation steps (EPIC 7 - Phase 3 Enhanced)
 
         Returns dict with:
         - treatments: List[str]
+        - treatment_protocol: List[Dict] (EPIC 7 - Phase 3) - Step-by-step protocol with timing
         - evidence_sources: Dict[str, str]
         - contraindications: Dict[str, List[str]]
         - safety_warnings: List[str]
@@ -109,17 +114,25 @@ class TreatmentRecommender:
 
         reasoning_chain.append(f"📋 Found {len(treatments)} treatment options")
 
-        # Step 2: Get evidence sources
+        # Step 2: Get treatment protocol (EPIC 7 - Phase 3)
+        treatment_protocol = self.get_treatment_protocol(primary_condition)
+        if treatment_protocol:
+            critical_steps = [s for s in treatment_protocol if s['priority'] == 'critical']
+            reasoning_chain.append(f"📋 Retrieved treatment protocol: {len(treatment_protocol)} steps ({len(critical_steps)} critical)")
+        else:
+            reasoning_chain.append("📋 No structured protocol available for this condition")
+
+        # Step 3: Get evidence sources
         reasoning_chain.append("📚 Retrieving evidence sources (CDC, WHO, medical guidelines)...")
         evidence_sources = self.get_evidence_sources(treatments)
 
-        # Step 3: Check contraindications
+        # Step 4: Check contraindications
         reasoning_chain.append("⚕️ Performing safety validation...")
         contraindications = self.check_all_contraindications(
             treatments, patient_age, medical_history
         )
 
-        # Step 4: Check drug interactions
+        # Step 5: Check drug interactions
         safety_warnings = self.check_drug_interactions(
             treatments, current_medications, allergies
         )
@@ -130,12 +143,12 @@ class TreatmentRecommender:
         if safety_warnings:
             reasoning_chain.append(f"⚠️ {len(safety_warnings)} safety warnings identified")
 
-        # Step 5: Recommend specialist referral if needed
+        # Step 6: Recommend specialist referral if needed
         specialist = self.recommend_specialist(primary_condition, urgency_level)
         if specialist:
             reasoning_chain.append(f"🏥 Specialist referral recommended: {specialist}")
 
-        # Step 6: Determine follow-up timeline
+        # Step 7: Determine follow-up timeline
         follow_up = self.determine_follow_up_timeline(urgency_level, primary_condition)
         reasoning_chain.append(f"📅 Follow-up timeline: {follow_up}")
 
@@ -146,6 +159,7 @@ class TreatmentRecommender:
 
         return {
             "treatments": treatments,
+            "treatment_protocol": treatment_protocol,  # EPIC 7 - Phase 3
             "evidence_sources": evidence_sources,
             "contraindications": contraindications,
             "safety_warnings": list(set(safety_warnings)),  # Remove duplicates
@@ -170,6 +184,35 @@ class TreatmentRecommender:
 
         # treatments is a list of treatment names
         return treatments
+
+    def get_treatment_protocol(self, condition: str) -> List[Dict]:
+        """
+        Get step-by-step treatment protocol for critical conditions (EPIC 7 - Phase 3)
+
+        Returns list of protocol steps with timing and priority:
+        [
+            {
+                'step_number': 1,
+                'action': 'call-911',
+                'timing': 'immediate',
+                'priority': 'critical'
+            },
+            ...
+        ]
+        """
+        # Normalize condition name for MeTTa query
+        condition_normalized = condition.lower().replace(" ", "-")
+
+        # Query MeTTa for treatment protocol
+        protocol_steps = self.metta.get_treatment_protocol(condition_normalized)
+
+        if not protocol_steps:
+            return []
+
+        # Sort by step number to ensure correct order
+        protocol_steps.sort(key=lambda x: x['step_number'])
+
+        return protocol_steps
 
     def get_evidence_sources(self, treatments: List[str]) -> Dict[str, str]:
         """

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Zap, ArrowRight } from 'lucide-react';
 import { Button, Badge } from '../shared';
 
@@ -53,20 +54,29 @@ export const HeroSection: React.FC = () => {
 
         {/* Innovation Lab Badges */}
         <div className="flex flex-wrap gap-3 justify-center items-center">
-          <img
+          <Image
             src="https://img.shields.io/badge/innovationlab-3D8BD3?style=for-the-badge"
             alt="Innovation Lab"
+            width={140}
+            height={32}
             className="h-8"
+            unoptimized
           />
-          <img
+          <Image
             src="https://img.shields.io/badge/hackathon-5F43F1?style=for-the-badge"
             alt="Hackathon"
+            width={120}
+            height={32}
             className="h-8"
+            unoptimized
           />
-          <img
+          <Image
             src="https://img.shields.io/badge/ASI_Alliance-10B981?style=for-the-badge"
             alt="ASI Alliance"
+            width={130}
+            height={32}
             className="h-8"
+            unoptimized
           />
         </div>
 

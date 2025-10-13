@@ -39,6 +39,9 @@ AGENT_PORT = 8004
 BASE_SEED = os.getenv("AGENT_SEED", "default_seed_phrase_change_me")
 AGENT_SEED = f"{BASE_SEED}_symptom_analysis"
 
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "symptom_analysis_readme.md")
+
 # Initialize agent with mailbox
 agent = Agent(
     name=AGENT_NAME,
@@ -46,6 +49,7 @@ agent = Agent(
     seed=AGENT_SEED,
     mailbox=True,
     publish_agent_details=True,
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Initialize MeTTa query engine (singleton pattern)
@@ -79,49 +83,92 @@ class SymptomAnalyzer:
         age: Optional[int] = None,
         severity_scores: Optional[Dict[str, int]] = None,
         medical_history: Optional[List[str]] = None,
+        symptom_attributes: Optional[Dict[str, Dict[str, str]]] = None,
     ) -> Dict:
         """
         Main analysis method - orchestrates all symptom analysis steps
+
+        Args:
+            symptoms: List of symptom names
+            age: Patient age (optional)
+            severity_scores: Severity ratings for symptoms (optional)
+            medical_history: Patient medical history (optional)
+            symptom_attributes: EPIC 7 Phase 3 - Symptom characteristics (optional)
+                Format: {
+                    "chest-pain": {
+                        "duration": "5-30-minutes",
+                        "location": "substernal",
+                        "character": "crushing",
+                        "radiation": "left-arm"
+                    }
+                }
 
         Returns dict with:
         - urgency_level: str
         - red_flags: List[str]
         - differential_diagnoses: List[str]
         - confidence_scores: Dict[str, float]
+        - risk_adjustments: Dict[str, Dict] (EPIC 7 - Phase 2)
+        - attribute_matches: Dict[str, Dict] (EPIC 7 - Phase 3)
         - reasoning_chain: List[str]
         - recommended_next_step: str
         """
         reasoning_chain = []
         reasoning_chain.append(f"🔬 Analyzing {len(symptoms)} symptoms: {', '.join(symptoms)}")
 
+        # Patient risk profile for EPIC 7 Phase 2
+        if age:
+            reasoning_chain.append(f"👤 Patient age: {age} years")
+        if medical_history:
+            reasoning_chain.append(f"📋 Medical history: {', '.join(medical_history)}")
+
         # Step 1: Detect red flags immediately
         red_flags = self.detect_red_flags(symptoms)
         if red_flags:
             reasoning_chain.append(f"⚠️ RED FLAGS DETECTED: {', '.join(red_flags)}")
 
-        # Step 2: Find matching conditions
+        # Step 2: Match symptom attributes (EPIC 7 - Phase 3)
+        attribute_matches = {}
+        if symptom_attributes:
+            reasoning_chain.append("🎯 Matching symptom attributes for precision diagnosis...")
+            attribute_matches = self._match_symptom_attributes(symptom_attributes)
+
+            # Log attribute match summary
+            high_quality_matches = sum(1 for m in attribute_matches.values() if m['match_score'] >= 0.7)
+            if high_quality_matches > 0:
+                reasoning_chain.append(f"✓ High-quality attribute matches: {high_quality_matches}/{len(attribute_matches)}")
+
+        # Step 3: Find matching conditions
         reasoning_chain.append("🔍 Querying MeTTa knowledge base for matching conditions...")
         condition_matches = self.find_matching_conditions(symptoms)
         reasoning_chain.append(f"📊 Found {len(condition_matches)} potential conditions")
 
-        # Step 3: Calculate confidence scores
-        confidence_scores = self.calculate_confidence_scores(
-            symptoms, condition_matches, severity_scores
+        # Step 4: Calculate confidence scores with risk adjustment (EPIC 7 - Phase 2 + 3)
+        confidence_scores, risk_adjustments = self.calculate_confidence_scores(
+            symptoms, condition_matches, severity_scores, age, medical_history, attribute_matches
         )
 
-        # Step 4: Assess urgency level
+        # Add risk-adjusted reasoning
+        high_risk_conditions = [
+            cond for cond, adjustment in risk_adjustments.items()
+            if adjustment.get('risk_multiplier', 1.0) > 1.5
+        ]
+        if high_risk_conditions:
+            reasoning_chain.append(f"⚡ Risk factors detected for: {', '.join(high_risk_conditions[:3])}")
+
+        # Step 5: Assess urgency level
         urgency_level = self.assess_urgency(
             condition_matches, red_flags, confidence_scores, age
         )
         reasoning_chain.append(f"🚨 Urgency Assessment: {urgency_level.upper()}")
 
-        # Step 5: Generate differential diagnoses (top 2-5)
+        # Step 6: Generate differential diagnoses (top 2-5)
         differential_diagnoses = self.generate_differential_diagnoses(
             confidence_scores, max_count=5
         )
         reasoning_chain.append(f"🎯 Top differential diagnoses: {', '.join(differential_diagnoses[:3])}")
 
-        # Step 6: Recommend next step based on urgency
+        # Step 7: Recommend next step based on urgency
         recommended_next_step = self.recommend_action(urgency_level, red_flags)
         reasoning_chain.append(f"💡 Recommendation: {recommended_next_step}")
 
@@ -130,6 +177,8 @@ class SymptomAnalyzer:
             "red_flags": red_flags,
             "differential_diagnoses": differential_diagnoses,
             "confidence_scores": confidence_scores,
+            "risk_adjustments": risk_adjustments,  # EPIC 7 - Phase 2
+            "attribute_matches": attribute_matches,  # EPIC 7 - Phase 3
             "reasoning_chain": reasoning_chain,
             "recommended_next_step": recommended_next_step,
         }
@@ -197,12 +246,25 @@ class SymptomAnalyzer:
         symptoms: List[str],
         conditions: List[str],
         severity_scores: Optional[Dict[str, int]] = None,
-    ) -> Dict[str, float]:
+        age: Optional[int] = None,
+        medical_history: Optional[List[str]] = None,
+        attribute_matches: Optional[Dict[str, Dict]] = None,
+    ) -> Tuple[Dict[str, float], Dict[str, Dict]]:
         """
-        Calculate confidence score for each possible condition
-        Based on symptom match percentage and severity weighting
+        Calculate confidence score for each possible condition (EPIC 7 - Phase 2+3 Enhanced)
+        Based on symptom match percentage, severity weighting, RISK FACTORS, and ATTRIBUTE MATCHING
+
+        Args:
+            attribute_matches: Dict mapping symptoms to their attribute match details
+                Format: {symptom: {match_score: 0.8, matched_attrs: [...], total_attrs: N}}
+
+        Returns:
+            Tuple of (confidence_scores, risk_adjustments)
+            - confidence_scores: Dict[condition, final_confidence]
+            - risk_adjustments: Dict[condition, {risk_multiplier, matched_factors, base_confidence, attribute_boost}]
         """
         confidence_scores = {}
+        risk_adjustments = {}
 
         for condition in conditions:
             # Get all symptoms for this condition from MeTTa
@@ -210,6 +272,11 @@ class SymptomAnalyzer:
 
             if not condition_symptoms:
                 confidence_scores[condition] = 0.0
+                risk_adjustments[condition] = {
+                    'risk_multiplier': 1.0,
+                    'matched_factors': [],
+                    'base_confidence': 0.0
+                }
                 continue
 
             # Calculate base match score (% of condition symptoms present)
@@ -229,11 +296,202 @@ class SymptomAnalyzer:
                 ) / max(len(matched_symptoms), 1)
                 severity_weight = 0.5 + (avg_severity / 20.0)  # 0.5-1.0 range
 
-            # Final confidence score
-            confidence = min(match_ratio * severity_weight, 1.0)
-            confidence_scores[condition] = round(confidence, 2)
+            # Base confidence before adjustments
+            base_confidence = match_ratio * severity_weight
 
-        return confidence_scores
+            # EPIC 7 - Phase 2: Calculate risk multiplier
+            risk_multiplier, matched_risk_factors = self._calculate_risk_multiplier(
+                condition, age, medical_history
+            )
+
+            # EPIC 7 - Phase 3: Apply attribute matching boost
+            attribute_boost = 1.0
+            if attribute_matches:
+                # Calculate average attribute match score for matched symptoms
+                matched_symptom_scores = []
+                for symptom in matched_symptoms:
+                    if symptom in attribute_matches:
+                        matched_symptom_scores.append(attribute_matches[symptom]['match_score'])
+
+                if matched_symptom_scores:
+                    avg_attr_match = sum(matched_symptom_scores) / len(matched_symptom_scores)
+                    # Boost confidence by 0-20% based on attribute match quality
+                    attribute_boost = 1.0 + (avg_attr_match * 0.2)
+
+            # Apply all adjustments (capped at 0.99 to avoid overconfidence)
+            final_confidence = min(base_confidence * risk_multiplier * attribute_boost, 0.99)
+            confidence_scores[condition] = round(final_confidence, 2)
+
+            # Track adjustment details
+            risk_adjustments[condition] = {
+                'risk_multiplier': round(risk_multiplier, 2),
+                'matched_factors': matched_risk_factors,
+                'base_confidence': round(base_confidence, 2),
+                'attribute_boost': round(attribute_boost, 2)  # EPIC 7 - Phase 3
+            }
+
+        return confidence_scores, risk_adjustments
+
+    def _calculate_risk_multiplier(
+        self,
+        condition: str,
+        age: Optional[int] = None,
+        medical_history: Optional[List[str]] = None,
+    ) -> Tuple[float, List[str]]:
+        """
+        Calculate risk multiplier based on patient risk factors (EPIC 7 - Phase 2)
+
+        Returns:
+            Tuple of (risk_multiplier, matched_risk_factors)
+            - risk_multiplier: 1.0 (no risk) to 2.5+ (very high risk)
+            - matched_risk_factors: List of matched risk factor names
+        """
+        # Get all risk factors for this condition from KB
+        risk_factors_data = self.metta.get_risk_factors(condition)
+
+        if not risk_factors_data:
+            return 1.0, []  # No risk factors defined
+
+        # Build patient risk factor list
+        patient_risk_factors = []
+
+        # Add age-based risk factors
+        if age:
+            if age < 40:
+                patient_risk_factors.append('age-under-40')
+            elif age <= 55:
+                patient_risk_factors.append('age-40-55')
+            elif age <= 70:
+                patient_risk_factors.append('age-55-70')
+            else:
+                patient_risk_factors.extend(['age-over-70', 'age-over-65'])
+
+        # Add medical history risk factors (normalize)
+        if medical_history:
+            normalized_history = [
+                h.lower().replace(" ", "-").replace("_", "-") for h in medical_history
+            ]
+            patient_risk_factors.extend(normalized_history)
+
+        # Calculate risk score from matched factors
+        matched_factors = []
+        total_risk_score = 0.0
+
+        for rf in risk_factors_data:
+            factor_name = rf['factor']
+            multiplier = rf['multiplier']
+
+            # Check if patient has this risk factor
+            if factor_name in patient_risk_factors:
+                matched_factors.append(factor_name)
+                total_risk_score += multiplier
+
+        # Convert risk score to multiplier (1.0 = no additional risk, 2.5+ = very high risk)
+        if total_risk_score == 0:
+            risk_multiplier = 1.0  # No additional risk
+        elif total_risk_score < 3.0:
+            risk_multiplier = 1.0 + (total_risk_score / 10.0)  # 1.0-1.3 (low risk)
+        elif total_risk_score < 6.0:
+            risk_multiplier = 1.3 + (total_risk_score / 8.0)  # 1.3-2.0 (medium risk)
+        else:
+            risk_multiplier = 2.0 + (total_risk_score / 10.0)  # 2.0-2.5+ (high risk)
+
+        return risk_multiplier, matched_factors
+
+    def _match_symptom_attributes(
+        self,
+        patient_attributes: Dict[str, Dict[str, str]]
+    ) -> Dict[str, Dict]:
+        """
+        Match patient-reported symptom attributes against knowledge base (EPIC 7 - Phase 3)
+
+        Args:
+            patient_attributes: Patient-reported symptom characteristics
+                Format: {
+                    "chest-pain": {
+                        "duration": "5-30-minutes",
+                        "location": "substernal",
+                        "character": "crushing"
+                    }
+                }
+
+        Returns:
+            Dict mapping symptoms to match details:
+            {
+                symptom: {
+                    'match_score': 0.8,  # 0.0-1.0
+                    'matched_attrs': ['duration-typical', 'location-primary'],
+                    'mismatched_attrs': ['character'],
+                    'total_attrs': 3
+                }
+            }
+        """
+        match_results = {}
+
+        for symptom, patient_attrs in patient_attributes.items():
+            # Normalize symptom name
+            symptom_normalized = symptom.lower().replace(" ", "-").replace("_", "-")
+
+            # Get KB attributes for this symptom
+            kb_attributes = self.metta.get_symptom_attributes(symptom_normalized)
+
+            if not kb_attributes:
+                # No KB attributes available for this symptom
+                match_results[symptom_normalized] = {
+                    'match_score': 0.5,  # Neutral score when no KB data
+                    'matched_attrs': [],
+                    'mismatched_attrs': [],
+                    'total_attrs': 0,
+                    'note': 'No KB attributes available'
+                }
+                continue
+
+            # Match patient attributes against KB attributes
+            matched_attrs = []
+            mismatched_attrs = []
+
+            for attr_key, patient_value in patient_attrs.items():
+                # Normalize patient value
+                patient_value_normalized = patient_value.lower().replace(" ", "-").replace("_", "-")
+
+                # Find matching KB attribute types (e.g., "duration-typical", "location-primary")
+                attr_matched = False
+                for kb_attr_type, kb_values in kb_attributes.items():
+                    # Check if attribute type matches (e.g., "duration" in "duration-typical")
+                    if attr_key.lower() in kb_attr_type.lower():
+                        # Check if patient value matches any KB value for this attribute
+                        for kb_value in kb_values:
+                            kb_value_normalized = kb_value.lower()
+
+                            # Flexible matching: check substring or exact match
+                            if (patient_value_normalized in kb_value_normalized or
+                                kb_value_normalized in patient_value_normalized or
+                                patient_value_normalized == kb_value_normalized):
+                                matched_attrs.append(kb_attr_type)
+                                attr_matched = True
+                                break
+
+                        if attr_matched:
+                            break
+
+                if not attr_matched:
+                    mismatched_attrs.append(attr_key)
+
+            # Calculate match score
+            total_patient_attrs = len(patient_attrs)
+            if total_patient_attrs > 0:
+                match_score = len(matched_attrs) / total_patient_attrs
+            else:
+                match_score = 0.0
+
+            match_results[symptom_normalized] = {
+                'match_score': round(match_score, 2),
+                'matched_attrs': matched_attrs,
+                'mismatched_attrs': mismatched_attrs,
+                'total_attrs': total_patient_attrs
+            }
+
+        return match_results
 
     def assess_urgency(
         self,

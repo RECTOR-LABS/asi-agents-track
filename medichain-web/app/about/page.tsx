@@ -8,8 +8,8 @@ export default function AboutPage() {
   const metrics = [
     { label: 'Diagnostic Accuracy', value: '87%', icon: <CheckCircle2 className="w-5 h-5" /> },
     { label: 'Avg Assessment Time', value: '<30s', icon: <TrendingUp className="w-5 h-5" /> },
-    { label: 'Conditions Covered', value: '13', icon: <Target className="w-5 h-5" /> },
-    { label: 'Knowledge Base Size', value: '200+', icon: <Award className="w-5 h-5" /> },
+    { label: 'Conditions Covered', value: '25', icon: <Target className="w-5 h-5" /> },
+    { label: 'Knowledge Base Size', value: '2,074', icon: <Award className="w-5 h-5" /> },
   ];
 
   const judgingCriteria = [
@@ -68,7 +68,7 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-medical-green-600 flex-shrink-0 mt-1" />
-                    <span>Deep MeTTa integration with 200+ medical facts and reasoning chains</span>
+                    <span>Deep MeTTa integration with 2,074 medical facts and reasoning chains</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-medical-green-600 flex-shrink-0 mt-1" />

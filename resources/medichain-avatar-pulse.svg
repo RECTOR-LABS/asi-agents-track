@@ -1,0 +1,69 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5B4FE9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.2" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+
+  <!-- Main circle -->
+  <circle cx="200" cy="200" r="190" fill="url(#bgGradient)"/>
+
+  <!-- Medical heartbeat/pulse line -->
+  <g transform="translate(200, 200)">
+    <!-- Pulse line (EKG/ECG style) -->
+    <path d="M -140,0 L -80,0 L -60,-60 L -40,80 L -20,-40 L 0,0 L 40,0 L 60,-50 L 80,70 L 100,-30 L 120,0 L 140,0"
+          fill="none"
+          stroke="white"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+    <!-- Glowing pulse effect -->
+    <path d="M -140,0 L -80,0 L -60,-60 L -40,80 L -20,-40 L 0,0 L 40,0 L 60,-50 L 80,70 L 100,-30 L 120,0 L 140,0"
+          fill="none"
+          stroke="url(#pulseGradient)"
+          stroke-width="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          opacity="0.4"/>
+
+    <!-- Medical cross integrated with pulse -->
+    <g opacity="0.9">
+      <!-- Vertical bar -->
+      <rect x="-12" y="-100" width="24" height="80" fill="white" rx="4"/>
+      <rect x="-12" y="20" width="24" height="80" fill="white" rx="4"/>
+
+      <!-- Horizontal bar -->
+      <rect x="-100" y="-12" width="80" height="24" fill="white" rx="4"/>
+      <rect x="20" y="-12" width="80" height="24" fill="white" rx="4"/>
+    </g>
+
+    <!-- AI Neural nodes -->
+    <circle cx="-80" cy="-80" r="6" fill="white" opacity="0.8"/>
+    <circle cx="80" cy="-80" r="6" fill="white" opacity="0.8"/>
+    <circle cx="-80" cy="80" r="6" fill="white" opacity="0.8"/>
+    <circle cx="80" cy="80" r="6" fill="white" opacity="0.8"/>
+
+    <!-- Center AI core -->
+    <circle cx="0" cy="0" r="20" fill="white"/>
+    <circle cx="0" cy="0" r="14" fill="#5B4FE9"/>
+    <circle cx="0" cy="0" r="6" fill="white"/>
+
+    <!-- Neural connections -->
+    <line x1="-80" y1="-80" x2="-20" y2="-20" stroke="white" stroke-width="2" opacity="0.4"/>
+    <line x1="80" y1="-80" x2="20" y2="-20" stroke="white" stroke-width="2" opacity="0.4"/>
+    <line x1="-80" y1="80" x2="-20" y2="20" stroke="white" stroke-width="2" opacity="0.4"/>
+    <line x1="80" y1="80" x2="20" y2="20" stroke="white" stroke-width="2" opacity="0.4"/>
+  </g>
+
+  <!-- Outer ring accent -->
+  <circle cx="200" cy="200" r="185" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+  <circle cx="200" cy="200" r="175" fill="none" stroke="white" stroke-width="1" opacity="0.2"/>
+</svg>

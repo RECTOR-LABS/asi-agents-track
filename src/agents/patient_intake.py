@@ -18,7 +18,7 @@ from src.protocols import (
     Symptom,
     PatientIntakeData,
     DiagnosticRequest,
-    AgentAcknowledgement,
+    AgentAcknowledgementMsg,  # Mailbox-compatible acknowledgement
     IntakeTextMessage,
 )
 
@@ -30,11 +30,15 @@ load_dotenv()
 # Patient Intake Agent Configuration
 # ============================================================================
 
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "patient_intake_readme.md")
+
 agent = Agent(
     name="medichain-patient-intake",
     seed=os.getenv("AGENT_SEED", "patient_intake_seed_dev") + "_intake",
     mailbox=True,  # Enable Agentverse mailbox for ASI:One discoverability
     publish_agent_details=True,  # Publish agent details for better discoverability
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Create protocol for inter-agent communication
@@ -168,11 +172,26 @@ class SymptomExtractor:
     @staticmethod
     def extract_age(text: str) -> Optional[int]:
         """Extract age from text"""
-        # Pattern: "I am X years old" or "X year old"
-        age_pattern = r'(\d+)\s*(year|years|yr|yrs)\s*old'
-        match = re.search(age_pattern, text.lower())
+        text_lower = text.lower()
+
+        # Pattern 1: "age X" or "age: X" (e.g., "age 28", "age: 28")
+        age_direct = r'age[:\s]+(\d+)'
+        match = re.search(age_direct, text_lower)
         if match:
             return int(match.group(1))
+
+        # Pattern 2: "I am X years old" or "X year old"
+        age_pattern = r'(\d+)\s*(year|years|yr|yrs)\s*old'
+        match = re.search(age_pattern, text_lower)
+        if match:
+            return int(match.group(1))
+
+        # Pattern 3: "X-year-old" or "X year old" at start
+        age_prefix = r'(\d+)[\s-]*(year|yr)[\s-]*old'
+        match = re.search(age_prefix, text_lower)
+        if match:
+            return int(match.group(1))
+
         return None
 
 
@@ -283,7 +302,7 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     # Rate limiting check
     if not check_rate_limit(sender):
         ctx.logger.warning(f"Rate limit exceeded for {sender}")
-        response = AgentAcknowledgement(
+        response = AgentAcknowledgementMsg(
             session_id=msg.session_id,
             agent_name="patient_intake",
             message=(
@@ -300,7 +319,7 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     validation_error = validate_input(msg.text)
     if validation_error:
         ctx.logger.warning(f"Input validation failed for {sender}: {validation_error}")
-        response = AgentAcknowledgement(
+        response = AgentAcknowledgementMsg(
             session_id=msg.session_id,
             agent_name="patient_intake",
             message=validation_error
@@ -334,7 +353,7 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     max_clarifications = 2
     if clarification and not is_http_session and session_context[msg.session_id]["clarification_count"] <= max_clarifications:
         ctx.logger.info(f"Requesting clarification for session {msg.session_id}")
-        response = AgentAcknowledgement(
+        response = AgentAcknowledgementMsg(
             session_id=msg.session_id,
             agent_name="patient_intake",
             message=clarification
@@ -345,7 +364,7 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
     # If no symptoms after max clarifications, provide helpful message
     if not symptoms:
         ctx.logger.warning(f"No symptoms extracted after {max_clarifications} attempts")
-        response = AgentAcknowledgement(
+        response = AgentAcknowledgementMsg(
             session_id=msg.session_id,
             agent_name="patient_intake",
             message=("I'm having trouble identifying specific symptoms from your description. "
@@ -381,7 +400,7 @@ async def handle_intake_message(ctx: Context, sender: str, msg: IntakeTextMessag
         f"Analyzing your symptoms..."
     )
 
-    ack = AgentAcknowledgement(
+    ack = AgentAcknowledgementMsg(
         session_id=msg.session_id,
         agent_name="patient_intake",
         message=ack_message

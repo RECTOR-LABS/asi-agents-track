@@ -40,12 +40,30 @@ export const TechStack: React.FC = () => {
         </div>
 
         <AnimatedSection animation="slide-up" delay={400} className="mt-16 text-center">
-          <Card glassmorphism padding="lg" className="max-w-3xl mx-auto">
-            <p className="text-gray-700 leading-relaxed">
+          <Card glassmorphism padding="lg" className="max-w-4xl mx-auto">
+            <p className="text-gray-700 leading-relaxed mb-4">
               <strong>Production-Ready Architecture:</strong> VPS-hosted agents with systemd services,
               Vercel-deployed frontend, 24/7 uptime monitoring, and Chat Protocol integration for
               ASI:One compatibility.
             </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-medical-blue-600">25</p>
+                <p className="text-sm text-gray-600">Conditions</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-purple-600">2,074</p>
+                <p className="text-sm text-gray-600">Medical Facts</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-medical-green-600">180</p>
+                <p className="text-sm text-gray-600">Risk Factors</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-orange-600">181</p>
+                <p className="text-sm text-gray-600">Tests Passing</p>
+              </div>
+            </div>
           </Card>
         </AnimatedSection>
       </div>

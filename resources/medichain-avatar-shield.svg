@@ -1,0 +1,92 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glowGradient">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background glow -->
+  <circle cx="200" cy="200" r="190" fill="url(#glowGradient)"/>
+
+  <!-- Medical Shield -->
+  <path d="M 200,50
+           C 240,50 280,60 300,70
+           L 300,180
+           C 300,260 260,320 200,350
+           C 140,320 100,260 100,180
+           L 100,70
+           C 120,60 160,50 200,50 Z"
+        fill="url(#shieldGradient)"
+        stroke="#312E81"
+        stroke-width="4"/>
+
+  <!-- Inner shield glow -->
+  <path d="M 200,60
+           C 235,60 270,68 287,77
+           L 287,180
+           C 287,253 252,308 200,335
+           C 148,308 113,253 113,180
+           L 113,77
+           C 130,68 165,60 200,60 Z"
+        fill="none"
+        stroke="white"
+        stroke-width="2"
+        opacity="0.2"/>
+
+  <!-- Medical Cross -->
+  <g transform="translate(200, 200)">
+    <!-- Vertical bar -->
+    <rect x="-18" y="-70" width="36" height="140" fill="white" rx="6"/>
+    <!-- Horizontal bar -->
+    <rect x="-70" y="-18" width="140" height="36" fill="white" rx="6"/>
+
+    <!-- AI Circuit corners on cross -->
+    <!-- Top -->
+    <circle cx="0" cy="-52" r="8" fill="#4F46E5"/>
+    <circle cx="0" cy="-52" r="4" fill="white"/>
+
+    <!-- Bottom -->
+    <circle cx="0" cy="52" r="8" fill="#4F46E5"/>
+    <circle cx="0" cy="52" r="4" fill="white"/>
+
+    <!-- Left -->
+    <circle cx="-52" cy="0" r="8" fill="#4F46E5"/>
+    <circle cx="-52" cy="0" r="4" fill="white"/>
+
+    <!-- Right -->
+    <circle cx="52" cy="0" r="8" fill="#4F46E5"/>
+    <circle cx="52" cy="0" r="4" fill="white"/>
+
+    <!-- Center AI core -->
+    <circle cx="0" cy="0" r="16" fill="#4F46E5"/>
+    <circle cx="0" cy="0" r="10" fill="white"/>
+    <circle cx="0" cy="0" r="5" fill="#4F46E5"/>
+
+    <!-- Circuit lines connecting nodes -->
+    <line x1="0" y1="-44" x2="0" y2="-16" stroke="#4F46E5" stroke-width="3" opacity="0.6"/>
+    <line x1="0" y1="44" x2="0" y2="16" stroke="#4F46E5" stroke-width="3" opacity="0.6"/>
+    <line x1="-44" y1="0" x2="-16" y2="0" stroke="#4F46E5" stroke-width="3" opacity="0.6"/>
+    <line x1="44" y1="0" x2="16" y2="0" stroke="#4F46E5" stroke-width="3" opacity="0.6"/>
+  </g>
+
+  <!-- Shield top accent line -->
+  <path d="M 200,50 C 240,50 280,60 300,70"
+        fill="none"
+        stroke="white"
+        stroke-width="3"
+        opacity="0.4"/>
+
+  <!-- AI corner nodes outside shield -->
+  <g opacity="0.5">
+    <circle cx="120" cy="100" r="5" fill="white"/>
+    <circle cx="280" cy="100" r="5" fill="white"/>
+    <circle cx="140" cy="320" r="5" fill="white"/>
+    <circle cx="260" cy="320" r="5" fill="white"/>
+  </g>
+</svg>

@@ -1,6 +1,6 @@
 # MediChain AI Website Revamp - Comprehensive Specification
 
-**Target URL:** https://medichain-web.vercel.app/
+**Target URL:** https://medichain-web.rectorspace.com/
 **Repository:** /Users/rz/local-dev/asi-agents-track/medichain-web/
 **Objective:** Transform the current demo website into a professional, elegant pitch website that showcases the hackathon submission to judges and users.
 
@@ -764,7 +764,7 @@ vercel --prod --yes
 ```
 
 ### Post-Deployment Verification
-- [ ] Visit https://medichain-web.vercel.app/
+- [ ] Visit https://medichain-web.rectorspace.com/
 - [ ] Test all pages
 - [ ] Test demo functionality
 - [ ] Check Google PageSpeed Insights
@@ -845,7 +845,7 @@ vercel --prod --yes
 - https://www.figma.com/community/file/medical-dashboard (medical UI patterns)
 
 **Technical Reference:**
-- Current site: https://medichain-web.vercel.app/
+- Current site: https://medichain-web.rectorspace.com/
 - GitHub repo: https://github.com/RECTOR-LABS/asi-agents-track
 - API endpoint: http://176.222.53.185:8080
 
@@ -875,7 +875,7 @@ vercel --prod --yes
 - [ ] Content update instructions
 
 **Deployment:**
-- [ ] Live on Vercel: https://medichain-web.vercel.app/
+- [ ] Live on Vercel: https://medichain-web.rectorspace.com/
 - [ ] All features working
 - [ ] Performance optimized
 - [ ] SEO configured

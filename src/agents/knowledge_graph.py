@@ -33,12 +33,16 @@ load_dotenv()
 # Knowledge Graph Agent Configuration
 # ============================================================================
 
+# README path for ASI:One discoverability
+AGENT_README_PATH = os.path.join(os.path.dirname(__file__), "knowledge_graph_readme.md")
+
 agent = Agent(
     name="medichain-knowledge-graph",
     seed=os.getenv("AGENT_SEED", "knowledge_graph_seed_dev") + "_kg",
     port=8003,  # Use different port (8000=coordinator, 8001=patient_intake, 8002=in use)
     mailbox=True,  # Enable Agentverse mailbox for inter-agent communication
     publish_agent_details=True,  # Publish agent details for discoverability
+    readme_path=AGENT_README_PATH,  # README for ASI:One agent discovery
 )
 
 # Create protocol for inter-agent communication

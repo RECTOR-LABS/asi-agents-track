@@ -22,7 +22,7 @@ ssh website 'sudo systemctl status medichain-*.service | grep "Active:"'
 ```
 
 ### 3. Frontend Loading ✅
-- Open: https://medichain-web.vercel.app
+- Open: https://medichain-web.rectorspace.com
 - Should load within 2-3 seconds
 - Landing page displays correctly
 - Chat interface visible at bottom
@@ -126,7 +126,7 @@ Runny nose, mild sore throat, sneezing - symptoms for 2 days
 - Mention MeTTa KB: 200+ facts, 13 conditions
 
 **2:00-4:00 | Live Demo** ⭐ **MOST IMPORTANT**
-1. Open https://medichain-web.vercel.app
+1. Open https://medichain-web.rectorspace.com
 2. Scroll to demo section
 3. Test **Emergency Case First** (most impressive!):
    - Input: Meningitis symptoms
@@ -218,7 +218,7 @@ After recording demo video:
 
 ## Production URLs (For Reference)
 
-**Frontend:** https://medichain-web.vercel.app
+**Frontend:** https://medichain-web.rectorspace.com
 **Backend API:** http://176.222.53.185:8080
 **Health Check:** http://176.222.53.185:8080/health
 **GitHub:** https://github.com/RECTOR-LABS/asi-agents-track

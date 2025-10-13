@@ -83,10 +83,10 @@ echo ""
 
 # Test Vercel deployment
 test_step "Vercel frontend loads" \
-    "curl -sf -o /dev/null -w '%{http_code}' https://medichain-web.vercel.app | grep -q '200'"
+    "curl -sf -o /dev/null -w '%{http_code}' https://medichain-web.rectorspace.com | grep -q '200'"
 
 test_step "Vercel API route works" \
-    "curl -sf https://medichain-web.vercel.app/api/diagnose -X POST -H 'Content-Type: application/json' -d '{\"message\":\"test\"}' > /dev/null"
+    "curl -sf https://medichain-web.rectorspace.com/api/diagnose -X POST -H 'Content-Type: application/json' -d '{\"message\":\"test\"}' > /dev/null"
 
 echo ""
 echo "======================================================================"
