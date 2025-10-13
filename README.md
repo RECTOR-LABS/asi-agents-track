@@ -311,7 +311,7 @@ imaging = engine.find_imaging_requirements('kidney-stones')
 
 ## 🎥 Demo Video
 
-**[Demo Video Link]** - 3-5 minute demonstration of the agent system
+**[Watch Demo Video](https://www.youtube.com/watch?v=Fjz9C6GShIQ)** - 3-5 minute demonstration of the agent system
 
 **Video Contents:**
 - Problem statement and motivation

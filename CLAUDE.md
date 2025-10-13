@@ -343,7 +343,7 @@ agent.include(chat_proto, publish_manifest=True)
 - ✅ Multi-agent system deployed on Agentverse
 - ✅ Deep MeTTa integration (2,074 KB lines - **Epic 7 COMPLETE - ALL 3 PHASES**)
 - ✅ Chat Protocol working
-- ⏳ Demo video (3-5 minutes) - **IN PROGRESS**
+- ✅ Demo video (3-5 minutes) - **COMPLETE** ([Watch on YouTube](https://www.youtube.com/watch?v=Fjz9C6GShIQ))
 - ✅ README with agent addresses and URLs
 
 **Innovation Lab Badges:**
