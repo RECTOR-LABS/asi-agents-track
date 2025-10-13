@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Book, Github, ExternalLink, Code, Users, Rocket, FileCode, Network, Terminal } from 'lucide-react';
-import { Card, AnimatedSection, Badge } from '@/components/shared';
+import { Book, Github, ExternalLink, Code, Users, Rocket, FileCode, Network, Terminal, Mail, Brain, Database, Bot, TestTube, Zap } from 'lucide-react';
+import { Card, AnimatedSection, Badge, CodeBlock } from '@/components/shared';
 
 const faqs = [
   {
@@ -27,8 +27,25 @@ const faqs = [
   },
 ];
 
-const codeExamples = {
-  messageProtocol: `# Message Protocol Structure (Pydantic Models)
+interface CodeExample {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  language: string;
+  code: string;
+  gradient: string;
+}
+
+const codeExamples: CodeExample[] = [
+  {
+    id: 'messageProtocol',
+    title: 'Message Protocol',
+    description: 'Pydantic models for inter-agent communication with type safety',
+    icon: Mail,
+    language: 'python',
+    gradient: 'from-blue-500 to-cyan-500',
+    code: `# Message Protocol Structure (Pydantic Models)
 
 class Symptom(BaseModel):
     """Individual symptom with metadata"""
@@ -46,8 +63,15 @@ class PatientIntakeData(BaseModel):
     medical_history: Optional[List[str]] = None
     allergies: Optional[List[str]] = None
     current_medications: Optional[List[str]] = None`,
-
-  mettaQuery: `# MeTTa Query Engine Examples
+  },
+  {
+    id: 'mettaQuery',
+    title: 'MeTTa Queries',
+    description: 'Symbolic reasoning engine with 34 query methods for diagnostics',
+    icon: Brain,
+    language: 'python',
+    gradient: 'from-purple-500 to-pink-500',
+    code: `# MeTTa Query Engine Examples
 
 engine = MeTTaQueryEngine()
 
@@ -77,8 +101,15 @@ reasoning = engine.generate_reasoning_chain(
     patient_age=28
 )
 # Returns detailed step-by-step diagnostic reasoning`,
-
-  knowledgeBase: `# Knowledge Base Structure (MeTTa Facts)
+  },
+  {
+    id: 'knowledgeBase',
+    title: 'Knowledge Base',
+    description: '2,074 medical facts as symbolic knowledge graph',
+    icon: Database,
+    language: 'metta',
+    gradient: 'from-green-500 to-emerald-500',
+    code: `# Knowledge Base Structure (MeTTa Facts)
 
 ; Symptom relationships
 (has-symptom meningitis fever)
@@ -106,8 +137,15 @@ reasoning = engine.generate_reasoning_chain(
 ; Lab tests & imaging (Epic 7)
 (requires-lab-test diabetic-ketoacidosis blood-glucose)
 (requires-imaging kidney-stones ct-scan)`,
-
-  agentImplementation: `# Coordinator Agent with Chat Protocol
+  },
+  {
+    id: 'agentImplementation',
+    title: 'Agent Code',
+    description: 'Multi-agent coordinator with Chat Protocol for ASI:One',
+    icon: Bot,
+    language: 'python',
+    gradient: 'from-orange-500 to-red-500',
+    code: `# Coordinator Agent with Chat Protocol
 
 from uagents import Agent, Context, Protocol
 from uagents_core.contrib.protocols.chat import (
@@ -141,8 +179,15 @@ agent.include(chat_proto, publish_manifest=True)
 
 if __name__ == "__main__":
     agent.run()`,
-
-  testing: `# Comprehensive Test Suite (181 tests passing)
+  },
+  {
+    id: 'testing',
+    title: 'Testing',
+    description: 'Comprehensive test suite with 181 passing tests',
+    icon: TestTube,
+    language: 'python',
+    gradient: 'from-indigo-500 to-blue-500',
+    code: `# Comprehensive Test Suite (181 tests passing)
 
 # Test MeTTa Query Engine
 def test_emergency_condition_detection():
@@ -171,8 +216,15 @@ def test_emergency_detection_validation():
     assert result.category == "emergency_detection"
     assert result.priority == "CRITICAL"
     assert "911" in result.response.lower()`,
-
-  deployment: `# Deployment Instructions
+  },
+  {
+    id: 'deployment',
+    title: 'Deployment',
+    description: 'VPS + Agentverse deployment with 24/7 uptime',
+    icon: Zap,
+    language: 'bash',
+    gradient: 'from-yellow-500 to-orange-500',
+    code: `# Deployment Instructions
 
 ## VPS Deployment (Production)
 
@@ -210,7 +262,9 @@ python src/agents/treatment_recommendation.py # Port 8005
 
 # Run tests
 pytest tests/ --cov=src`,
-};
+  },
+];
+
 
 const architectureDetails = [
   {
@@ -236,7 +290,8 @@ const architectureDetails = [
 ];
 
 export default function DocsPage() {
-  const [selectedExample, setSelectedExample] = useState<keyof typeof codeExamples>('messageProtocol');
+  const [selectedExampleIndex, setSelectedExampleIndex] = useState(0);
+  const selectedExample = codeExamples[selectedExampleIndex] ?? codeExamples[0]!;
 
   return (
     <main className="min-h-screen">
@@ -313,41 +368,98 @@ export default function DocsPage() {
       {/* Code Examples Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection animation="slide-up" className="text-center mb-12">
-            <FileCode className="w-16 h-16 text-medical-blue-600 mx-auto mb-4" />
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Code Examples & Implementation</h2>
-            <p className="text-xl text-gray-600">Explore the core components with real code snippets</p>
+          <AnimatedSection animation="slide-up" className="text-center mb-16">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-6 shadow-lg">
+              <FileCode className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-5xl font-bold text-gray-900 mb-4">
+              Code Examples & Implementation
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Explore production-ready code snippets from our multi-agent diagnostic system
+            </p>
           </AnimatedSection>
 
-          {/* Code Example Tabs */}
-          <div className="flex flex-wrap gap-3 justify-center mb-8">
-            {Object.keys(codeExamples).map((key) => (
-              <button
-                key={key}
-                onClick={() => setSelectedExample(key as keyof typeof codeExamples)}
-                className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all ${
-                  selectedExample === key
-                    ? 'bg-medical-blue-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {key === 'messageProtocol' && '📨 Message Protocol'}
-                {key === 'mettaQuery' && '🧠 MeTTa Queries'}
-                {key === 'knowledgeBase' && '📚 Knowledge Base'}
-                {key === 'agentImplementation' && '🤖 Agent Code'}
-                {key === 'testing' && '🧪 Testing'}
-                {key === 'deployment' && '🚀 Deployment'}
-              </button>
-            ))}
+          {/* Code Example Tab Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+            {codeExamples.map((example, index) => {
+              const Icon = example.icon;
+              const isSelected = selectedExampleIndex === index;
+
+              return (
+                <AnimatedSection key={example.id} animation="scale-in" delay={index * 50}>
+                  <button
+                    onClick={() => setSelectedExampleIndex(index)}
+                    className={`w-full text-left p-6 rounded-2xl transition-all duration-300 ${
+                      isSelected
+                        ? 'bg-white shadow-2xl scale-105 ring-2 ring-medical-blue-500/50'
+                        : 'bg-white/60 backdrop-blur shadow-md hover:shadow-xl hover:scale-102'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div
+                        className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${example.gradient} shadow-lg`}
+                      >
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3
+                          className={`text-lg font-bold mb-1 transition-colors ${
+                            isSelected ? 'text-gray-900' : 'text-gray-800'
+                          }`}
+                        >
+                          {example.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {example.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {isSelected && (
+                      <div className="mt-4 flex items-center gap-2 text-medical-blue-600">
+                        <div className="w-1.5 h-1.5 rounded-full bg-medical-blue-600 animate-pulse"></div>
+                        <span className="text-sm font-semibold">Currently viewing</span>
+                      </div>
+                    )}
+                  </button>
+                </AnimatedSection>
+              );
+            })}
           </div>
 
           {/* Code Display */}
-          <AnimatedSection key={selectedExample} animation="fade-in">
-            <Card className="overflow-hidden p-0">
-              <div className="bg-gray-900 text-white p-6 overflow-x-auto">
-                <pre className="text-sm font-mono whitespace-pre-wrap">{codeExamples[selectedExample]}</pre>
+          <AnimatedSection key={selectedExample.id} animation="fade-in">
+            <CodeBlock
+              code={selectedExample.code}
+              language={selectedExample.language}
+              title={selectedExample.title}
+              showLineNumbers={false}
+            />
+          </AnimatedSection>
+
+          {/* Stats below code */}
+          <AnimatedSection animation="slide-up" delay={200}>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-8 text-center">
+              <div className="flex items-center gap-2">
+                <Code className="w-5 h-5 text-blue-600" />
+                <span className="text-gray-700">
+                  <span className="font-bold text-gray-900">2,000+</span> lines of code
+                </span>
               </div>
-            </Card>
+              <div className="flex items-center gap-2">
+                <TestTube className="w-5 h-5 text-green-600" />
+                <span className="text-gray-700">
+                  <span className="font-bold text-gray-900">181</span> tests passing
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-yellow-600" />
+                <span className="text-gray-700">
+                  <span className="font-bold text-gray-900">4</span> deployed agents
+                </span>
+              </div>
+            </div>
           </AnimatedSection>
         </div>
       </section>
