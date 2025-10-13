@@ -78,7 +78,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
       typescript: 'bg-blue-600',
       javascript: 'bg-yellow-500',
     };
-    return colors[lang] || 'bg-gray-500';
+    return colors[lang] ?? 'bg-gray-500';
   };
 
   return (
@@ -114,6 +114,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
             {/* Copy button */}
             <button
               onClick={handleCopy}
+              aria-label={copied ? "Code copied to clipboard" : "Copy code to clipboard"}
               className={clsx(
                 'flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-sm transition-all',
                 copied

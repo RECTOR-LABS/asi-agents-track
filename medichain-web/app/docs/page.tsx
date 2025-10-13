@@ -293,6 +293,11 @@ export default function DocsPage() {
   const [selectedExampleIndex, setSelectedExampleIndex] = useState(0);
   const selectedExample = codeExamples[selectedExampleIndex] ?? codeExamples[0]!;
 
+  // Early return if no examples (defensive coding)
+  if (!selectedExample) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen">
       {/* Hero */}
