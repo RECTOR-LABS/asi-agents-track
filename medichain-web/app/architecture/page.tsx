@@ -49,7 +49,7 @@ const agents = [
 ];
 
 export default function ArchitecturePage() {
-  const [selectedAgent, setSelectedAgent] = useState(agents[0]);
+  const [selectedAgent, setSelectedAgent] = useState(agents[0]!);
 
   return (
     <main className="min-h-screen">

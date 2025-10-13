@@ -12,3 +12,6 @@ export type { AnimatedSectionProps } from './AnimatedSection';
 
 export { StatusIndicator } from './StatusIndicator';
 export type { StatusIndicatorProps } from './StatusIndicator';
+
+export { CodeBlock } from './CodeBlock';
+export type { CodeBlockProps } from './CodeBlock';
