@@ -24,6 +24,7 @@ class InputValidator:
         # CRITICAL: Emergency keywords
         self.emergency_keywords = [
             'can\'t breathe', 'cannot breathe', 'difficulty breathing', 'shortness of breath',
+            'gasping', 'gasping for air', 'suffocating', 'can barely breathe',
             'chest pain', 'crushing pain', 'heart attack',
             'severe bleeding', 'bleeding heavily', 'won\'t stop bleeding',
             'unconscious', 'passed out', 'collapsed',

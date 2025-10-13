@@ -187,7 +187,14 @@ const systemCapabilities = [
 const clinicalFeatures = [
   {
     title: 'Clinical Scoring Systems',
-    items: ['PERC Score (PE)', 'Wells Score (DVT/PE)', 'CURB-65 (Pneumonia)', 'CHA2DS2-VASc (Stroke)', 'GCS (Consciousness)', 'Centor (Strep Throat)'],
+    items: [
+      'PERC Score (PE)',
+      'Wells Score (DVT/PE)',
+      'CURB-65 (Pneumonia)',
+      'CHA2DS2-VASc (Stroke)',
+      'GCS (Consciousness)',
+      'Centor (Strep Throat)',
+    ],
   },
   {
     title: 'Lab Test Recommendations',
@@ -464,7 +471,9 @@ export default function DemoPage() {
           <AnimatedSection animation="fade-in" delay={600} className="mt-8 text-center">
             <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200" padding="lg">
               <p className="text-gray-800">
-                <strong>Total Coverage:</strong> 3 Critical (safety), 3 Important (UX+safety), 8 Nice-to-have (UX) = <strong className="text-medical-blue-600">14 validated scenarios</strong>
+                <strong>Total Coverage:</strong> 3 Critical (safety), 3 Important (UX+safety),
+                8 Nice-to-have (UX) ={' '}
+                <strong className="text-medical-blue-600">14 validated scenarios</strong>
               </p>
             </Card>
           </AnimatedSection>
@@ -483,7 +492,10 @@ export default function DemoPage() {
             {steps.map((item, index) => (
               <AnimatedSection key={index} animation="slide-up" delay={index * 100}>
                 <Card hover padding="lg" className="h-full text-center">
-                  <div className="w-12 h-12 bg-medical-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                  <div
+                    className="w-12 h-12 bg-medical-blue-600 text-white rounded-full
+                               flex items-center justify-center text-xl font-bold mx-auto mb-4"
+                  >
                     {item.step}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
