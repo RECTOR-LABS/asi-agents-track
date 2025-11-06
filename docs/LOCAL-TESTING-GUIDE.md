@@ -1,6 +1,8 @@
 # Local Testing Guide - Phase 4
 
-Complete guide for testing the MediChain AI system locally before deployment.
+> **⚠️ DEPRECATED:** This guide includes HTTP coordinator testing which is no longer in production. Current deployment uses **Chat Protocol** via Agentverse. For current testing instructions, see main [README.md](../README.md).
+
+Complete guide for testing the MediChain AI system locally before deployment. *(Historical Reference)*
 
 ---
 

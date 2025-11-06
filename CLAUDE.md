@@ -164,8 +164,8 @@ User → Vercel Landing Page → "Test on Agentverse" Button
 - **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 
 **Backend (VPS):**
-- **Health Check:** http://176.222.53.185:8080/health
 - **All 4 agents:** Running as systemd services (24/7 uptime)
+- **Architecture:** Chat Protocol (mailbox-based) via Agentverse - no HTTP endpoint
 
 ### Deployed Agents
 

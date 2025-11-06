@@ -1,6 +1,8 @@
 # Phase 4 Quick Start - Copy-Paste Commands
 
-**Goal:** Test complete system locally (Frontend + Backend multi-agent flow)
+> **⚠️ DEPRECATED:** This quickstart was for HTTP-based frontend testing. Current production uses **Chat Protocol** via Agentverse. See main [README.md](../README.md) for current setup.
+
+**Goal:** Test complete system locally (Frontend + Backend multi-agent flow) *(Legacy)*
 
 **Time Estimate:** 15-20 minutes
 

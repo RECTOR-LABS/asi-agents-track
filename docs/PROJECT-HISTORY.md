@@ -23,19 +23,19 @@
 
 **What Changed Since Day 4:**
 - ✅ Complete custom web interface (Next.js + TypeScript + Tailwind)
-- ✅ VPS production deployment (176.222.53.185:8080)
-- ✅ Queue-based HTTP bridge (solved Flask/async threading issues)
+- ✅ VPS production deployment *(Note: Later switched from HTTP to Chat Protocol)*
+- ✅ Queue-based HTTP bridge (solved Flask/async threading issues) *(Deprecated: Now uses Chat Protocol)*
 - ✅ Vercel production deployment (medichain-web.rectorspace.com)
 - ✅ End-to-end tested: Web → VPS → 4 Agents → Complete diagnosis in ~10 seconds
 
 ### Production Architecture (FULLY OPERATIONAL)
 
-**Backend - VPS (Ubuntu 22.04, IP: 176.222.53.185)**:
+**Backend - VPS (Ubuntu 22.04, IP: 176.222.53.185)** *(Historical - Later switched to Chat Protocol)*:
 - All 4 agents running as systemd services with auto-restart
-- Queue-based coordinator (`coordinator_queue.py`) - FastAPI + asyncio.Queue
+- Queue-based coordinator (`coordinator_queue.py`) - FastAPI + asyncio.Queue *(Deprecated)*
 - Mailbox connections active for all agents
-- Port 8080 open and serving HTTP requests
-- Health check: http://176.222.53.185:8080/health ✅
+- Port 8080 open and serving HTTP requests *(No longer deployed - Chat Protocol only)*
+- Health check: http://176.222.53.185:8080/health *(Deprecated - Agents use mailbox now)*
 
 **Frontend - Vercel**:
 - Next.js 14 production deployment
@@ -245,9 +245,9 @@ User → Vercel API Route → VPS Backend → Multi-Agent Flow
 - **Testing Platform:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 
 **Backend (VPS - Still Running 24/7):**
-- **VPS API:** http://176.222.53.185:8080 (Direct HTTP access if needed)
-- **Health Check:** http://176.222.53.185:8080/health
-- **All 4 agents:** Running as systemd services with mailbox connections
+- **VPS API:** ~~http://176.222.53.185:8080~~ *(Deprecated - Chat Protocol only)*
+- **Health Check:** ~~http://176.222.53.185:8080/health~~ *(Deprecated - Use Agentverse)*
+- **All 4 agents:** Running as systemd services with mailbox connections ✅
 
 ---
 

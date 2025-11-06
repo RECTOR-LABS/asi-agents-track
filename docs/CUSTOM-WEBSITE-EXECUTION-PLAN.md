@@ -1,7 +1,9 @@
 # Custom Website Execution Plan - MediChain AI
 ## xxx.rectorspace.com Pitch Website Development
 
-**Bismillah! Let's build a professional demo website for hackathon judges.**
+> **⚠️ DEPRECATED:** This plan was for HTTP-based website integration. Current production uses **Chat Protocol** via Agentverse. The static landing page at [medichain-web.rectorspace.com](https://medichain-web.rectorspace.com) links to Agentverse for testing.
+
+**Bismillah! Let's build a professional demo website for hackathon judges.** *(Historical Context)*
 
 ---
 

@@ -8,10 +8,10 @@
 
 ### 1. VPS Backend Health ✅
 ```bash
-# Quick health check
-curl http://176.222.53.185:8080/health
+# Check all services are running
+ssh website 'sudo systemctl is-active medichain-*.service'
 
-# Expected: {"status": "healthy", "agent": "medichain-coordinator", ...}
+# Expected: All show "active"
 ```
 
 ### 2. All Services Running ✅
@@ -219,9 +219,10 @@ After recording demo video:
 ## Production URLs (For Reference)
 
 **Frontend:** https://medichain-web.rectorspace.com
-**Backend API:** http://176.222.53.185:8080
-**Health Check:** http://176.222.53.185:8080/health
+**Chat Testing:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q
 **GitHub:** https://github.com/RECTOR-LABS/asi-agents-track
+
+**Note:** Uses Chat Protocol (mailbox-based) via Agentverse - no HTTP API endpoint
 
 ---
 

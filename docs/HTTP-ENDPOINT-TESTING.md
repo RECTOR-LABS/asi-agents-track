@@ -1,6 +1,8 @@
 # HTTP Endpoint Testing Guide
 
-**Testing the coordinator HTTP bridge locally**
+> **⚠️ DEPRECATED:** This guide covers legacy HTTP coordinator variants (`coordinator_http.py`, `coordinator_queue.py`) that are no longer deployed. Current production uses **Chat Protocol (mailbox-based)** via Agentverse. For testing, use the [Agentverse chat interface](https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q) instead.
+
+**Testing the coordinator HTTP bridge locally** *(Legacy)*
 
 ## Quick Start
 

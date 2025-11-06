@@ -164,9 +164,9 @@ Pet Symptoms: "My dog is vomiting"
 ### Production URLs
 
 - **Pitch Website:** https://medichain-web.rectorspace.com (Beautiful landing page with agent details)
-- **VPS Backend:** http://176.222.53.185:8080 (Direct HTTP API for testing)
+- **Chat Testing:** https://agentverse.ai/agents/details/agent1qwukpkhx9m6595wvfy953unajptrl2rpx95zynucfxam4s7u0qz2je6h70q (Live agent interaction)
 
-**Note:** The pitch website provides agent information and links to Agentverse for live testing. All actual diagnostic flows happen through Agentverse!
+**Note:** The pitch website provides agent information and links to Agentverse for live testing. All diagnostic flows use Chat Protocol through Agentverse (no HTTP API endpoint).
 
 ---
 
